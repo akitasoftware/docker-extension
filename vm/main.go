@@ -1,6 +1,9 @@
 package main
 
 import (
+	"akita/infrastructure/db"
+	"akita/infrastructure/repo"
+	"akita/ports"
 	"flag"
 	"log"
 	"net"
@@ -16,10 +19,18 @@ func main() {
 	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
 	flag.Parse()
 
-	os.RemoveAll(socketPath)
+	_ = os.RemoveAll(socketPath)
 
 	logrus.New().Infof("Starting listening on %s\n", socketPath)
-	router := echo.New()
+
+	memDB, err := db.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	agentRepo := repo.NewAgentRepository(memDB)
+
+	router := ports.NewRouter(agentRepo)
 	router.HideBanner = true
 
 	startURL := ""

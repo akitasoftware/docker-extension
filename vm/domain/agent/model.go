@@ -3,6 +3,7 @@ package agent
 import (
 	"akita/domain/failure"
 	"encoding/json"
+	"io"
 )
 
 type Config struct {
@@ -13,10 +14,10 @@ type Config struct {
 	TargetContainer *string `json:"target_container"`
 }
 
-func UnmarshalConfig(data []byte) (*Config, error) {
+func DecodeConfig(r io.Reader) (*Config, error) {
 	var result *Config
 
-	if err := json.Unmarshal(data, &result); err != nil {
+	if err := json.NewDecoder(r).Decode(&result); err != nil {
 		return nil, failure.Invalid(err)
 	}
 

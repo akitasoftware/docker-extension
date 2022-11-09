@@ -4,25 +4,25 @@ import (
 	"akita/domain/agent"
 )
 
-var currAgentConfig *agent.Config = nil
-
+// TODO: Persist the agent config to a file.
 type AgentRepository struct {
+	agentConfig *agent.Config
 }
 
-func NewAgentRepository() *AgentRepository {
+func NewAgentRepository() agent.Repository {
 	return &AgentRepository{}
 }
 
 func (a AgentRepository) GetConfig() (*agent.Config, error) {
-	return currAgentConfig, nil
+	return a.agentConfig, nil
 }
 
 func (a AgentRepository) CreateConfig(agentConfig *agent.Config) error {
-	currAgentConfig = agentConfig
+	a.agentConfig = agentConfig
 	return nil
 }
 
 func (a AgentRepository) RemoveConfig() error {
-	currAgentConfig = nil
+	a.agentConfig = nil
 	return nil
 }

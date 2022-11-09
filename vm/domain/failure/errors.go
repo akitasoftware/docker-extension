@@ -5,9 +5,16 @@ import (
 	"fmt"
 )
 
-var ErrInvalid = errors.New("invalid")
+var (
+	ErrInvalid  = errors.New("invalid")
+	ErrNotFound = errors.New("not found")
+)
 
 // Returns an ErrInvalid error along with the given message.
 func Invalidf(format string, a ...interface{}) error {
 	return fmt.Errorf("%w: %s", ErrInvalid, fmt.Sprintf(format, a...))
+}
+
+func NotFoundf(format string, a ...interface{}) error {
+	return fmt.Errorf("%w: %s", ErrNotFound, fmt.Sprintf(format, a...))
 }

@@ -2,27 +2,36 @@ package repo
 
 import (
 	"akita/domain/agent"
+	"akita/domain/failure"
 )
 
-// TODO: Persist the agent config to a file.
-type AgentRepository struct {
+// TODO (versilis): This is a temporary solution to store data in memory, but it might be worth it to use a persistent database.
+// Docker extensions don't support creating additional volumes, so we can't store data in a file.
+type dataStore struct {
 	agentConfig *agent.Config
 }
 
+type AgentRepository struct {
+	dataStore *dataStore
+}
+
 func NewAgentRepository() agent.Repository {
-	return &AgentRepository{}
+	return &AgentRepository{&dataStore{}}
 }
 
 func (a AgentRepository) GetConfig() (*agent.Config, error) {
-	return a.agentConfig, nil
+	if a.dataStore.agentConfig == nil {
+		return nil, failure.NotFoundf("no agent config found")
+	}
+	return a.dataStore.agentConfig, nil
 }
 
 func (a AgentRepository) CreateConfig(agentConfig *agent.Config) error {
-	a.agentConfig = agentConfig
+	a.dataStore.agentConfig = agentConfig
 	return nil
 }
 
 func (a AgentRepository) RemoveConfig() error {
-	a.agentConfig = nil
+	a.dataStore.agentConfig = nil
 	return nil
 }

@@ -4,14 +4,13 @@ import (
 	"akita/domain/failure"
 	"encoding/json"
 	"io"
-	"strconv"
 )
 
 type Config struct {
 	APIKey          string  `json:"api_key"`
 	APISecret       string  `json:"api_secret"`
 	ProjectName     string  `json:"project_name"`
-	TargetPort      *string `json:"target_port"`
+	TargetPort      *int    `json:"target_port"`
 	TargetContainer *string `json:"target_container"`
 }
 
@@ -44,14 +43,6 @@ func (a *Config) Validate() error {
 
 	if a.TargetPort == nil && a.TargetContainer == nil {
 		return failure.Invalidf("target port or container must be specified")
-	}
-
-	if a.TargetPort == nil {
-		return nil
-	}
-
-	if _, err := strconv.Atoi(*a.TargetPort); err != nil {
-		return failure.Invalidf("target port must be a number")
 	}
 
 	return nil

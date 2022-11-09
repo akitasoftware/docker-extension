@@ -16,7 +16,7 @@ export const Root = () => {
       try {
         void removeAkitaAgentContainer(ddClient);
       } catch (e) {
-        console.error(e);
+        ddClient.desktopUI.toast.error(`Failed to remove Akita container: ${e.message}`);
       }
       navigate("/config");
     });

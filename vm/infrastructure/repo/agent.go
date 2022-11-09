@@ -3,60 +3,35 @@ package repo
 import (
 	"akita/domain/agent"
 	"akita/domain/failure"
-	"akita/infrastructure/datasource"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"github.com/spf13/afero"
 )
 
-type AgentRepository struct {
+// TODO (versilis): This is a temporary solution to store data in memory, but it might be worth it to use a persistent database.
+// Docker extensions don't support creating additional volumes, so we can't store data in a file.
+type dataStore struct {
+	agentConfig *agent.Config
 }
 
-func NewAgentRepository() *AgentRepository {
-	return &AgentRepository{}
+type AgentRepository struct {
+	dataStore *dataStore
+}
+
+func NewAgentRepository() agent.Repository {
+	return &AgentRepository{&dataStore{}}
 }
 
 func (a AgentRepository) GetConfig() (*agent.Config, error) {
-	data, err := afero.ReadFile(datasource.FileSystem, datasource.ConfigFilePath)
-	if err != nil {
-		if errors.Is(err, afero.ErrFileNotFound) {
-			return nil, failure.NotFoundf("agent config not found")
-		}
-		return nil, fmt.Errorf("failed to read agent config: %w", err)
+	if a.dataStore.agentConfig == nil {
+		return nil, failure.NotFoundf("no agent config found")
 	}
-
-	var result *agent.Config
-
-	if err := json.Unmarshal(data, &result); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal agent config: %w", err)
-	}
-
-	return result, nil
+	return a.dataStore.agentConfig, nil
 }
 
 func (a AgentRepository) CreateConfig(agentConfig *agent.Config) error {
-	data, err := json.Marshal(agentConfig)
-	if err != nil {
-		return fmt.Errorf("failed to marshal agent config: %w", err)
-	}
-
-	if err := afero.WriteFile(
-		datasource.FileSystem,
-		datasource.ConfigFilePath,
-		data,
-		datasource.OS_USER_RW,
-	); err != nil {
-		return fmt.Errorf("failed to write agent config: %w", err)
-	}
-
+	a.dataStore.agentConfig = agentConfig
 	return nil
 }
 
 func (a AgentRepository) RemoveConfig() error {
-	if err := datasource.FileSystem.Remove(datasource.ConfigFilePath); err != nil {
-		return fmt.Errorf("failed to remove agent config: %w", err)
-	}
-
+	a.dataStore.agentConfig = nil
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"akita/domain/failure"
 	"encoding/json"
 	"io"
+	"strconv"
 )
 
 type Config struct {
@@ -18,7 +19,7 @@ func DecodeConfig(r io.Reader) (*Config, error) {
 	var result *Config
 
 	if err := json.NewDecoder(r).Decode(&result); err != nil {
-		return nil, failure.Invalid(err)
+		return nil, failure.Invalidf("failed to decode agent config: %v", err)
 	}
 
 	if err := result.Validate(); err != nil {
@@ -42,7 +43,15 @@ func (a *Config) Validate() error {
 	}
 
 	if a.TargetPort == nil && a.TargetContainer == nil {
-		return failure.Invalidf("target port and container are missing")
+		return failure.Invalidf("target port or container must be specified")
+	}
+
+	if a.TargetPort == nil {
+		return nil
+	}
+
+	if _, err := strconv.Atoi(*a.TargetPort); err != nil {
+		return failure.Invalidf("target port must be a number")
 	}
 
 	return nil

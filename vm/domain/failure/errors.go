@@ -7,14 +7,7 @@ import (
 
 var ErrInvalid = errors.New("invalid")
 
-func Invalid(err error) error {
-	return fmt.Errorf("%w: %v", ErrInvalid, err)
-}
-
+// Return an ErrInvalid error along with the given message.
 func Invalidf(format string, a ...interface{}) error {
-	return Invalid(fmt.Errorf(format, a...))
-}
-
-func IsInvalidErr(err error) bool {
-	return errors.Is(err, ErrInvalid)
+	return fmt.Errorf("%w: %s", ErrInvalid, fmt.Sprintf(format, a...))
 }

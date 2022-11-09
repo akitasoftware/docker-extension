@@ -1,3 +1,5 @@
 services:
   akita:
     image: ${DESKTOP_PLUGIN_IMAGE}
+    volume:
+      - /var/lib/docker/volumes/akita/data:/data

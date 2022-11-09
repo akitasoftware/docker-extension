@@ -15,23 +15,22 @@ import { useNavigate } from "react-router-dom";
 import darkAkitaLogo from "../assets/img/akita_logo_dark.svg";
 import lightAkitaLogo from "../assets/img/akita_logo_light.svg";
 import { createAgentConfig } from "../data/queries/agent-config";
+import { useContainers } from "../data/queries/container";
 import { useDockerDesktopClient } from "../hooks/use-docker-desktop-client";
-import {useContainers} from "../data/queries/container";
-
 
 const AkitaLogo = () => {
   const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   return (
-      <img
-          src={isDarkMode ? lightAkitaLogo : darkAkitaLogo}
-          alt={"Akita"}
-          style={{
-            height: 140,
-            width: "50%",
-            display: "block",
-            margin: "auto",
-          }}
-      />
+    <img
+      src={isDarkMode ? lightAkitaLogo : darkAkitaLogo}
+      alt={"Akita"}
+      style={{
+        height: 140,
+        width: "50%",
+        display: "block",
+        margin: "auto",
+      }}
+    />
   );
 };
 
@@ -49,8 +48,7 @@ const initialConfigInputState: ConfigInputState = {
   projectName: undefined,
   targetPort: undefined,
   targetContainer: undefined,
-}
-
+};
 
 export const ConfigPage = () => {
   const ddClient = useDockerDesktopClient();

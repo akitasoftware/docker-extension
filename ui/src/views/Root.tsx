@@ -1,8 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getAgentConfig } from "../data/queries/agent-config";
+import { removeAkitaAgentContainer } from "../data/queries/container";
 import { useDockerDesktopClient } from "../hooks/use-docker-desktop-client";
-import {removeAkitaAgentContainer} from "../data/queries/container";
 
 export const Root = () => {
   const ddClient = useDockerDesktopClient();

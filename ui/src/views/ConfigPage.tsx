@@ -67,7 +67,9 @@ export const ConfigPage = () => {
       .then(() => {
         navigate("/agent");
       })
-      .catch((err) => console.error(err));
+      .catch((err) =>
+        ddClient.desktopUI.toast.error(`Failed to create agent config: ${err.message}`)
+      );
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {

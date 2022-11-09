@@ -30,7 +30,7 @@ export const getContainers = async (client: v1.DockerDesktopClient): Promise<Con
   return result as ContainerInfo[];
 };
 
-export const useContainers = () => {
+export const useContainers = (): ContainerInfo[] => {
   const client = useDockerDesktopClient();
 
   const [containers, setContainers] = useState<ContainerInfo[]>([]);
@@ -42,17 +42,17 @@ export const useContainers = () => {
   return containers;
 };
 
-export const getAkitaAgentContainer = async (
+export const getAkitaContainer = async (
   client: v1.DockerDesktopClient
 ): Promise<ContainerInfo | undefined> =>
   await getContainers(client).then((containers) =>
-    containers.find((container) => isAkitaAgentContainer(container))
+    containers.find((container) => isAkitaContainer(container))
   );
 
 export const startAkitaAgent = async (client: v1.DockerDesktopClient, config?: AgentConfig) => {
   if (!config) return;
 
-  const container = await getAkitaAgentContainer(client);
+  const container = await getAkitaContainer(client);
   if (container) return;
 
   // Pull the latest image of Akita CLI
@@ -78,14 +78,14 @@ export const startAkitaAgent = async (client: v1.DockerDesktopClient, config?: A
   await client.docker.cli.exec("run", runArgs);
 };
 
-export const removeAkitaAgentContainer = async (client: v1.DockerDesktopClient) => {
-  const container = await getAkitaAgentContainer(client);
+export const removeAkitaContainer = async (client: v1.DockerDesktopClient) => {
+  const container = await getAkitaContainer(client);
   if (container) {
     await client.docker.cli.exec("rm", ["-f", container.Id]);
   }
 };
 
-const isAkitaAgentContainer = (containerInfo?: ContainerInfo): boolean => {
+const isAkitaContainer = (containerInfo?: ContainerInfo): boolean => {
   const doesMatchContainerName = containerInfo?.Names.some((name) =>
     name.includes(AgentContainerName)
   );

@@ -21,6 +21,10 @@ func (a agentHandler) getAgentConfig(ctx echo.Context) error {
 		return err
 	}
 
+	if config == nil {
+		return ctx.NoContent(404)
+	}
+
 	return ctx.JSON(200, config)
 }
 
@@ -42,7 +46,7 @@ func (a agentHandler) removeAgentConfig(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.NoContent(204)
+	return ctx.NoContent(200)
 }
 
 func handleError(err error, ctx echo.Context) {

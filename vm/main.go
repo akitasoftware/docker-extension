@@ -1,7 +1,6 @@
 package main
 
 import (
-	"akita/infrastructure/db"
 	"akita/infrastructure/repo"
 	"akita/ports"
 	"flag"
@@ -21,12 +20,7 @@ func main() {
 
 	logrus.New().Infof("Starting listening on %s\n", socketPath)
 
-	memDB, err := db.New()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	agentRepo := repo.NewAgentRepository(memDB)
+	agentRepo := repo.NewAgentRepository()
 
 	router := ports.NewRouter(agentRepo)
 	router.HideBanner = true

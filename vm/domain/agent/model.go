@@ -10,7 +10,7 @@ type Config struct {
 	APIKey          string  `json:"api_key"`
 	APISecret       string  `json:"api_secret"`
 	ProjectName     string  `json:"project_name"`
-	TargetPort      *int    `json:"target_port"`
+	TargetPort      *string `json:"target_port"`
 	TargetContainer *string `json:"target_container"`
 }
 

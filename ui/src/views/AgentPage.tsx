@@ -268,7 +268,7 @@ const AgentStatus = ({ containerInfo, onReinitialize }: AgentStatusProps) => {
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
       ) : (
-        <Typography variant={"body1"}>Loading Akita agent details...</Typography>
+        <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
     </Paper>
   );

@@ -27,7 +27,6 @@ export type ContainerInfo = {
 
 export const getContainers = async (client: v1.DockerDesktopClient): Promise<ContainerInfo[]> => {
   const result = await client.docker.listContainers();
-  console.log("getContainers", result);
   return result as ContainerInfo[];
 };
 

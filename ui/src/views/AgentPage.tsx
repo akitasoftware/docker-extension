@@ -81,18 +81,35 @@ interface SettingsDialogProps {
   onCloseDialog: () => void;
 }
 
+interface InputState {
+  projectName: string;
+  targetPort: string;
+  targetContainer: string;
+}
+
+const resolveConfigFromInput = (config: AgentConfig, inputState: InputState): AgentConfig => ({
+  ...config,
+  project_name: inputState.projectName,
+  target_port: inputState.targetPort != "" ? parseInt(inputState.targetPort) : undefined,
+  target_container: inputState.targetContainer != "" ? inputState.targetContainer : undefined,
+});
+
+const inputStateFromConfig = (config?: AgentConfig): InputState => ({
+  projectName: config?.project_name ?? "",
+  targetPort: config?.target_port?.toString() ?? "",
+  targetContainer: config?.target_container ?? "",
+});
+
 const SettingsDialog = ({ isOpen, onConfigChange, onCloseDialog, config }: SettingsDialogProps) => {
   const containers = useContainers();
 
-  console.log("SettingsDialog config", config);
-
-  const [input, setInput] = useState<{ project: string; port?: number; container?: string }>({
-    project: config?.project_name,
-    port: config?.target_port,
-    container: config?.target_container,
-  });
+  const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
 
   const [isUpdatedConfigValid, setIsUpdatedConfigValid] = useState(false);
+
+  useEffect(() => {
+    setInput(inputStateFromConfig(config));
+  }, [config]);
 
   useEffect(() => {
     if (!config) {
@@ -100,49 +117,35 @@ const SettingsDialog = ({ isOpen, onConfigChange, onCloseDialog, config }: Setti
       return;
     }
 
-    if (
-      config?.target_container === input.container &&
-      config?.target_port === input.port &&
-      config?.project_name === input.project
-    ) {
-      setIsUpdatedConfigValid(false);
-      return;
-    }
+    const updatedConfig = resolveConfigFromInput(config, input);
 
-    if (input.container === "") {
-      setIsUpdatedConfigValid(false);
-      return;
-    }
+    console.log("input", input);
+    console.log("updated config", updatedConfig);
+    console.log("current config", config);
 
-    if (!input.port && !input.container) {
-      setIsUpdatedConfigValid(false);
-      return;
-    }
+    const isConfigChanged = JSON.stringify(updatedConfig) !== JSON.stringify(config);
 
-    setIsUpdatedConfigValid(true);
+    const hasRequiredFields =
+      updatedConfig.project_name !== "" &&
+      (updatedConfig.target_port !== undefined || updatedConfig.target_container !== undefined);
+
+    setIsUpdatedConfigValid(isConfigChanged && hasRequiredFields);
   }, [config, input]);
 
-  useEffect(() => {
-    if (!config) return;
-
-    setInput({
-      project: config?.project_name,
-      port: config?.target_port,
-      container: config?.target_container,
-    });
-  }, [config]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setInput((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleRestart = () => {
-    const newConfig: AgentConfig = {
-      api_key: config.api_key,
-      api_secret: config.api_secret,
-      project_name: input.project,
-      target_port: input.port,
-      target_container: input.container,
-    };
-
+    const newConfig: AgentConfig = resolveConfigFromInput(config, input);
     onConfigChange(newConfig);
     onCloseDialog();
+  };
+
+  const handleCancel = () => {
+    onCloseDialog();
+    setInput(inputStateFromConfig(config));
   };
 
   return (
@@ -153,37 +156,38 @@ const SettingsDialog = ({ isOpen, onConfigChange, onCloseDialog, config }: Setti
           <Stack justifyContent={"center"} alignItems={"center"} spacing={3}>
             <TextField
               label={"Project Name"}
-              value={input.project}
-              name={"project"}
+              value={input.projectName}
+              name={"projectName"}
               margin={"normal"}
               variant={"standard"}
               fullWidth
               type={"text"}
-              onChange={(e) =>
-                setInput((prev) => ({ ...prev, project: e.target.value.toString() }))
-              }
+              onChange={handleInputChange}
             />
             <TextField
               label={"Target Port"}
-              name={"port"}
-              value={input.port}
+              name={"targetPort"}
+              value={input.targetPort}
               variant={"standard"}
               fullWidth
               margin={"normal"}
               type={"number"}
-              onChange={(e) => setInput((prev) => ({ ...prev, port: parseInt(e.target.value) }))}
+              onChange={handleInputChange}
             />
             <TextField
               label={"Target Container"}
-              name={"container"}
+              name={"targetContainer"}
               margin={"normal"}
               variant={"standard"}
               fullWidth
               type={"text"}
-              value={input.container}
+              value={input.targetContainer}
               select
-              onChange={(e) => setInput((prev) => ({ ...prev, container: e.target.value }))}
+              onChange={handleInputChange}
             >
+              <MenuItem key={"none"} value={""}>
+                <em>None</em>
+              </MenuItem>
               {containers.map((container) => (
                 <MenuItem key={container.Id} value={container.Id}>
                   {container.Names[0].replace(/^\//g, "")}
@@ -193,7 +197,7 @@ const SettingsDialog = ({ isOpen, onConfigChange, onCloseDialog, config }: Setti
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button variant={"outlined"} onClick={onCloseDialog}>
+          <Button variant={"outlined"} onClick={handleCancel}>
             Cancel
           </Button>
           <Button

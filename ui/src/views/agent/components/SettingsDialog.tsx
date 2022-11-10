@@ -63,10 +63,6 @@ export const SettingsDialog = ({
 
     const updatedConfig = resolveConfigFromInput(config, input);
 
-    console.log("input", input);
-    console.log("updated config", updatedConfig);
-    console.log("current config", config);
-
     const isConfigChanged = JSON.stringify(updatedConfig) !== JSON.stringify(config);
 
     const hasRequiredFields =

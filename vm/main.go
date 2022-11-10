@@ -23,7 +23,6 @@ func main() {
 	agentRepo := repo.NewAgentRepository()
 
 	router := ports.NewRouter(agentRepo)
-	router.HideBanner = true
 
 	startURL := ""
 

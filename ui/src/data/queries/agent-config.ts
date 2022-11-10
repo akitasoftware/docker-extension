@@ -8,25 +8,14 @@ export type AgentConfig = {
   target_container?: string;
 };
 
-export const getAgentConfig = async (
-  ddClient: v1.DockerDesktopClient
-): Promise<AgentConfig | undefined> =>
-  (await ddClient.extension.vm?.service?.get("/agents/config")) as AgentConfig | undefined;
+export const getAgentConfig = async (ddClient: v1.DockerDesktopClient): Promise<AgentConfig> =>
+  (await ddClient.extension.vm?.service?.get("/agents/config")) as AgentConfig;
 
 export const createAgentConfig = async (
   ddClient: v1.DockerDesktopClient,
   config: AgentConfig
-): Promise<AgentConfig> => {
-  const data = JSON.stringify(config, (key, value) => {
-    if (isNaN(value)) {
-      return value;
-    }
-
-    return Number(value);
-  });
-
-  return (await ddClient.extension.vm?.service?.post("/agents/config", data)) as AgentConfig;
-};
+): Promise<AgentConfig> =>
+  (await ddClient.extension.vm?.service?.post("/agents/config", config)) as AgentConfig;
 
 export const deleteAgentConfig = async (ddClient: v1.DockerDesktopClient) => {
   await ddClient.extension.vm?.service?.delete("/agents/config");

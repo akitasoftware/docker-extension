@@ -255,7 +255,7 @@ const AgentStatus = ({ containerInfo, onReinitialize }: AgentStatusProps) => {
         label={status}
       />
       <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
-        {status === "Running" ? <DoneOutlineIcon /> : <CircularProgress />}
+        {status === "Running" ? <DoneOutlineIcon /> : <CircularProgress size={"1rem"} />}
       </Box>
       {status === "Running" ? (
         <Typography variant={"body1"}>

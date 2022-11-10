@@ -1,16 +1,7 @@
 import { useEffect, useState } from "react";
-import { AgentConfig, getAgentConfig } from "../data/queries/agent-config";
 import { ContainerInfo, getAkitaContainer, startAkitaAgent } from "../data/queries/container";
+import { useAgentConfig } from "./use-agent-config";
 import { useDockerDesktopClient } from "./use-docker-desktop-client";
-
-const useAgentConfig = (): AgentConfig | undefined => {
-  const ddClient = useDockerDesktopClient();
-  const [agentConfig, setAgentConfig] = useState<AgentConfig | undefined>();
-  useEffect(() => {
-    void getAgentConfig(ddClient).then(setAgentConfig);
-  }, [ddClient]);
-  return agentConfig;
-};
 
 export const useAkitaAgent = () => {
   const client = useDockerDesktopClient();
@@ -54,5 +45,5 @@ export const useAkitaAgent = () => {
     return () => clearInterval(interval);
   }, [client, config, isInitialized]);
 
-  return { config, containerInfo };
+  return { config, containerInfo, setIsInitialized };
 };

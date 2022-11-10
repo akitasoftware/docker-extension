@@ -13,11 +13,12 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteAgentConfig } from "../data/queries/agent-config";
-import { ContainerInfo, removeAkitaContainer } from "../data/queries/container";
+import { ContainerInfo, ContainerState, removeAkitaContainer } from "../data/queries/container";
 import { useAkitaAgent } from "../hooks/use-akita-agent";
+import { useContainerState } from "../hooks/use-container-state";
 import { useDockerDesktopClient } from "../hooks/use-docker-desktop-client";
 
 const Header = () => {
@@ -58,12 +59,30 @@ const Header = () => {
 };
 
 interface AgentStatusProps {
-  containerInfo: ContainerInfo;
+  containerInfo?: ContainerInfo;
+  onReinitialize: () => void;
 }
 
-const AgentStatus = ({ containerInfo }: AgentStatusProps) => {
+const AgentStatus = ({ containerInfo, onReinitialize }: AgentStatusProps) => {
   const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const ddClient = useDockerDesktopClient();
+  const containerState = useContainerState(3000, containerInfo?.Id);
+  const [status, setStatus] = useState<"Loading" | "Running" | "Starting">("Loading");
+
+  useEffect(() => {
+    if (!containerInfo || !containerState) {
+      setStatus("Loading");
+      return;
+    }
+
+    if (containerState === ContainerState.RUNNING) {
+      setStatus("Running");
+    } else {
+      // If the container doesn't exist, we need to restart it.
+      onReinitialize();
+      setStatus("Starting");
+    }
+  }, [containerInfo, containerState, onReinitialize]);
 
   return (
     <Paper
@@ -80,13 +99,13 @@ const AgentStatus = ({ containerInfo }: AgentStatusProps) => {
     >
       <Chip
         variant={"filled"}
-        color={containerInfo ? "success" : "warning"}
-        label={containerInfo ? "Running" : "Starting"}
+        color={status === "Running" ? "success" : "warning"}
+        label={status}
       />
       <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
-        {containerInfo ? <DoneOutlineIcon /> : <CircularProgress />}
+        {status === "Running" ? <DoneOutlineIcon /> : <CircularProgress />}
       </Box>
-      {containerInfo ? (
+      {status === "Running" ? (
         <Typography variant={"body1"}>
           Akita is running. Check the{" "}
           <Link onClick={() => ddClient.host.openExternal("https://app.akita.software")}>
@@ -94,20 +113,22 @@ const AgentStatus = ({ containerInfo }: AgentStatusProps) => {
           </Link>{" "}
           to view your models.
         </Typography>
-      ) : (
+      ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
+      ) : (
+        <Typography variant={"body1"}>Loading Akita agent details...</Typography>
       )}
     </Paper>
   );
 };
 
 export const AgentPage = () => {
-  const { containerInfo } = useAkitaAgent();
+  const { containerInfo, setIsInitialized } = useAkitaAgent();
 
   return (
     <Stack spacing={4} marginX={8}>
       <Header />
-      <AgentStatus containerInfo={containerInfo} />
+      <AgentStatus containerInfo={containerInfo} onReinitialize={() => setIsInitialized(false)} />
     </Stack>
   );
 };

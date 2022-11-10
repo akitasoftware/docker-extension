@@ -63,7 +63,7 @@ export const startAkitaAgent = async (client: v1.DockerDesktopClient, config?: A
   const runArgs = [
     "--rm",
     `--network ${networkArg}`,
-    "--name akita-docker-extension-agent",
+    `--name ${AgentContainerName}`,
     `-e AKITA_API_KEY_ID=${config.api_key}`,
     `-e AKITA_API_KEY_SECRET=${config.api_secret}`,
     "akitasoftware/cli:latest apidump",

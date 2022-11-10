@@ -63,7 +63,16 @@ export const SettingsDialog = ({
 
     const updatedConfig = resolveConfigFromInput(config, input);
 
-    const isConfigChanged = JSON.stringify(updatedConfig) !== JSON.stringify(config);
+    const toJsonString = (agentConfig: AgentConfig) =>
+      JSON.stringify(agentConfig, (key, value) => {
+        if (value === null) {
+          return undefined;
+        }
+
+        return value;
+      });
+
+    const isConfigChanged = toJsonString(config) !== toJsonString(updatedConfig);
 
     const hasRequiredFields =
       updatedConfig.project_name !== "" &&

@@ -85,13 +85,12 @@ export const ConfigPage = () => {
 
     if (serviceResponse.status === 401) {
       setIsInvalidAPICredentials(true);
+      ddClient.desktopUI.toast.error("Invalid API credentials");
       return false;
     }
 
     if (!serviceResponse.ok) {
-      ddClient.desktopUI.toast.error(
-        `Failed to fetch Akita projects: ${serviceResponse.statusText}`
-      );
+      ddClient.desktopUI.toast.error(`Failed to fetch Akita projects: ${serviceResponse.status}`);
       return false;
     }
 

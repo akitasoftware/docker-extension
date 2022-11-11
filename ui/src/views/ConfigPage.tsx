@@ -14,7 +14,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import darkAkitaLogo from "../assets/img/akita_logo_dark.svg";
 import lightAkitaLogo from "../assets/img/akita_logo_light.svg";
-import { createAgentConfig } from "../data/queries/agent-config";
+import { AgentConfig, createAgentConfig } from "../data/queries/agent-config";
 import { useContainers } from "../data/queries/container";
 import { getServices } from "../data/queries/service";
 import { UserResponse, getAkitaUser } from "../data/queries/user";
@@ -37,20 +37,34 @@ const AkitaLogo = () => {
 };
 
 interface ConfigInputState {
-  apiKey?: string;
-  apiSecret?: string;
-  projectName?: string;
-  targetPort?: number;
-  targetContainer?: string;
+  apiKey: string;
+  apiSecret: string;
+  projectName: string;
+  targetPort: string;
+  targetContainer: string;
 }
 
 const initialConfigInputState: ConfigInputState = {
-  apiKey: undefined,
-  apiSecret: undefined,
-  projectName: undefined,
-  targetPort: undefined,
-  targetContainer: undefined,
+  apiKey: "",
+  apiSecret: "",
+  projectName: "",
+  targetPort: "",
+  targetContainer: "",
 };
+
+const isConfigInputStateValid = (state: ConfigInputState) =>
+  state.apiKey !== "" &&
+  state.apiSecret !== "" &&
+  state.projectName !== "" &&
+  (state.targetPort !== "" || state.targetContainer !== "");
+
+const mapInputToAgentConfig = (input: ConfigInputState): AgentConfig => ({
+  api_key: input.apiKey,
+  api_secret: input.apiSecret,
+  project_name: input.projectName,
+  target_port: input.targetPort !== "" ? parseInt(input.targetPort) : undefined,
+  target_container: input.targetContainer !== "" ? input.targetContainer : undefined,
+});
 
 export const ConfigPage = () => {
   const ddClient = useDockerDesktopClient();
@@ -129,13 +143,7 @@ export const ConfigPage = () => {
     validateSubmission()
       .then((isValid) => {
         if (isValid) {
-          return createAgentConfig(ddClient, {
-            api_key: configInput.apiKey,
-            api_secret: configInput.apiSecret,
-            project_name: configInput.projectName,
-            target_port: configInput.targetPort,
-            target_container: configInput.targetContainer,
-          });
+          return createAgentConfig(ddClient, mapInputToAgentConfig(configInput));
         }
 
         return Promise.reject(new Error("Invalid submission"));
@@ -161,12 +169,7 @@ export const ConfigPage = () => {
   };
 
   const isSubmitEnabled = () =>
-    configInput.apiKey &&
-    configInput.apiSecret &&
-    configInput.projectName &&
-    (configInput.targetPort || configInput.targetContainer) &&
-    !isInvalidAPICredentials &&
-    !isInvalidProjectName;
+    isConfigInputStateValid(configInput) && !isInvalidAPICredentials && !isInvalidProjectName;
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -187,6 +190,7 @@ export const ConfigPage = () => {
                 name={"apiKey"}
                 type={"text"}
                 margin={"normal"}
+                value={configInput.apiKey}
                 onChange={handleInputChange}
               />
               <TextField
@@ -196,6 +200,7 @@ export const ConfigPage = () => {
                 name={"apiSecret"}
                 type={"password"}
                 margin={"normal"}
+                value={configInput.apiSecret}
                 onChange={handleInputChange}
               />
               <TextField
@@ -206,6 +211,7 @@ export const ConfigPage = () => {
                 name={"projectName"}
                 type={"text"}
                 margin={"normal"}
+                value={configInput.projectName}
                 onChange={handleInputChange}
               />
               <TextField
@@ -213,6 +219,7 @@ export const ConfigPage = () => {
                 name={"targetPort"}
                 type={"number"}
                 margin={"normal"}
+                value={configInput.targetPort}
                 onChange={handleInputChange}
               />
               <TextField
@@ -221,8 +228,12 @@ export const ConfigPage = () => {
                 type={"text"}
                 margin={"normal"}
                 select
+                value={configInput.targetContainer}
                 onChange={handleInputChange}
               >
+                <MenuItem key={"none"} value={""}>
+                  <em>None</em>
+                </MenuItem>
                 {containers.map((container) => (
                   <MenuItem key={container.Id} value={container.Id}>
                     {container.Names[0].replace(/^\//g, "")}

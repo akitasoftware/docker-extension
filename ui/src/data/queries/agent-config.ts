@@ -8,10 +8,8 @@ export type AgentConfig = {
   target_container?: string;
 };
 
-export const getAgentConfig = async (
-  ddClient: v1.DockerDesktopClient
-): Promise<AgentConfig | undefined> =>
-  (await ddClient.extension.vm?.service?.get("/agents/config")) as AgentConfig | undefined;
+export const getAgentConfig = async (ddClient: v1.DockerDesktopClient): Promise<AgentConfig> =>
+  (await ddClient.extension.vm?.service?.get("/agents/config")) as AgentConfig;
 
 export const createAgentConfig = async (
   ddClient: v1.DockerDesktopClient,

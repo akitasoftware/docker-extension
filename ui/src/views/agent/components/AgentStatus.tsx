@@ -7,16 +7,22 @@ import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client
 
 interface AgentStatusProps {
   containerInfo?: ContainerInfo;
+  isInitialized: boolean;
   onReinitialize: () => void;
 }
 
-export const AgentStatus = ({ containerInfo, onReinitialize }: AgentStatusProps) => {
+export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: AgentStatusProps) => {
   const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
   const [status, setStatus] = useState<"Loading" | "Running" | "Starting">("Loading");
 
   useEffect(() => {
+    if (!isInitialized) {
+      setStatus("Starting");
+      return;
+    }
+
     if (!containerInfo || !containerState) {
       setStatus("Loading");
       return;
@@ -29,7 +35,7 @@ export const AgentStatus = ({ containerInfo, onReinitialize }: AgentStatusProps)
       onReinitialize();
       setStatus("Starting");
     }
-  }, [containerInfo, containerState, onReinitialize]);
+  }, [containerInfo, containerState, isInitialized, onReinitialize]);
 
   return (
     <Paper

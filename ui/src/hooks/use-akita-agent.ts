@@ -45,5 +45,9 @@ export const useAkitaAgent = () => {
     return () => clearInterval(interval);
   }, [client, config, isInitialized]);
 
-  return { config, containerInfo, setIsInitialized };
+  const restartAgent = () => {
+    setIsInitialized(false);
+  };
+
+  return { config, containerInfo, restartAgent, isInitialized };
 };

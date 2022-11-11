@@ -12,7 +12,7 @@ import { SettingsDialog } from "./components/SettingsDialog";
 export const AgentPage = () => {
   const ddClient = useDockerDesktopClient();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { config, containerInfo, setIsInitialized } = useAkitaAgent();
+  const { config, containerInfo, restartAgent, isInitialized } = useAkitaAgent();
   const navigate = useNavigate();
   const wasWarned = useRef(false);
 
@@ -40,7 +40,11 @@ export const AgentPage = () => {
     <>
       <Stack spacing={4} marginX={8}>
         <Header onSettingsClick={() => setIsSettingsOpen(true)} />
-        <AgentStatus containerInfo={containerInfo} onReinitialize={() => setIsInitialized(false)} />
+        <AgentStatus
+          containerInfo={containerInfo}
+          onReinitialize={() => restartAgent()}
+          isInitialized={isInitialized}
+        />
       </Stack>
       <SettingsDialog
         config={config}

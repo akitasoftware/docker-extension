@@ -2,20 +2,21 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteAgentConfig } from "../../../data/queries/agent-config";
+import { AgentConfig, createAgentConfig } from "../../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../../data/queries/container";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
 interface HeaderProps {
   onSettingsClick: () => void;
+  config?: AgentConfig;
 }
 
-export const Header = ({ onSettingsClick }: HeaderProps) => {
+export const Header = ({ onSettingsClick, config }: HeaderProps) => {
   const navigate = useNavigate();
   const ddClient = useDockerDesktopClient();
 
   const onStopClicked = () => {
-    deleteAgentConfig(ddClient)
+    createAgentConfig(ddClient, { ...config, enabled: false })
       .then(() => removeAkitaContainer(ddClient))
       .then(() => navigate("/"))
       .catch((e) => ddClient.desktopUI.toast.error(`Failed to stop Akita container: ${e.message}`));
@@ -39,7 +40,7 @@ export const Header = ({ onSettingsClick }: HeaderProps) => {
         </Tooltip>
       </Box>
       <Box m={2}>
-        <Button variant={"contained"} color={"error"} onClick={onStopClicked}>
+        <Button variant={"contained"} color={"error"} onClick={onStopClicked} disabled={!config}>
           Stop Akita
         </Button>
       </Box>

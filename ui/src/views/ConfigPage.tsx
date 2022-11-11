@@ -10,13 +10,14 @@ import {
   TextField,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import darkAkitaLogo from "../assets/img/akita_logo_dark.svg";
 import lightAkitaLogo from "../assets/img/akita_logo_light.svg";
 import { AgentConfig, createAgentConfig } from "../data/queries/agent-config";
 import { useContainers } from "../data/queries/container";
 import { getServices } from "../data/queries/service";
+import { useAgentConfig } from "../hooks/use-agent-config";
 import { useDockerDesktopClient } from "../hooks/use-docker-desktop-client";
 
 const AkitaLogo = () => {
@@ -60,15 +61,29 @@ const mapInputToAgentConfig = (input: ConfigInputState): AgentConfig => ({
   project_name: input.projectName,
   target_port: input.targetPort !== "" ? parseInt(input.targetPort) : undefined,
   target_container: input.targetContainer !== "" ? input.targetContainer : undefined,
+  enabled: true,
 });
 
 export const ConfigPage = () => {
   const ddClient = useDockerDesktopClient();
+  const agentConfig = useAgentConfig();
   const [configInput, setConfigInput] = useState<ConfigInputState>(initialConfigInputState);
   const containers = useContainers();
   const navigate = useNavigate();
   const [isInvalidAPICredentials, setIsInvalidAPICredentials] = useState(false);
   const [isInvalidProjectName, setIsInvalidProjectName] = useState(false);
+
+  useEffect(() => {
+    if (agentConfig) {
+      setConfigInput({
+        apiKey: agentConfig.api_key.toString(),
+        apiSecret: agentConfig.api_secret.toString(),
+        projectName: agentConfig.project_name.toString(),
+        targetPort: agentConfig.target_port?.toString() ?? "",
+        targetContainer: agentConfig.target_container?.toString() ?? "",
+      });
+    }
+  }, [agentConfig]);
 
   const validateSubmission = async () => {
     const serviceResponse = await getServices(configInput.apiKey, configInput.apiSecret).catch(

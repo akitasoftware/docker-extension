@@ -12,6 +12,8 @@ type Config struct {
 	ProjectName     string  `json:"project_name" bson:"project_name"`
 	TargetPort      *int    `json:"target_port" bson:"target_port"`
 	TargetContainer *string `json:"target_container" bson:"target_container"`
+	// Indicates whether the agent should be started by the frontend on app startup.
+	IsEnabled bool `json:"enabled" bson:"enabled"`
 }
 
 func DecodeConfig(r io.Reader) (*Config, error) {

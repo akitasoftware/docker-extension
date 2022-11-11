@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AgentConfig, getAgentConfig } from "../data/queries/agent-config";
 import { useDockerDesktopClient } from "./use-docker-desktop-client";
 
-export const useAgentConfig = () => {
+export const useAgentConfig = (): AgentConfig | undefined => {
   const ddClient = useDockerDesktopClient();
   const [config, setConfig] = useState<AgentConfig | undefined>(undefined);
 

@@ -41,9 +41,5 @@ func (a *Config) Validate() error {
 		return failure.Invalidf("project name is missing")
 	}
 
-	if a.TargetPort == nil && a.TargetContainer == nil {
-		return failure.Invalidf("target port or container must be specified")
-	}
-
 	return nil
 }

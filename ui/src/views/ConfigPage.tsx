@@ -52,10 +52,7 @@ const initialConfigInputState: ConfigInputState = {
 };
 
 const isConfigInputStateValid = (state: ConfigInputState) =>
-  state.apiKey !== "" &&
-  state.apiSecret !== "" &&
-  state.projectName !== "" &&
-  (state.targetPort !== "" || state.targetContainer !== "");
+  state.apiKey !== "" && state.apiSecret !== "" && state.projectName !== "";
 
 const mapInputToAgentConfig = (input: ConfigInputState): AgentConfig => ({
   api_key: input.apiKey,

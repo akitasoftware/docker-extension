@@ -17,7 +17,6 @@ import lightAkitaLogo from "../assets/img/akita_logo_light.svg";
 import { AgentConfig, createAgentConfig } from "../data/queries/agent-config";
 import { useContainers } from "../data/queries/container";
 import { getServices } from "../data/queries/service";
-import { UserResponse, getAkitaUser } from "../data/queries/user";
 import { useDockerDesktopClient } from "../hooks/use-docker-desktop-client";
 
 const AkitaLogo = () => {
@@ -74,7 +73,7 @@ export const ConfigPage = () => {
   const [isInvalidAPICredentials, setIsInvalidAPICredentials] = useState(false);
   const [isInvalidProjectName, setIsInvalidProjectName] = useState(false);
 
-  const validateProjectName = async () => {
+  const validateSubmission = async () => {
     const serviceResponse = await getServices(configInput.apiKey, configInput.apiSecret).catch(
       (err) => {
         ddClient.desktopUI.toast.error(`Failed to fetch Akita projects: ${err.message}`);
@@ -85,7 +84,7 @@ export const ConfigPage = () => {
     if (!serviceResponse) return false;
 
     if (serviceResponse.status === 401) {
-      // Return false to indicate that the API credentials are invalid, but don't show an error message
+      setIsInvalidAPICredentials(true);
       return false;
     }
 
@@ -103,40 +102,6 @@ export const ConfigPage = () => {
     }
 
     return true;
-  };
-
-  const validateAPICredentials = async () => {
-    const userResponse: UserResponse = await getAkitaUser(
-      configInput.apiKey,
-      configInput.apiSecret
-    ).catch(() => {
-      ddClient.desktopUI.toast.error("Failed to authenticate with Akita API");
-      return undefined;
-    });
-
-    if (!userResponse) return false;
-
-    if (!userResponse.ok) {
-      if (userResponse.status === 401) {
-        ddClient.desktopUI.toast.error("Invalid Akita API credentials");
-        setIsInvalidAPICredentials(true);
-      } else {
-        ddClient.desktopUI.toast.error(
-          `Failed to authenticate with Akita API: ${userResponse.status}`
-        );
-      }
-
-      return false;
-    }
-
-    return true;
-  };
-
-  const validateSubmission = async () => {
-    const isProjectNameValid = await validateProjectName();
-    const isAPICredentialsValid = await validateAPICredentials();
-
-    return isProjectNameValid && isAPICredentialsValid;
   };
 
   const handleSubmit = () => {

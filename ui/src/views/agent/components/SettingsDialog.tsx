@@ -74,11 +74,9 @@ export const SettingsDialog = ({
 
     const isConfigChanged = toJsonString(config) !== toJsonString(updatedConfig);
 
-    const hasRequiredFields =
-      updatedConfig.project_name !== "" &&
-      (updatedConfig.target_port !== undefined || updatedConfig.target_container !== undefined);
+    const hasProjectName = updatedConfig.project_name !== "";
 
-    setIsUpdatedConfigValid(isConfigChanged && hasRequiredFields);
+    setIsUpdatedConfigValid(isConfigChanged && hasProjectName);
   }, [config, input]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +102,7 @@ export const SettingsDialog = ({
         <DialogContent>
           <Stack justifyContent={"center"} alignItems={"center"} spacing={3}>
             <TextField
+              required
               label={"Project Name"}
               value={input.projectName}
               name={"projectName"}

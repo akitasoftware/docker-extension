@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig } from "../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../data/queries/container";
@@ -14,6 +14,20 @@ export const AgentPage = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { config, containerInfo, setIsInitialized } = useAkitaAgent();
   const navigate = useNavigate();
+  const wasWarned = useRef(false);
+
+  useEffect(() => {
+    if (!config) {
+      return;
+    }
+
+    if (!config.target_port && !config.target_container && !wasWarned.current) {
+      ddClient.desktopUI.toast.warning(
+        "No target port or container specified. All traffic will be forwarded to the Akita Agent. Click the gear icon to configure."
+      );
+      wasWarned.current = true;
+    }
+  }, [config, ddClient]);
 
   const handleConfigChange = (config: AgentConfig) => {
     createAgentConfig(ddClient, config)

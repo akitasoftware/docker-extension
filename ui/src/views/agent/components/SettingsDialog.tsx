@@ -12,6 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
 import { useContainers } from "../../../data/queries/container";
+import { useServices } from "../../../data/queries/service";
 
 interface SettingsDialogProps {
   config?: AgentConfig;
@@ -50,6 +51,7 @@ export const SettingsDialog = ({
   const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
 
   const [isUpdatedConfigValid, setIsUpdatedConfigValid] = useState(false);
+  const services = useServices(config);
 
   useEffect(() => {
     setInput(inputStateFromConfig(config));
@@ -103,15 +105,22 @@ export const SettingsDialog = ({
           <Stack justifyContent={"center"} alignItems={"center"} spacing={3}>
             <TextField
               required
-              label={"Project Name"}
+              label={"Project"}
               value={input.projectName}
               name={"projectName"}
               margin={"normal"}
               variant={"standard"}
               fullWidth
               type={"text"}
+              select
               onChange={handleInputChange}
-            />
+            >
+              {services.map((service) => (
+                <MenuItem key={service.name} value={service.name}>
+                  {service.name}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               label={"Target Port"}
               name={"targetPort"}

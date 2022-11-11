@@ -1,8 +1,10 @@
 package main
 
 import (
+	"akita/infrastructure/datasource"
 	"akita/infrastructure/repo"
 	"akita/ports"
+	"context"
 	"flag"
 	"log"
 	"net"
@@ -20,7 +22,14 @@ func main() {
 
 	logrus.New().Infof("Starting listening on %s\n", socketPath)
 
-	agentRepo := repo.NewAgentRepository()
+	appCtx := context.Background()
+
+	db, err := datasource.ProvideMongoDB(appCtx)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	agentRepo := repo.NewAgentRepository(db)
 
 	router := ports.NewRouter(agentRepo)
 

@@ -7,11 +7,11 @@ import (
 )
 
 type Config struct {
-	APIKey          string  `json:"api_key"`
-	APISecret       string  `json:"api_secret"`
-	ProjectName     string  `json:"project_name"`
-	TargetPort      *int    `json:"target_port"`
-	TargetContainer *string `json:"target_container"`
+	APIKey          string  `json:"api_key" bson:"api_key"`
+	APISecret       string  `json:"api_secret" bson:"api_secret"`
+	ProjectName     string  `json:"project_name" bson:"project_name"`
+	TargetPort      *int    `json:"target_port" bson:"target_port"`
+	TargetContainer *string `json:"target_container" bson:"target_container"`
 }
 
 func DecodeConfig(r io.Reader) (*Config, error) {

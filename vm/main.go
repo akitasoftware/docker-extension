@@ -63,7 +63,8 @@ func provideAnalyticsClient() (analytics.Client, error) {
 			"All":      true,
 			"Intercom": false,
 		},
-		WriteKey: "2sngErDOO1ylbIrPLMN4xFfuUz4DPIJl",
+		WriteKey:  "2sngErDOO1ylbIrPLMN4xFfuUz4DPIJl",
+		BatchSize: 1,
 	}
 
 	return analytics.NewClient(config)

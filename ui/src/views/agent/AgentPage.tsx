@@ -25,13 +25,16 @@ export const AgentPage = () => {
     if (isUnauthorized) {
       deleteAgentConfig(ddClient)
         .then(() => removeAkitaContainer(ddClient))
+        .then(() =>
+          ddClient.desktopUI.toast.error("Akita API key is invalid. Please re-authenticate.")
+        )
         .then(() => navigate("/"))
         .catch((err) => console.error(err));
     }
   }, [ddClient, isUnauthorized, navigate]);
 
   useEffect(() => {
-    if (!user || wasViewEventSent) return;
+    if (!user || wasViewEventSent.current) return;
 
     postAnalyticsEvent(ddClient, {
       distinct_id: user.email,
@@ -40,7 +43,7 @@ export const AgentPage = () => {
     })
       .then(() => (wasViewEventSent.current = true))
       .catch((err) => console.error(err));
-  });
+  }, [ddClient, user]);
 
   useEffect(() => {
     if (!config) {

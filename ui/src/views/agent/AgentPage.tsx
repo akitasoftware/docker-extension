@@ -3,7 +3,9 @@ import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig, deleteAgentConfig } from "../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../data/queries/container";
+import { postAnalyticsEvent } from "../../data/queries/event";
 import { useAkitaAgent } from "../../hooks/use-akita-agent";
+import { useAkitaUser } from "../../hooks/use-akita-user";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
 import { AgentStatus } from "./components/AgentStatus";
 import { Header } from "./components/Header";
@@ -16,6 +18,29 @@ export const AgentPage = () => {
     useAkitaAgent();
   const navigate = useNavigate();
   const wasWarned = useRef(false);
+  const wasViewEventSent = useRef(false);
+  const { user, isUnauthorized } = useAkitaUser();
+
+  useEffect(() => {
+    if (isUnauthorized) {
+      deleteAgentConfig(ddClient)
+        .then(() => removeAkitaContainer(ddClient))
+        .then(() => navigate("/"))
+        .catch((err) => console.error(err));
+    }
+  }, [ddClient, isUnauthorized, navigate]);
+
+  useEffect(() => {
+    if (!user || wasViewEventSent) return;
+
+    postAnalyticsEvent(ddClient, {
+      distinct_id: user.email,
+      name: "Viewed Agent Page",
+      properties: {},
+    })
+      .then(() => (wasViewEventSent.current = true))
+      .catch((err) => console.error(err));
+  });
 
   useEffect(() => {
     if (!config) {

@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import { User, getAkitaUser } from "../data/queries/user";
 import { useAgentConfig } from "./use-agent-config";
 
-export const useAkitaUser = (): { user?: User; hasError: boolean; isUnauthorized: boolean } => {
+export const useAkitaUser = (): { user?: User; isUnauthorized: boolean } => {
   const config = useAgentConfig();
   const [user, setUser] = useState<User | undefined>(undefined);
-  const [hasError, setHasError] = useState(false);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
 
   useEffect(() => {
@@ -18,16 +17,17 @@ export const useAkitaUser = (): { user?: User; hasError: boolean; isUnauthorized
           }
 
           if (response.status === 401) {
-            setHasError(true);
             setIsUnauthorized(true);
             return;
           }
 
-          setHasError(true);
+          return Promise.reject(
+            new Error(`Unexpected response: ${response.status}. message: ${response.message}`)
+          );
         })
-        .catch(() => setHasError(true));
+        .catch((e) => console.error(e));
     }
   }, [config]);
 
-  return { user, hasError, isUnauthorized };
+  return { user, isUnauthorized };
 };

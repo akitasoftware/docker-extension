@@ -21,9 +21,9 @@ func NewRouter(repository agent.Repository, analyticsClient analytics.Client) *e
 		router.DELETE("/agents/config", agentHandler.removeAgentConfig)
 	}
 
-	// Event Endpoints
+	// Analytics Endpoints
 	{
-		router.POST("/events", eventHandler.postEvent)
+		router.POST("analytics/event", eventHandler.postEvent)
 	}
 
 	return router

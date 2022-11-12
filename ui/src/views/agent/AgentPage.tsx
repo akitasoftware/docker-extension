@@ -91,6 +91,7 @@ export const AgentPage = () => {
         isOpen={isSettingsOpen && containerInfo !== undefined}
         onConfigChange={handleConfigChange}
         onCloseDialog={() => setIsSettingsOpen(false)}
+        user={user}
       />
     </>
   );

@@ -12,6 +12,9 @@ import {
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
 import { ContainerState, useContainers } from "../../../data/queries/container";
+import { postAnalyticsEvent } from "../../../data/queries/event";
+import { User } from "../../../data/queries/user";
+import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 import { useAkitaServices } from "../../../hooks/user-akita-services";
 
 interface SettingsDialogProps {
@@ -19,6 +22,7 @@ interface SettingsDialogProps {
   isOpen: boolean;
   onConfigChange: (config: AgentConfig) => void;
   onCloseDialog: () => void;
+  user?: User;
 }
 
 interface InputState {
@@ -45,9 +49,11 @@ export const SettingsDialog = ({
   onConfigChange,
   onCloseDialog,
   config,
+  user,
 }: SettingsDialogProps) => {
   const containers = useContainers((container) => container.State === ContainerState.RUNNING);
 
+  const ddClient = useDockerDesktopClient();
   const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
 
   const [isUpdatedConfigValid, setIsUpdatedConfigValid] = useState(false);
@@ -87,6 +93,13 @@ export const SettingsDialog = ({
   };
 
   const handleRestart = () => {
+    if (user) {
+      postAnalyticsEvent(ddClient, {
+        distinct_id: user.email,
+        name: "Agent Restarted",
+        properties: {},
+      }).catch((e) => console.error(e));
+    }
     const newConfig: AgentConfig = resolveConfigFromInput(config, input);
     onConfigChange(newConfig);
     onCloseDialog();

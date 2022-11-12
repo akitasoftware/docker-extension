@@ -2,19 +2,29 @@ package ports
 
 import (
 	"akita/domain/agent"
+	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/labstack/echo"
 )
 
-func NewRouter(repository agent.Repository) *echo.Echo {
-	handler := newAgentHandler(repository)
+func NewRouter(repository agent.Repository, analyticsClient analytics.Client) *echo.Echo {
+	agentHandler := newAgentHandler(repository)
+	eventHandler := newEventHandler(analyticsClient)
 
 	router := echo.New()
 	router.HideBanner = true
 	router.HTTPErrorHandler = handleError
 
-	router.GET("/agents/config", handler.getAgentConfig)
-	router.POST("/agents/config", handler.createAgentConfig)
-	router.DELETE("/agents/config", handler.removeAgentConfig)
+	// Config Endpoints
+	{
+		router.GET("/agents/config", agentHandler.getAgentConfig)
+		router.POST("/agents/config", agentHandler.createAgentConfig)
+		router.DELETE("/agents/config", agentHandler.removeAgentConfig)
+	}
+
+	// Event Endpoints
+	{
+		router.POST("/events", eventHandler.postEvent)
+	}
 
 	return router
 }

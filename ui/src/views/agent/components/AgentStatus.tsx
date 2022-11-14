@@ -1,5 +1,14 @@
 import DoneOutlineIcon from "@mui/icons-material/DoneOutlined";
-import { Box, Chip, CircularProgress, Link, Paper, Typography, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Link,
+  Paper,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { useContainerState } from "../../../hooks/use-container-state";
@@ -16,6 +25,7 @@ export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: Ag
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
   const [status, setStatus] = useState<"Loading" | "Running" | "Starting">("Loading");
+  const [canViewContainer, setCanViewContainer] = useState(false);
 
   useEffect(() => {
     if (!isInitialized) {
@@ -36,6 +46,20 @@ export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: Ag
       setStatus("Starting");
     }
   }, [containerInfo, containerState, isInitialized, onReinitialize]);
+
+  useEffect(() => {
+    if (status === "Running") {
+      setCanViewContainer(true);
+    } else {
+      setCanViewContainer(false);
+    }
+  }, [status]);
+
+  const handleViewContainer = () => {
+    ddClient.desktopUI.navigate
+      .viewContainer(containerInfo?.Id)
+      .catch((err) => console.error("Failed to navigate to container", err));
+  };
 
   return (
     <Paper
@@ -71,6 +95,11 @@ export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: Ag
       ) : (
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
+      <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
+        <Button variant={"outlined"} onClick={handleViewContainer} disabled={!canViewContainer}>
+          View Container
+        </Button>
+      </Box>
     </Paper>
   );
 };

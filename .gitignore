@@ -1,3 +1,6 @@
 node_modules
 ui/build
-!/.idea/git_toolbox_prj.xml
+
+# IDEs
+.idea
+*.iml

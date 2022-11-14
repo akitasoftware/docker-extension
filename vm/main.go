@@ -1,13 +1,13 @@
 package main
 
 import (
+	"akita/infrastructure/repo"
+	"akita/ports"
 	"flag"
 	"log"
 	"net"
-	"net/http"
 	"os"
 
-	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,11 +16,13 @@ func main() {
 	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
 	flag.Parse()
 
-	os.RemoveAll(socketPath)
+	_ = os.RemoveAll(socketPath)
 
 	logrus.New().Infof("Starting listening on %s\n", socketPath)
-	router := echo.New()
-	router.HideBanner = true
+
+	agentRepo := repo.NewAgentRepository()
+
+	router := ports.NewRouter(agentRepo)
 
 	startURL := ""
 
@@ -30,19 +32,9 @@ func main() {
 	}
 	router.Listener = ln
 
-	router.GET("/hello", hello)
-
 	log.Fatal(router.Start(startURL))
 }
 
 func listen(path string) (net.Listener, error) {
 	return net.Listen("unix", path)
-}
-
-func hello(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, HTTPMessageBody{Message: "hello"})
-}
-
-type HTTPMessageBody struct {
-	Message string
 }

@@ -1,4 +1,5 @@
 import DoneOutlineIcon from "@mui/icons-material/DoneOutlined";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import {
   Box,
   Button,
@@ -17,22 +18,39 @@ import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client
 interface AgentStatusProps {
   containerInfo?: ContainerInfo;
   isInitialized: boolean;
-  onReinitialize: () => void;
+  onRestartAgent: () => void;
+  onStopAgent: () => void;
+  hasInitializationFailed: boolean;
 }
 
-export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: AgentStatusProps) => {
+export const AgentStatus = ({
+  containerInfo,
+  onRestartAgent,
+  onStopAgent,
+  isInitialized,
+  hasInitializationFailed,
+}: AgentStatusProps) => {
   const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
-  const [status, setStatus] = useState<"Loading" | "Running" | "Starting">("Loading");
+  const [status, setStatus] = useState<"Loading" | "Running" | "Starting" | "Failed">("Loading");
   const [canViewContainer, setCanViewContainer] = useState(false);
 
   useEffect(() => {
+    // If the container has failed to start after multiple attempt, set the status to failed.
+    if (hasInitializationFailed) {
+      setStatus("Failed");
+      onStopAgent();
+    }
+
+    // If the container is not initialized, set the status to starting.
     if (!isInitialized) {
+      console.log("Container is not initialized");
       setStatus("Starting");
       return;
     }
 
+    // If the container has been initialized, but the container info is not available, set the status to loading
     if (!containerInfo || !containerState) {
       setStatus("Loading");
       return;
@@ -42,10 +60,17 @@ export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: Ag
       setStatus("Running");
     } else {
       // If the container doesn't exist, we need to restart it.
-      onReinitialize();
+      onRestartAgent();
       setStatus("Starting");
     }
-  }, [containerInfo, containerState, isInitialized, onReinitialize]);
+  }, [
+    hasInitializationFailed,
+    containerInfo,
+    containerState,
+    isInitialized,
+    onRestartAgent,
+    onStopAgent,
+  ]);
 
   useEffect(() => {
     if (status === "Running") {
@@ -76,11 +101,17 @@ export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: Ag
     >
       <Chip
         variant={"filled"}
-        color={status === "Running" ? "success" : "warning"}
+        color={status === "Running" ? "success" : status === "Failed" ? "error" : "warning"}
         label={status}
       />
       <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
-        {status === "Running" ? <DoneOutlineIcon /> : <CircularProgress size={"1rem"} />}
+        {status === "Running" ? (
+          <DoneOutlineIcon />
+        ) : status === "Failed" ? (
+          <ErrorOutlineOutlinedIcon />
+        ) : (
+          <CircularProgress size={"1rem"} />
+        )}
       </Box>
       {status === "Running" ? (
         <Typography variant={"body1"}>
@@ -92,6 +123,10 @@ export const AgentStatus = ({ containerInfo, onReinitialize, isInitialized }: Ag
         </Typography>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
+      ) : status === "Failed" ? (
+        <Typography variant={"body1"}>
+          Failed to start Akita. Update the configuration settings and try again
+        </Typography>
       ) : (
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}

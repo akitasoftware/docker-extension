@@ -1,14 +1,17 @@
 import { Stack } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteAgentConfig } from "../../data/queries/agent-config";
+import { AgentConfig, createAgentConfig, deleteAgentConfig } from "../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../data/queries/container";
 import { useAkitaAgent } from "../../hooks/use-akita-agent";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
 import { AgentStatus } from "./components/AgentStatus";
+import { Header } from "./components/Header";
+import { SettingsDialog } from "./components/SettingsDialog";
 
 export const AgentPage = () => {
   const ddClient = useDockerDesktopClient();
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const { config, containerInfo, restartAgent, isInitialized, hasInitializationFailed } =
     useAkitaAgent();
   const navigate = useNavigate();
@@ -39,10 +42,17 @@ export const AgentPage = () => {
       );
   };
 
+  const handleConfigChange = (config: AgentConfig) => {
+    createAgentConfig(ddClient, config)
+      .then(() => removeAkitaContainer(ddClient))
+      .then(() => navigate("/"))
+      .catch((e) => ddClient.desktopUI.toast.error(`Failed to update config: ${e.message}`));
+  };
+
   return (
     <>
       <Stack spacing={4} marginX={8}>
-        {/* TODO: Add Header */}
+        <Header onSettingsClick={() => setIsSettingsOpen(true)} />
         <AgentStatus
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}
@@ -51,7 +61,12 @@ export const AgentPage = () => {
           hasInitializationFailed={hasInitializationFailed}
         />
       </Stack>
-      {/* TODO: Add Settings Dialog */}
+      <SettingsDialog
+        config={config}
+        isOpen={isSettingsOpen && containerInfo !== undefined}
+        onConfigChange={handleConfigChange}
+        onCloseDialog={() => setIsSettingsOpen(false)}
+      />
     </>
   );
 };

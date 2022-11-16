@@ -1,10 +1,13 @@
 import {
+  Alert,
+  AlertTitle,
   Box,
   Button,
   Card,
   CardContent,
   CardMedia,
   Container,
+  Link,
   MenuItem,
   Stack,
   TextField,
@@ -129,6 +132,10 @@ export const ConfigPage = () => {
     setConfigInput({ ...configInput, [name]: value });
   };
 
+  const handleSignupClick = () => {
+    ddClient.host.openExternal("https://www.akitasoftware.com/beta-signup");
+  };
+
   const isSubmitEnabled = () =>
     isConfigInputStateValid(configInput) && !isInvalidAPICredentials && !isInvalidProjectName;
 
@@ -144,6 +151,18 @@ export const ConfigPage = () => {
           />
           <CardContent>
             <Stack spacing={2}>
+              <Alert severity="info">
+                <AlertTitle>{"We're in beta!"}</AlertTitle>
+                {"If you're not in our beta program"},{" "}
+                <Link
+                  onClick={handleSignupClick}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  sign up here
+                </Link>
+              </Alert>
               <TextField
                 error={isInvalidAPICredentials}
                 required

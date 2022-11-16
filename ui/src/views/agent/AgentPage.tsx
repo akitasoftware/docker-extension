@@ -6,6 +6,7 @@ import { removeAkitaContainer } from "../../data/queries/container";
 import { useAkitaAgent } from "../../hooks/use-akita-agent";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
 import { AgentStatus } from "./components/AgentStatus";
+import { Header } from "./components/Header";
 
 export const AgentPage = () => {
   const ddClient = useDockerDesktopClient();
@@ -42,7 +43,11 @@ export const AgentPage = () => {
   return (
     <>
       <Stack spacing={4} marginX={8}>
-        {/* TODO: Add Header */}
+        <Header
+          onSettingsClick={() => {
+            // TODO: Show settings dialog
+          }}
+        />
         <AgentStatus
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}

@@ -30,6 +30,14 @@ export const getContainers = async (client: v1.DockerDesktopClient): Promise<Con
   return result as ContainerInfo[];
 };
 
+export const getContainer = async (
+  client: v1.DockerDesktopClient,
+  containerID?: string
+): Promise<ContainerInfo | undefined> =>
+  await getContainers(client).then((containers) =>
+    containers.find((container) => container.Id === containerID)
+  );
+
 export const useContainers = (): ContainerInfo[] => {
   const client = useDockerDesktopClient();
 

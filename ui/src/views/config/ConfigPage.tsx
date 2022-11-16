@@ -245,7 +245,7 @@ export const ConfigPage = () => {
       <SubmitWarningDialog
         isOpen={isSubmitWarningDialogOpen}
         onClose={() => setIsSubmitWarningDialogOpen(false)}
-        onSubmit={handleStart}
+        onConfirm={handleStart}
       />
     </>
   );

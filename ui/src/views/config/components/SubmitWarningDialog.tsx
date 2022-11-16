@@ -11,11 +11,11 @@ import React from "react";
 
 export interface SubmitWarningDialogProps {
   onClose: () => void;
-  onSubmit: () => void;
+  onConfirm: () => void;
   isOpen: boolean;
 }
 
-export const SubmitWarningDialog = ({ onClose, onSubmit, isOpen }: SubmitWarningDialogProps) => (
+export const SubmitWarningDialog = ({ onClose, onConfirm, isOpen }: SubmitWarningDialogProps) => (
   <Container maxWidth={"lg"}>
     <Dialog open={isOpen} onClose={onClose} fullWidth={true}>
       <DialogTitle>Ensure Docker Extension Containers are viewable</DialogTitle>
@@ -31,7 +31,7 @@ export const SubmitWarningDialog = ({ onClose, onSubmit, isOpen }: SubmitWarning
         <Button onClick={onClose} variant={"outlined"}>
           Cancel
         </Button>
-        <Button onClick={onSubmit} variant={"contained"}>
+        <Button onClick={onConfirm} variant={"contained"}>
           Confirm & Start
         </Button>
       </DialogActions>

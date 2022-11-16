@@ -1,8 +1,8 @@
 import React from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
-import { ConfigPage } from "./views/ConfigPage";
 import { Root } from "./views/Root";
 import { AgentPage } from "./views/agent/AgentPage";
+import { ConfigPage } from "./views/config/ConfigPage";
 
 export function App() {
   return (

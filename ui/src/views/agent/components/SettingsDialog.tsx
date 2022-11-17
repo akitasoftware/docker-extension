@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
-import { useContainers } from "../../../data/queries/container";
+import { ContainerState, useContainers } from "../../../data/queries/container";
 import { useAkitaServices } from "../../../hooks/user-akita-services";
 
 interface SettingsDialogProps {
@@ -46,7 +46,7 @@ export const SettingsDialog = ({
   onCloseDialog,
   config,
 }: SettingsDialogProps) => {
-  const containers = useContainers();
+  const containers = useContainers((container) => container.State === ContainerState.RUNNING);
 
   const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
 

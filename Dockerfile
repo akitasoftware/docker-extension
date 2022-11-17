@@ -24,18 +24,20 @@ RUN npm run build
 
 FROM alpine
 LABEL org.opencontainers.image.title="Akita" \
-    org.opencontainers.image.description="Docker Extension Utility for Akita CLI" \
+    org.opencontainers.image.description="Drop in Agent for API Monitoring and Observability" \
     org.opencontainers.image.vendor="Akita Software" \
     com.docker.desktop.extension.api.version="0.3.0" \
+
+    com.docker.desktop.extension.icon="https://drive.google.com/uc?id=1MeT_AQCo7CoeGAGHlRajObnF09CWbpBR" \
     com.docker.extension.screenshots="" \
     com.docker.extension.detailed-description="" \
-    com.docker.extension.publisher-url="" \
+    com.docker.extension.publisher-url="https://www.akitasoftware.com" \
     com.docker.extension.additional-urls="" \
-    com.docker.extension.changelog=""
+    com.docker.extension.changelog="First Release!"
 
 COPY --from=builder /backend/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .
-COPY docker.svg .
+COPY aki_full.svg .
 COPY --from=client-builder /ui/build ui
 CMD /service -socket /run/guest-services/extension-akita.sock

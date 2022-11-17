@@ -1,3 +1,12 @@
 services:
   akita:
     image: ${DESKTOP_PLUGIN_IMAGE}
+  akita-db:
+    image: mongo:6.0.1
+    ports:
+      - ":27017"
+    volumes:
+      - akita-mongo-data:/data/db
+
+volumes:
+  akita-mongo-data:

@@ -6,6 +6,7 @@ export type AgentConfig = {
   project_name: string;
   target_port?: number;
   target_container?: string;
+  enabled: boolean;
 };
 
 export const getAgentConfig = async (ddClient: v1.DockerDesktopClient): Promise<AgentConfig> =>
@@ -15,12 +16,20 @@ export const createAgentConfig = async (
   ddClient: v1.DockerDesktopClient,
   config: AgentConfig
 ): Promise<AgentConfig> => {
-  const data = JSON.stringify(config, (key, value) => {
-    if (isNaN(value)) {
-      return value;
+  const data = JSON.stringify(config, (key: string, value: any) => {
+    if (key === "enabled") {
+      return Boolean(value);
     }
 
-    return Number(value);
+    if (!value) {
+      return undefined;
+    }
+
+    if (key === "target_port") {
+      return Number(value);
+    }
+
+    return value;
   });
 
   return (await ddClient.extension.vm?.service?.post("/agents/config", data)) as AgentConfig;

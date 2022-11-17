@@ -69,7 +69,7 @@ const mapInputToAgentConfig = (input: ConfigInputState): AgentConfig => ({
 export const ConfigPage = () => {
   const ddClient = useDockerDesktopClient();
   const [configInput, setConfigInput] = useState<ConfigInputState>(initialConfigInputState);
-  const containers = useContainers();
+  const containers = useContainers((container) => container.State === "running");
   const navigate = useNavigate();
   const [isInvalidAPICredentials, setIsInvalidAPICredentials] = useState(false);
   const [isInvalidProjectName, setIsInvalidProjectName] = useState(false);

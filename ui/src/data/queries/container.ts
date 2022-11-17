@@ -26,10 +26,13 @@ export type ContainerInfo = {
   Labels: Record<string, string>;
 };
 
-export const getContainers = async (client: v1.DockerDesktopClient): Promise<ContainerInfo[]> => {
-  const result = await client.docker.listContainers({ all: true });
-  return result as ContainerInfo[];
-};
+export const getContainers = async (
+  client: v1.DockerDesktopClient,
+  predicate?: (ContainerInfo) => boolean
+): Promise<ContainerInfo[]> =>
+  await client.docker
+    .listContainers({ all: true })
+    .then((containers: ContainerInfo[]) => (predicate ? containers.filter(predicate) : containers));
 
 export const getContainer = async (
   client: v1.DockerDesktopClient,
@@ -39,14 +42,14 @@ export const getContainer = async (
     containers.find((container) => container.Id === containerID)
   );
 
-export const useContainers = (): ContainerInfo[] => {
+export const useContainers = (predicate?: (ContainerInfo) => boolean): ContainerInfo[] => {
   const client = useDockerDesktopClient();
 
   const [containers, setContainers] = useState<ContainerInfo[]>([]);
 
   useEffect(() => {
-    getContainers(client).then(setContainers).catch(console.error);
-  }, [client]);
+    getContainers(client, predicate).then(setContainers).catch(console.error);
+  }, [predicate, client]);
 
   return containers;
 };
@@ -109,9 +112,7 @@ const startAkitaAgent = async (
   await client.docker.cli.exec("run", runArgs);
 
   // Poll for agent container info using the `docker ps` command
-  return retryPromise(() => getAkitaContainer(client), 3, 2000).catch((err) =>
-    Promise.resolve(err)
-  );
+  return retryPromise(() => getAkitaContainer(client), 3, 2000).catch((err) => Promise.reject(err));
 };
 
 export const removeAkitaContainer = async (client: v1.DockerDesktopClient) => {

@@ -9,10 +9,18 @@ export const Root = () => {
   const navigate = useNavigate();
 
   getAgentConfig(ddClient)
-    .then(() => {
-      navigate("/agent");
+    .then((config) => {
+      if (config.enabled) {
+        navigate("/agent");
+      } else {
+        navigate("/config");
+      }
     })
-    .catch(() => {
+    .catch((e) => {
+      if (e.statusCode !== 404) {
+        ddClient.desktopUI.toast.error(`Failed to get agent config: ${e.message}`);
+      }
+
       try {
         void removeAkitaContainer(ddClient);
       } catch (e) {

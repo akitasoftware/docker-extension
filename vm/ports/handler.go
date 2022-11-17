@@ -16,7 +16,8 @@ func newAgentHandler(agentRepo agent.Repository) *agentHandler {
 }
 
 func (a agentHandler) getAgentConfig(ctx echo.Context) error {
-	config, err := a.agentRepo.GetConfig()
+	requestContext := ctx.Request().Context()
+	config, err := a.agentRepo.GetConfig(requestContext)
 	if err != nil {
 		return err
 	}
@@ -34,7 +35,9 @@ func (a agentHandler) createAgentConfig(ctx echo.Context) error {
 		return err
 	}
 
-	if err := a.agentRepo.SaveConfig(config); err != nil {
+	requestContext := ctx.Request().Context()
+
+	if err := a.agentRepo.SaveConfig(requestContext, config); err != nil {
 		return err
 	}
 
@@ -42,7 +45,9 @@ func (a agentHandler) createAgentConfig(ctx echo.Context) error {
 }
 
 func (a agentHandler) removeAgentConfig(ctx echo.Context) error {
-	if err := a.agentRepo.DeleteConfig(); err != nil {
+	requestContext := ctx.Request().Context()
+
+	if err := a.agentRepo.DeleteConfig(requestContext); err != nil {
 		return err
 	}
 

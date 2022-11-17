@@ -2,21 +2,22 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteAgentConfig } from "../../../data/queries/agent-config";
-import { removeAkitaContainer } from "../../../data/queries/container";
+import { AgentConfig, createAgentConfig } from "../../../data/queries/agent-config";
+import { useAgentConfig } from "../../../hooks/use-agent-config";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
 interface HeaderProps {
   onSettingsClick: () => void;
+  agentConfig: AgentConfig;
 }
 
 export const Header = ({ onSettingsClick }: HeaderProps) => {
   const navigate = useNavigate();
   const ddClient = useDockerDesktopClient();
+  const agentConfig = useAgentConfig();
 
   const onStopClicked = () => {
-    deleteAgentConfig(ddClient)
-      .then(() => removeAkitaContainer(ddClient))
+    createAgentConfig(ddClient, { ...agentConfig, enabled: false })
       .then(() => navigate("/"))
       .catch((e) => {
         ddClient.desktopUI.toast.error(`Failed to stop Akita container: ${e.message}`);

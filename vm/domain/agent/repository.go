@@ -1,7 +1,9 @@
 package agent
 
+import "context"
+
 type Repository interface {
-	GetConfig() (*Config, error)
-	CreateConfig(agentConfig *Config) error
-	RemoveConfig() error
+	GetConfig(ctx context.Context) (*Config, error)
+	SaveConfig(ctx context.Context, agentConfig *Config) error
+	DeleteConfig(ctx context.Context) error
 }

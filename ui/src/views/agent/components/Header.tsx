@@ -18,7 +18,10 @@ export const Header = ({ onSettingsClick }: HeaderProps) => {
     deleteAgentConfig(ddClient)
       .then(() => removeAkitaContainer(ddClient))
       .then(() => navigate("/"))
-      .catch((e) => ddClient.desktopUI.toast.error(`Failed to stop Akita container: ${e.message}`));
+      .catch((e) => {
+        ddClient.desktopUI.toast.error(`Failed to stop Akita container: ${e.message}`);
+        navigate("/config");
+      });
   };
 
   return (

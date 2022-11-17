@@ -22,7 +22,7 @@ export const SubmitWarningDialog = ({ onClose, onConfirm, isOpen }: SubmitWarnin
       <DialogContent>
         <DialogContentText>
           <strong>&quot;Show Docker Extension Containers&quot;</strong> must be enabled for this
-          extension to work. To enable, got to <strong>Preferences</strong> &gt;{" "}
+          extension to work. To enable, navigate to <strong>Preferences</strong> &gt;{" "}
           <strong>Extension</strong> and check the &quot;Show Docker Extension Containers&quot;
           checkbox.
         </DialogContentText>

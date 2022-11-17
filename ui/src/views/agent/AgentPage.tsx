@@ -85,6 +85,7 @@ export const AgentPage = () => {
           onStopAgent={handleStopAgent}
           isInitialized={isInitialized}
           hasInitializationFailed={hasInitializationFailed}
+          onSendAnalyticsEvent={sendAnalyticsEvent}
         />
       </Stack>
       <SettingsDialog

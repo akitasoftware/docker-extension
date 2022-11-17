@@ -34,7 +34,7 @@ func (a agentHandler) createAgentConfig(ctx echo.Context) error {
 		return err
 	}
 
-	if err := a.agentRepo.CreateConfig(config); err != nil {
+	if err := a.agentRepo.SaveConfig(config); err != nil {
 		return err
 	}
 
@@ -42,7 +42,7 @@ func (a agentHandler) createAgentConfig(ctx echo.Context) error {
 }
 
 func (a agentHandler) removeAgentConfig(ctx echo.Context) error {
-	if err := a.agentRepo.RemoveConfig(); err != nil {
+	if err := a.agentRepo.DeleteConfig(); err != nil {
 		return err
 	}
 

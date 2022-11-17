@@ -52,7 +52,7 @@ export const AgentPage = () => {
   return (
     <>
       <Stack spacing={4} marginX={8}>
-        <Header onSettingsClick={() => setIsSettingsOpen(true)} />
+        <Header onSettingsClick={() => setIsSettingsOpen(true)} agentConfig={config} />
         <AgentStatus
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}

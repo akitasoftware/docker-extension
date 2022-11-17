@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { postAnalyticsEvent } from "../data/queries/event";
 import { User, getAkitaUser } from "../data/queries/user";
 import { useAgentConfig } from "./use-agent-config";
+import { useDockerDesktopClient } from "./use-docker-desktop-client";
 
-export const useAkitaUser = (): { user?: User; isUnauthorized: boolean } => {
+export const useAkitaUser: () => {
+  sendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
+  user: User;
+  isUnauthorized: boolean;
+} = () => {
   const config = useAgentConfig();
+  const ddClient = useDockerDesktopClient();
   const [user, setUser] = useState<User | undefined>(undefined);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
 
@@ -29,5 +36,18 @@ export const useAkitaUser = (): { user?: User; isUnauthorized: boolean } => {
     }
   }, [config]);
 
-  return { user, isUnauthorized };
+  const sendAnalyticsEvent = useCallback(
+    (eventName: string, properties?: Record<string, any>) => {
+      if (!user) return;
+
+      postAnalyticsEvent(ddClient, {
+        distinct_id: user.email,
+        name: eventName,
+        properties: properties || {},
+      }).catch((e) => console.error(e));
+    },
+    [ddClient, user]
+  );
+
+  return { user, isUnauthorized, sendAnalyticsEvent };
 };

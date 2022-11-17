@@ -3,28 +3,20 @@ import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig } from "../../../data/queries/agent-config";
-import { postAnalyticsEvent } from "../../../data/queries/event";
-import { User } from "../../../data/queries/user";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
 interface HeaderProps {
   onSettingsClick: () => void;
   agentConfig: AgentConfig;
-  user?: User;
+  onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
 }
 
-export const Header = ({ onSettingsClick, agentConfig, user }: HeaderProps) => {
+export const Header = ({ onSettingsClick, agentConfig, onSendAnalyticsEvent }: HeaderProps) => {
   const navigate = useNavigate();
   const ddClient = useDockerDesktopClient();
 
   const onStopClicked = () => {
-    if (user) {
-      postAnalyticsEvent(ddClient, {
-        distinct_id: user.email,
-        name: "Stopped Agent",
-        properties: {},
-      }).catch((err) => console.error(err));
-    }
+    onSendAnalyticsEvent("Stopped Agent");
     createAgentConfig(ddClient, { ...agentConfig, enabled: false })
       .then(() => navigate("/"))
       .catch((e) => {

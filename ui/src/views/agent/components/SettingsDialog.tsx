@@ -19,6 +19,7 @@ interface SettingsDialogProps {
   isOpen: boolean;
   onConfigChange: (config: AgentConfig) => void;
   onCloseDialog: () => void;
+  onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
 }
 
 interface InputState {
@@ -45,6 +46,7 @@ export const SettingsDialog = ({
   onConfigChange,
   onCloseDialog,
   config,
+  onSendAnalyticsEvent,
 }: SettingsDialogProps) => {
   const containers = useContainers((container) => container.State === ContainerState.RUNNING);
 
@@ -87,6 +89,7 @@ export const SettingsDialog = ({
   };
 
   const handleRestart = () => {
+    onSendAnalyticsEvent("Agent Restarted");
     const newConfig: AgentConfig = resolveConfigFromInput(config, input);
     onConfigChange(newConfig);
     onCloseDialog();

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig, deleteAgentConfig } from "../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../data/queries/container";
 import { useAkitaAgent } from "../../hooks/use-akita-agent";
+import { useAkitaUser } from "../../hooks/use-akita-user";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
 import { AgentStatus } from "./components/AgentStatus";
 import { Header } from "./components/Header";
@@ -16,6 +17,27 @@ export const AgentPage = () => {
     useAkitaAgent();
   const navigate = useNavigate();
   const wasWarned = useRef(false);
+  const wasViewEventSent = useRef(false);
+  const { user, isUnauthorized, sendAnalyticsEvent } = useAkitaUser();
+
+  useEffect(() => {
+    if (isUnauthorized) {
+      deleteAgentConfig(ddClient)
+        .then(() => removeAkitaContainer(ddClient))
+        .then(() =>
+          ddClient.desktopUI.toast.error("Akita API key is invalid. Please re-authenticate.")
+        )
+        .then(() => navigate("/"))
+        .catch((err) => console.error(err));
+    }
+  }, [ddClient, isUnauthorized, navigate]);
+
+  useEffect(() => {
+    if (!user || wasViewEventSent.current) return;
+
+    sendAnalyticsEvent("Viewed Agent Page");
+    wasViewEventSent.current = true;
+  }, [ddClient, sendAnalyticsEvent, user]);
 
   useEffect(() => {
     if (!config) {
@@ -31,8 +53,8 @@ export const AgentPage = () => {
   }, [config, ddClient]);
 
   const handleStopAgent = () => {
-    deleteAgentConfig(ddClient)
-      .then(() => removeAkitaContainer(ddClient))
+    sendAnalyticsEvent("Agent Failed to Start");
+    createAgentConfig(ddClient, { ...config, enabled: false })
       .then(() => ddClient.desktopUI.toast.error("Akita agent failed to start. Please try again."))
       .then(() => navigate("/"))
       .catch(() =>
@@ -52,7 +74,11 @@ export const AgentPage = () => {
   return (
     <>
       <Stack spacing={4} marginX={8}>
-        <Header onSettingsClick={() => setIsSettingsOpen(true)} agentConfig={config} />
+        <Header
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          agentConfig={config}
+          onSendAnalyticsEvent={sendAnalyticsEvent}
+        />
         <AgentStatus
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}
@@ -66,6 +92,7 @@ export const AgentPage = () => {
         isOpen={isSettingsOpen && containerInfo !== undefined}
         onConfigChange={handleConfigChange}
         onCloseDialog={() => setIsSettingsOpen(false)}
+        onSendAnalyticsEvent={sendAnalyticsEvent}
       />
     </>
   );

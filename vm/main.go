@@ -10,6 +10,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,9 +30,14 @@ func main() {
 		log.Fatalf("failed to connect to mongo: %v", err)
 	}
 
+	analyticsClient, err := provideAnalyticsClient()
+	if err != nil {
+		log.Fatalf("Failed to create analytics client: %v", err)
+	}
+
 	agentRepo := repo.NewAgentRepository(database)
 
-	router := ports.NewRouter(agentRepo)
+	router := ports.NewRouter(agentRepo, analyticsClient)
 
 	startURL := ""
 
@@ -46,4 +52,20 @@ func main() {
 
 func listen(path string) (net.Listener, error) {
 	return net.Listen("unix", path)
+}
+
+func provideAnalyticsClient() (analytics.Client, error) {
+	config := analytics.Config{
+		App: analytics.AppInfo{
+			Name: "docker-extension",
+		},
+		DefaultIntegrations: map[string]bool{
+			"All":      true,
+			"Intercom": false,
+		},
+		WriteKey:  "2sngErDOO1ylbIrPLMN4xFfuUz4DPIJl",
+		BatchSize: 1,
+	}
+
+	return analytics.NewClient(config)
 }

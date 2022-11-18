@@ -47,24 +47,38 @@ LABEL org.opencontainers.image.title="Akita" \
         } \
     ]" \
     com.docker.extension.detailed-description=" \
-        <p>Akita is the fastest, easisest way to see what API endpoints you have, what's slow, and what's throwing errors. \
-        API monitoring, no code changes required. The Akita Docker Desktop Extension makes it easy to try out Akita without additional work.</p> \
-        \
+        <p> \
+            Akita is the fastest, easisest way to see what API endpoints you have, what's slow, and what's throwing errors. \
+            API monitoring, no code changes required. The Akita Docker Desktop Extension makes it easy to try out Akita without additional work. \
+        </p> \
         <h2>What can you do with Akita?</h2> \
         <ul> \
-            <li><strong>See API endpoints.</strong> Automatically get a searchable map of your API endpoints in use. Explore by latency, errors, and usage. Export as OpenAPI specs.</li> \
-            <li><strong>Get drop-in API monitoring.</strong> Get a drop-in view of volume, latency, and errors, updated in near real-time. Set per-endpoint alerts.</li> \
-            <li><strong>Quickly understand the impact of changes.</strong> Keep track of the endpoints you care about and identify how new deployments impact your endpoints.</li> \
+            <li> \
+                <strong>See your API endpoints.</strong> Automatically get a searchable map of your API endpoints in use. \
+                Explore by latency, errors, and usage. Export as OpenAPI specs. \
+            </li> \
+            <li> \
+                <strong>See slow endpoints and endpoints with errors.</strong> \
+                Without having to instrument every endpoint, quickly see which endpoints need the most attention. \
+            </li> \
+            <li> \
+                <strong>Automatically monitor across your endpoints.</strong> \
+                Automatically monitor volume, latency, and errors across each of your endpoints. \
+                Set per-endpoint alerts. \
+            </li> \
         </ul> \
         \
-        <p>We're in beta and would love to have you give us a try! <a href=\"https://www.akitasoftware.com/beta-signup\">Join our beta here</a>.</p> \
+        <p> \
+            We're in beta and would love to have you help us build the API monitoring tool you love to use!&nbsp; \
+            <a href=\"https://www.akitasoftware.com/beta-signup?utm_source=docker&utm_medium=link&utm_campaign=beta_from_docker\">Join our beta here</a>. \
+        </p> \
         \
         <h2>Resources</h2> \
         <ul> \
             <li><a href=\"https://www.akitasoftware.com\">Website</a></li> \
             <li><a href=\"https://www.akitasoftware.com/beta-signup?utm_source=docker&utm_medium=link&utm_campaign=beta_from_docker\">Beta Signup</a></li> \
             <li><a href=\"https://docs.akita.software/docs/docker-desktop-extension\">Docker Desktop Extension Documentation</a></li> \
-            <li><a href=\"https://docs.akita.software/docs/\">Akita docs</a></li> \
+            <li><a href=\"https://docs.akita.software/docs/\">Akita Docs</a></li> \
         </ul> \
     " \
     com.docker.extension.publisher-url="https://www.akitasoftware.com" \

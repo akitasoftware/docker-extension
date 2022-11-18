@@ -77,7 +77,7 @@ LABEL org.opencontainers.image.title="Akita" \
         <ul> \
             <li><a href=\"https://www.akitasoftware.com\">Website</a></li> \
             <li><a href=\"https://www.akitasoftware.com/beta-signup?utm_source=docker&utm_medium=link&utm_campaign=beta_from_docker\">Beta Signup</a></li> \
-            <li><a href=\"https://docs.akita.software/docs/docker-desktop-extension\">Docker Desktop Extension Documentation</a></li> \
+            <li><a href=\"https://docs.akita.software/docs/docker-extension\">Docker Desktop Extension Documentation</a></li> \
             <li><a href=\"https://docs.akita.software/docs/\">Akita Docs</a></li> \
         </ul> \
     " \

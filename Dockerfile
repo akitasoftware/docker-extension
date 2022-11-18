@@ -50,6 +50,8 @@ LABEL org.opencontainers.image.title="Akita" \
     com.docker.extension.publisher-url="https://www.akitasoftware.com" \
     com.docker.extension.additional-urls="" \
     com.docker.extension.changelog="First Release!"
+    com.docker.extension.account-info="required"
+    com.docker.extension.categories="networking,utility-tools"
 
 COPY --from=builder /backend/bin/service /
 COPY docker-compose.yaml .

@@ -20,6 +20,7 @@ interface AgentStatusProps {
   isInitialized: boolean;
   onRestartAgent: () => void;
   onStopAgent: () => void;
+  onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
   hasInitializationFailed: boolean;
 }
 
@@ -29,6 +30,7 @@ export const AgentStatus = ({
   onStopAgent,
   isInitialized,
   hasInitializationFailed,
+  onSendAnalyticsEvent,
 }: AgentStatusProps) => {
   const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const ddClient = useDockerDesktopClient();
@@ -116,7 +118,15 @@ export const AgentStatus = ({
       {status === "Running" ? (
         <Typography variant={"body1"}>
           Akita is running. Check the{" "}
-          <Link onClick={() => ddClient.host.openExternal("https://app.akita.software")}>
+          <Link
+            onClick={() => {
+              onSendAnalyticsEvent("Opened Akita Web Dashboard");
+              ddClient.host.openExternal("https://app.akita.software");
+            }}
+            sx={{
+              cursor: "pointer",
+            }}
+          >
             Akita Dashboard
           </Link>{" "}
           to view your models.

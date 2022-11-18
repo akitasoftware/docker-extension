@@ -1,5 +1,5 @@
 {
-  "icon": "docker.svg",
+  "icon": "aki_full.svg",
   "vm": {
     "composefile": "docker-compose.yaml",
     "exposes": {

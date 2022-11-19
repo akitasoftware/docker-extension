@@ -22,6 +22,7 @@ import { useContainers } from "../../data/queries/container";
 import { getServices } from "../../data/queries/service";
 import { useAgentConfig } from "../../hooks/use-agent-config";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
+import { FeedBackFAB } from "../shared/components/FeedBackFAB";
 import { SubmitWarningDialog } from "./components/SubmitWarningDialog";
 
 const AkitaLogo = () => {
@@ -260,6 +261,7 @@ export const ConfigPage = () => {
           </Card>
         </Container>
       </Box>
+      <FeedBackFAB sx={{ position: "absolute", bottom: 32, right: 32 }} />
       <SubmitWarningDialog
         isOpen={isSubmitWarningDialogOpen}
         onClose={() => setIsSubmitWarningDialogOpen(false)}

@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Tooltip, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig } from "../../../data/queries/agent-config";
+import { removeAkitaContainer } from "../../../data/queries/container";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
 interface HeaderProps {
@@ -18,6 +19,7 @@ export const Header = ({ onSettingsClick, agentConfig, onSendAnalyticsEvent }: H
   const onStopClicked = () => {
     onSendAnalyticsEvent("Stopped Agent");
     createAgentConfig(ddClient, { ...agentConfig, enabled: false })
+      .then(() => removeAkitaContainer(ddClient))
       .then(() => navigate("/"))
       .catch((e) => {
         ddClient.desktopUI.toast.error(`Failed to stop Akita container: ${e.message}`);

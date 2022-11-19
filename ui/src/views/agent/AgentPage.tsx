@@ -53,10 +53,11 @@ export const AgentPage = () => {
     }
   }, [config, ddClient]);
 
-  const handleStopAgent = () => {
+  const handleFailure = () => {
     sendAnalyticsEvent("Agent Failed to Start");
     createAgentConfig(ddClient, { ...config, enabled: false })
-      .then(() => ddClient.desktopUI.toast.error("Akita agent failed to start. Please try again."))
+      .then(() => removeAkitaContainer(ddClient))
+      .then(() => ddClient.desktopUI.toast.error("Failed to start Akita Agent."))
       .then(() => navigate("/"))
       .catch(() =>
         ddClient.desktopUI.toast.error(
@@ -83,7 +84,7 @@ export const AgentPage = () => {
         <AgentStatus
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}
-          onStopAgent={handleStopAgent}
+          onFailure={handleFailure}
           isInitialized={isInitialized}
           hasInitializationFailed={hasInitializationFailed}
           onSendAnalyticsEvent={sendAnalyticsEvent}

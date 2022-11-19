@@ -19,7 +19,7 @@ interface AgentStatusProps {
   containerInfo?: ContainerInfo;
   isInitialized: boolean;
   onRestartAgent: () => void;
-  onStopAgent: () => void;
+  onFailure: () => void;
   onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
   hasInitializationFailed: boolean;
 }
@@ -27,7 +27,7 @@ interface AgentStatusProps {
 export const AgentStatus = ({
   containerInfo,
   onRestartAgent,
-  onStopAgent,
+  onFailure,
   isInitialized,
   hasInitializationFailed,
   onSendAnalyticsEvent,
@@ -42,7 +42,7 @@ export const AgentStatus = ({
     // If the container has failed to start after multiple attempt, set the status to failed.
     if (hasInitializationFailed) {
       setStatus("Failed");
-      onStopAgent();
+      onFailure();
     }
 
     // If the container is not initialized, set the status to starting.
@@ -71,7 +71,7 @@ export const AgentStatus = ({
     containerState,
     isInitialized,
     onRestartAgent,
-    onStopAgent,
+    onFailure,
   ]);
 
   useEffect(() => {

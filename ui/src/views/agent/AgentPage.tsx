@@ -6,6 +6,7 @@ import { removeAkitaContainer } from "../../data/queries/container";
 import { useAkitaAgent } from "../../hooks/use-akita-agent";
 import { useAkitaUser } from "../../hooks/use-akita-user";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
+import { FeedBackFAB } from "../shared/components/FeedBackFAB";
 import { AgentStatus } from "./components/AgentStatus";
 import { Header } from "./components/Header";
 import { SettingsDialog } from "./components/SettingsDialog";
@@ -95,6 +96,7 @@ export const AgentPage = () => {
         onCloseDialog={() => setIsSettingsOpen(false)}
         onSendAnalyticsEvent={sendAnalyticsEvent}
       />
+      <FeedBackFAB sx={{ position: "absolute", bottom: 32, right: 32 }} />
     </>
   );
 };

@@ -6,11 +6,16 @@ BUILDER=buildx-multi-arch
 INFO_COLOR = \033[0;36m
 NO_COLOR   = \033[m
 
+rm-extension: ## Removes the extension
+	docker extension rm $(IMAGE):$(TAG)
+
 build-extension: ## Build service image to be deployed as a desktop extension
 	docker build --tag=$(IMAGE):$(TAG) .
 
 install-extension: build-extension ## Install the extension
 	docker extension install $(IMAGE):$(TAG)
+
+reinstall-extension: rm-extension build-extension install-extension
 
 update-extension: build-extension ## Update the extension
 	docker extension update $(IMAGE):$(TAG)

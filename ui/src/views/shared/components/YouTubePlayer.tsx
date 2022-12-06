@@ -1,23 +1,40 @@
-import { Box, Theme } from "@mui/material";
-import { SxProps } from "@mui/system";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import React from "react";
+import ReactPlayer from "react-player";
 
 interface YoutubePlayerProps {
   embedId: string;
-  title?: string;
-  sx?: SxProps<Theme>;
+  open: boolean;
+  title: string;
+  onClose: () => void;
 }
 
-export const YouTubePlayer = ({ embedId, title, sx }: YoutubePlayerProps) => (
-  <Box className={"youtube-player"} sx={sx}>
-    <iframe
-      title={title ?? "YouTube Embed"}
-      src={`https://www.youtube.com/embed/${embedId}`}
-      allow={
-        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      }
-      allowFullScreen
-      width={"100%"}
-    />
-  </Box>
+export const YouTubePlayer = ({ embedId, open, title, onClose }: YoutubePlayerProps) => (
+  <Dialog open={open} onClose={onClose} maxWidth={"xl"}>
+    <DialogTitle sx={{ m: 0, p: 2 }}>
+      {title}
+      <IconButton
+        onClick={onClose}
+        aria-label={"close"}
+        sx={{
+          position: "absolute",
+          right: 8,
+          top: 8,
+        }}
+      >
+        <CloseOutlinedIcon />
+      </IconButton>
+    </DialogTitle>
+    <DialogContent>
+      <ReactPlayer
+        light
+        url={`https://youtu.be/${embedId}`}
+        controls
+        youtube={{
+          playerVars: { fs: 1 },
+        }}
+      />
+    </DialogContent>
+  </Dialog>
 );

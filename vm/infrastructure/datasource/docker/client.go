@@ -1,9 +1,12 @@
 package docker
 
 import (
+	"akita/domain/failure"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/avast/retry-go"
+	"github.com/docker/docker/api/types"
 	docker "github.com/docker/docker/client"
 	"io"
 	"os"
@@ -20,6 +23,55 @@ func NewClient() (*Client, error) {
 	}
 
 	return &Client{cli: cli}, nil
+}
+
+func (c Client) ListContainers(ctx context.Context, opts types.ContainerListOptions) ([]types.Container, error) {
+	return c.cli.ContainerList(ctx, opts)
+}
+
+func (c Client) GetContainer(
+	ctx context.Context,
+	opts ContainerFilterOptions,
+) (*types.Container, error) {
+	containers, err := c.ListContainers(
+		ctx, types.ContainerListOptions{
+			All:     true,
+			Filters: opts.Filters,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(containers) == 0 {
+		return nil, failure.NotFoundf("container not found")
+	}
+
+	if opts.Predicate == nil {
+		return &containers[0], nil
+	}
+
+	for _, container := range containers {
+		if opts.Predicate(container) {
+			return &container, nil
+		}
+	}
+
+	return nil, failure.NotFoundf("no container found matching the specified predicate")
+}
+
+func (c Client) ContainerExists(
+	ctx context.Context,
+	opts ContainerFilterOptions,
+) (bool, error) {
+	_, err := c.GetContainer(ctx, opts)
+	if err != nil {
+		if errors.Is(err, failure.ErrNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (c Client) Run(ctx context.Context, opts *RunOptions) error {

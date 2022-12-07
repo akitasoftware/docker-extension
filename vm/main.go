@@ -1,6 +1,7 @@
 package main
 
 import (
+	"akita/app"
 	"akita/infrastructure/datasource"
 	"akita/infrastructure/repo"
 	"akita/ports"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/sirupsen/logrus"
@@ -37,9 +39,13 @@ func main() {
 
 	agentRepo := repo.NewAgentRepository(database)
 
-	router := ports.NewRouter(agentRepo, analyticsClient)
+	appInstance := app.NewApp(agentRepo)
+
+	router := ports.NewRouter(appInstance, analyticsClient)
 
 	startURL := ""
+
+	errCh := make(chan error)
 
 	ln, err := listen(socketPath)
 	if err != nil {
@@ -47,7 +53,15 @@ func main() {
 	}
 	router.Listener = ln
 
-	log.Fatal(router.Start(startURL))
+	go func() {
+		errCh <- runPeriodicTasks(appCtx, appInstance, time.Minute)
+	}()
+
+	go func() {
+		errCh <- router.Start(startURL)
+	}()
+
+	log.Fatal(<-errCh)
 }
 
 func listen(path string) (net.Listener, error) {
@@ -68,4 +82,23 @@ func provideAnalyticsClient() (analytics.Client, error) {
 	}
 
 	return analytics.NewClient(config)
+}
+
+func runPeriodicTasks(ctx context.Context, app *app.App, interval time.Duration) error {
+	agentTicker := time.NewTicker(interval)
+	errCh := make(chan error)
+
+	for {
+		select {
+		case <-agentTicker.C:
+			err := app.ManageAgentLifecycle.Handle(ctx)
+			if err != nil {
+				errCh <- err
+			}
+		case err := <-errCh:
+			log.Printf("Error while running periodic agent task: %v", err)
+		case <-ctx.Done():
+			return nil
+		}
+	}
 }

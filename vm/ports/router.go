@@ -1,13 +1,14 @@
 package ports
 
 import (
-	"akita/domain/agent"
+	"akita/app"
 	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/labstack/echo"
 )
 
-func NewRouter(repository agent.Repository, analyticsClient analytics.Client) *echo.Echo {
-	agentHandler := newAgentHandler(repository)
+func NewRouter(app *app.App, analyticsClient analytics.Client) *echo.Echo {
+
+	agentHandler := newAgentHandler(app)
 	eventHandler := newEventHandler(analyticsClient)
 
 	router := echo.New()

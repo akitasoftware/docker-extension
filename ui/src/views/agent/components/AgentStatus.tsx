@@ -105,6 +105,7 @@ export const AgentStatus = ({
         variant={"filled"}
         color={status === "Running" ? "success" : status === "Failed" ? "error" : "warning"}
         label={status}
+        sx={{ padding: 2, fontSize: "1rem" }}
       />
       <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
         {status === "Running" ? (

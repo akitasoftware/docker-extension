@@ -28,7 +28,6 @@ export const YouTubePlayer = ({ embedId, open, title, onClose }: YoutubePlayerPr
     </DialogTitle>
     <DialogContent>
       <ReactPlayer
-        light
         url={`https://youtu.be/${embedId}`}
         controls
         youtube={{

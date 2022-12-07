@@ -25,6 +25,14 @@ func NewClient() (*Client, error) {
 	return &Client{cli: cli}, nil
 }
 
+func (c Client) RemoveContainer(ctx context.Context, containerID string) error {
+	return c.cli.ContainerRemove(
+		ctx, containerID, types.ContainerRemoveOptions{
+			Force: true,
+		},
+	)
+}
+
 func (c Client) ListContainers(ctx context.Context, opts types.ContainerListOptions) ([]types.Container, error) {
 	return c.cli.ContainerList(ctx, opts)
 }

@@ -8,4 +8,5 @@ type Repository interface {
 	DeleteConfig(ctx context.Context) error
 	RunAgent(ctx context.Context) error
 	GetAgentStatus(ctx context.Context) (*State, error)
+	RemoveAgent(ctx context.Context) error
 }

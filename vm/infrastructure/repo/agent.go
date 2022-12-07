@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"go.mongodb.org/mongo-driver/bson"
@@ -110,15 +111,7 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 }
 
 func (a AgentRepository) GetAgentStatus(ctx context.Context) (*agent.State, error) {
-	agentContainer, err := a.dockerClient.GetContainer(
-		ctx, docker.ContainerFilterOptions{
-			Filters: filters.NewArgs(
-				filters.Arg("name", ContainerName),
-				filters.Arg("label", AgentLabelKey),
-				filters.Arg("image:tag", ImageName),
-			),
-		},
-	)
+	agentContainer, err := a.getAgentContainer(ctx)
 
 	if err != nil {
 		if errors.Is(err, failure.ErrNotFound) {
@@ -132,6 +125,27 @@ func (a AgentRepository) GetAgentStatus(ctx context.Context) (*agent.State, erro
 		Status:      agentContainer.State,
 		Created:     true,
 	}, nil
+}
+
+func (a AgentRepository) RemoveAgent(ctx context.Context) error {
+	agentContainer, err := a.getAgentContainer(ctx)
+	if err != nil {
+		return err
+	}
+
+	return a.dockerClient.RemoveContainer(ctx, agentContainer.ID)
+}
+
+func (a AgentRepository) getAgentContainer(ctx context.Context) (*dockertypes.Container, error) {
+	return a.dockerClient.GetContainer(
+		ctx, docker.ContainerFilterOptions{
+			Filters: filters.NewArgs(
+				filters.Arg("name", ContainerName),
+				filters.Arg("label", AgentLabelKey),
+				filters.Arg("image:tag", ImageName),
+			),
+		},
+	)
 }
 
 // Returns the collection of agent configs.

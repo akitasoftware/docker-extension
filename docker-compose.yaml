@@ -1,6 +1,8 @@
 services:
   akita:
     image: ${DESKTOP_PLUGIN_IMAGE}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   akita-db:
     image: mongo:6.0.1
     ports:

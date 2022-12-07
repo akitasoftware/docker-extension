@@ -5,3 +5,7 @@ type State struct {
 	Status      string `json:"status,omitempty"`
 	Created     bool   `json:"created"`
 }
+
+func (s *State) IsRunning() bool {
+	return s.Status == "running"
+}

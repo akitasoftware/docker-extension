@@ -3,15 +3,24 @@ package repo
 import (
 	"akita/domain/agent"
 	"akita/domain/failure"
+	"akita/infrastructure/datasource/docker"
 	"context"
 	"fmt"
+	"github.com/docker/docker/api/types/container"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const (
+	ContainerName = "akita-docker-extension-agent"
+	ImageName     = "akitasoftware/cli:latest"
+	AgentLabel    = "akita-extension-agent"
+)
+
 type AgentRepository struct {
-	db *mongo.Database
+	db           *mongo.Database
+	dockerClient *docker.Client
 }
 
 func NewAgentRepository(db *mongo.Database) agent.Repository {
@@ -53,6 +62,48 @@ func (a AgentRepository) DeleteConfig(ctx context.Context) error {
 		return fmt.Errorf("failed to remove agent config: %w", err)
 	}
 	return nil
+}
+
+func (a AgentRepository) RunAgent(ctx context.Context) error {
+	config, err := a.GetConfig(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to fetch agent config used for docker run: %w", err)
+	}
+
+	runOpts := docker.NewRunOptions(ImageName, ContainerName).WithMaxRetries(3)
+
+	networkMode := "host"
+	if config.TargetContainer != nil {
+		networkMode = fmt.Sprintf("container:%s", *config.TargetContainer)
+	}
+
+	runOpts.WithHostConfig(
+		&container.HostConfig{
+			AutoRemove:  true,
+			NetworkMode: container.NetworkMode(networkMode),
+		},
+	)
+
+	cmd := []string{"apidump", fmt.Sprintf(`--project "%s"`, config.ProjectName)}
+	if config.TargetPort != nil {
+		cmd = append(cmd, fmt.Sprintf(`--filter "port %d"`, *config.TargetPort))
+	}
+
+	runOpts.WithContainerConfig(
+		&container.Config{
+			Env: []string{
+				fmt.Sprintf("AKITA_API_KEY=%s", config.APIKey),
+				fmt.Sprintf("AKITA_API_KEY_SECRET=%s", config.APISecret),
+			},
+			Labels: map[string]string{
+				AgentLabel: "true",
+			},
+			Cmd: cmd,
+		},
+	)
+
+	err = a.dockerClient.Run(ctx, runOpts)
+	return err
 }
 
 // Returns the collection of agent configs.

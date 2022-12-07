@@ -7,4 +7,5 @@ type Repository interface {
 	SaveConfig(ctx context.Context, agentConfig *Config) error
 	DeleteConfig(ctx context.Context) error
 	RunAgent(ctx context.Context) error
+	GetAgentStatus(ctx context.Context) (*State, error)
 }

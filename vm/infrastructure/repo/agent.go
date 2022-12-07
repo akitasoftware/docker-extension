@@ -5,17 +5,20 @@ import (
 	"akita/domain/failure"
 	"akita/infrastructure/datasource/docker"
 	"context"
+	"errors"
 	"fmt"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const (
-	ContainerName = "akita-docker-extension-agent"
-	ImageName     = "akitasoftware/cli:latest"
-	AgentLabel    = "akita-extension-agent"
+	ContainerName   = "akita-docker-extension-agent"
+	ImageName       = "akitasoftware/cli:latest"
+	AgentLabelKey   = "akita-extension-agent"
+	AgentLabelValue = "true"
 )
 
 type AgentRepository struct {
@@ -96,7 +99,7 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 				fmt.Sprintf("AKITA_API_KEY_SECRET=%s", config.APISecret),
 			},
 			Labels: map[string]string{
-				AgentLabel: "true",
+				AgentLabelKey: AgentLabelValue,
 			},
 			Cmd: cmd,
 		},
@@ -104,6 +107,31 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 
 	err = a.dockerClient.Run(ctx, runOpts)
 	return err
+}
+
+func (a AgentRepository) GetAgentStatus(ctx context.Context) (*agent.State, error) {
+	agentContainer, err := a.dockerClient.GetContainer(
+		ctx, docker.ContainerFilterOptions{
+			Filters: filters.NewArgs(
+				filters.Arg("name", ContainerName),
+				filters.Arg("label", AgentLabelKey),
+				filters.Arg("image:tag", ImageName),
+			),
+		},
+	)
+
+	if err != nil {
+		if errors.Is(err, failure.ErrNotFound) {
+			return &agent.State{}, nil
+		}
+		return nil, err
+	}
+
+	return &agent.State{
+		ContainerID: agentContainer.ID,
+		Status:      agentContainer.State,
+		Created:     true,
+	}, nil
 }
 
 // Returns the collection of agent configs.

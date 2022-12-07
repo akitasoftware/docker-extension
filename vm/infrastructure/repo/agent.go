@@ -130,6 +130,9 @@ func (a AgentRepository) GetAgentStatus(ctx context.Context) (*agent.State, erro
 func (a AgentRepository) RemoveAgent(ctx context.Context) error {
 	agentContainer, err := a.getAgentContainer(ctx)
 	if err != nil {
+		if errors.Is(err, failure.ErrNotFound) {
+			return nil
+		}
 		return err
 	}
 

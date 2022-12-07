@@ -1,15 +1,6 @@
 import DoneOutlineIcon from "@mui/icons-material/DoneOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Link,
-  Paper,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, Chip, CircularProgress, Link, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { useContainerState } from "../../../hooks/use-container-state";
@@ -32,7 +23,6 @@ export const AgentStatus = ({
   hasInitializationFailed,
   onSendAnalyticsEvent,
 }: AgentStatusProps) => {
-  const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
   const [status, setStatus] = useState<"Loading" | "Running" | "Starting" | "Failed">("Loading");
@@ -98,13 +88,13 @@ export const AgentStatus = ({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: isDarkMode ? "#333d42" : "#f4f4f6",
       }}
     >
       <Chip
         variant={"filled"}
         color={status === "Running" ? "success" : status === "Failed" ? "error" : "warning"}
         label={status}
+        sx={{ padding: 2, fontSize: "1rem" }}
       />
       <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
         {status === "Running" ? (

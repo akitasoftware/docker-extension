@@ -88,7 +88,7 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 
 	runOpts.WithHostConfig(
 		&container.HostConfig{
-			AutoRemove:  false,
+			AutoRemove:  true,
 			NetworkMode: container.NetworkMode(networkMode),
 		},
 	)

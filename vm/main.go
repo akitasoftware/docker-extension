@@ -1,27 +1,24 @@
 package main
 
 import (
+	"akita/config"
 	"akita/infrastructure/datasource"
 	"akita/infrastructure/repo"
 	"akita/ports"
 	"context"
-	"flag"
 	"log"
 	"net"
 	"os"
 
-	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	var socketPath string
-	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
-	flag.Parse()
+	appConfig := config.Parse()
 
-	_ = os.RemoveAll(socketPath)
+	_ = os.RemoveAll(appConfig.SocketPath())
 
-	logrus.New().Infof("Starting listening on %s\n", socketPath)
+	logrus.New().Infof("Starting listening on %s\n", appConfig.SocketPath())
 
 	appCtx := context.Background()
 
@@ -30,10 +27,12 @@ func main() {
 		log.Fatalf("failed to connect to mongo: %v", err)
 	}
 
-	analyticsClient, err := provideAnalyticsClient()
+	analyticsClient, err := datasource.ProvideAnalyticsClient(appConfig.AnalyticsConfig())
 	if err != nil {
 		log.Fatalf("Failed to create analytics client: %v", err)
 	}
+
+	defer analyticsClient.Close()
 
 	agentRepo := repo.NewAgentRepository(database)
 
@@ -41,7 +40,7 @@ func main() {
 
 	startURL := ""
 
-	ln, err := listen(socketPath)
+	ln, err := listen(appConfig.SocketPath())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,20 +51,4 @@ func main() {
 
 func listen(path string) (net.Listener, error) {
 	return net.Listen("unix", path)
-}
-
-func provideAnalyticsClient() (analytics.Client, error) {
-	config := analytics.Config{
-		App: analytics.AppInfo{
-			Name: "docker-extension",
-		},
-		DefaultIntegrations: map[string]bool{
-			"All":      true,
-			"Intercom": false,
-		},
-		WriteKey:  "2sngErDOO1ylbIrPLMN4xFfuUz4DPIJl",
-		BatchSize: 1,
-	}
-
-	return analytics.NewClient(config)
 }

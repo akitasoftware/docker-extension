@@ -47,6 +47,8 @@ func (c Config) AnalyticsConfig() (analytics.Config, bool) {
 		DefaultIntegrations: map[string]bool{
 			"All": true,
 		},
+		WriteKey:  c.segmentWriteKey,
+		BatchSize: 1,
 	}, true
 }
 

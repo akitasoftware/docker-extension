@@ -19,11 +19,11 @@ func ProvideAnalyticsClient(config analytics.Config, enabled bool) (analytics.Cl
 type disabledAnalyticsClient struct {
 }
 
-func (d disabledAnalyticsClient) TrackEvent(event *analytics.Event) error {
+func (d disabledAnalyticsClient) TrackEvent(*analytics.Event) error {
 	return nil
 }
 
-func (d disabledAnalyticsClient) Track(distinctID string, name string, properties map[string]any) error {
+func (d disabledAnalyticsClient) Track(string, string, map[string]any) error {
 	return nil
 }
 

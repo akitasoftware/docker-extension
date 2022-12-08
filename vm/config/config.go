@@ -33,6 +33,8 @@ func (c Config) SocketPath() string {
 	return c.socketPath
 }
 
+// Returns a analytics client config parsed from the command line flags.
+// If no Segment write key was provided, then an empty config and false will be returned.
 func (c Config) AnalyticsConfig() (analytics.Config, bool) {
 	if !c.isAnalyticsEnabled() {
 		return analytics.Config{}, false

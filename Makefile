@@ -17,6 +17,10 @@ install-extension: build-extension ## Install the extension
 
 reinstall-extension: rm-extension install-extension
 
+dev-extension: install-extension
+	@docker extension dev-ui source $(IMAGE):$(TAG) http://localhost:3000
+	@npm start --prefix ui
+
 update-extension: build-extension ## Update the extension
 	docker extension update $(IMAGE):$(TAG)
 

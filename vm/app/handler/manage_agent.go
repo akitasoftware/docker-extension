@@ -5,6 +5,7 @@ import (
 	"akita/domain/failure"
 	"context"
 	"errors"
+	"github.com/labstack/gommon/log"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -18,7 +19,7 @@ func NewManageAgentHandler(repo agent.Repository) *ManageAgentLifecycle {
 
 func (h *ManageAgentLifecycle) Handle(ctx context.Context) error {
 	// Fetch the current agent config and container state.
-	eg, ctx := errgroup.WithContext(ctx)
+	eg, egCtx := errgroup.WithContext(ctx)
 
 	var (
 		config *agent.Config
@@ -27,7 +28,7 @@ func (h *ManageAgentLifecycle) Handle(ctx context.Context) error {
 
 	eg.Go(
 		func() error {
-			result, err := h.repo.GetConfig(ctx)
+			result, err := h.repo.GetConfig(egCtx)
 			if err != nil {
 				if errors.Is(err, failure.ErrNotFound) {
 					return nil
@@ -43,7 +44,7 @@ func (h *ManageAgentLifecycle) Handle(ctx context.Context) error {
 
 	eg.Go(
 		func() error {
-			result, err := h.repo.GetAgentStatus(ctx)
+			result, err := h.repo.GetAgentStatus(egCtx)
 			if err != nil {
 				return err
 			}
@@ -58,15 +59,20 @@ func (h *ManageAgentLifecycle) Handle(ctx context.Context) error {
 		return err
 	}
 
+	log.Infof("config: %v, state: %v", config, state)
+
 	// If there is no config, or the agent is not enabled, remove the agent container if it exists.
 	if config == nil || config.IsEnabled == false {
+		log.Info("Removing agent container as no config was found or agent is disabled")
 		return h.repo.RemoveAgent(ctx)
 	}
 
 	if state.IsRunning() {
+		log.Info("Agent container is running")
 		return nil
 	}
 
+	log.Info("Agent container is not running, starting it")
 	// If the agent is enabled, but not running, remove the agent container if  it exists, and start a new one.
 	if err := h.repo.RemoveAgent(ctx); err != nil {
 		return err

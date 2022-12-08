@@ -10,7 +10,6 @@ import (
 type RunOptions struct {
 	image                 string
 	containerName         string
-	imagePullOptions      dockertypes.ImagePullOptions
 	containerStartOptions dockertypes.ContainerStartOptions
 	containerConfig       *container.Config
 	hostConfig            *container.HostConfig
@@ -30,11 +29,6 @@ func NewRunOptions(image string, containerName string) *RunOptions {
 	}
 }
 
-func (ro *RunOptions) WithImagePullOptions(opts dockertypes.ImagePullOptions) *RunOptions {
-	ro.imagePullOptions = opts
-	return ro
-}
-
 func (ro *RunOptions) WithContainerStartOptions(opts dockertypes.ContainerStartOptions) *RunOptions {
 	ro.containerStartOptions = opts
 	return ro
@@ -42,7 +36,6 @@ func (ro *RunOptions) WithContainerStartOptions(opts dockertypes.ContainerStartO
 
 func (ro *RunOptions) WithContainerConfig(config *container.Config) *RunOptions {
 	ro.containerConfig = config
-	ro.containerConfig.Image = ro.image
 	return ro
 }
 

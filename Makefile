@@ -22,8 +22,8 @@ reinstall-extension: rm-extension install-extension
 .PHONY: reinstall-extension
 
 dev-extension: install-extension
-	@docker extensin dev-ui source $(IMAGE):$(TAG) http://localhost:3000
-	@cd ui && npm start
+	@docker extension dev-ui source $(IMAGE):$(TAG) http://localhost:3000
+	@npm start --prefix ui
 .PHONY: dev-extension
 
 update-extension: build-extension ## Update the extension

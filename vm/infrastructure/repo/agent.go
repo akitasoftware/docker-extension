@@ -17,7 +17,7 @@ import (
 
 const (
 	ContainerName   = "akita-docker-extension-agent"
-	ImageName       = "akitasoftware/cli:latest"
+	ImageName       = "public.ecr.aws/akitasoftware/akita-cli:latest"
 	AgentLabelKey   = "akita-extension-agent"
 	AgentLabelValue = "true"
 )
@@ -27,8 +27,8 @@ type AgentRepository struct {
 	dockerClient *docker.Client
 }
 
-func NewAgentRepository(db *mongo.Database) agent.Repository {
-	return &AgentRepository{db: db}
+func NewAgentRepository(db *mongo.Database, dockerClient *docker.Client) agent.Repository {
+	return &AgentRepository{db: db, dockerClient: dockerClient}
 }
 
 func (a AgentRepository) GetConfig(ctx context.Context) (*agent.Config, error) {
@@ -74,6 +74,11 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 		return fmt.Errorf("failed to fetch agent config used for docker run: %w", err)
 	}
 
+	err = a.dockerClient.PullImage(ctx, ImageName, dockertypes.ImagePullOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to pull akita-cli image: %w", err)
+	}
+
 	runOpts := docker.NewRunOptions(ImageName, ContainerName).WithMaxRetries(3)
 
 	networkMode := "host"
@@ -83,26 +88,27 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 
 	runOpts.WithHostConfig(
 		&container.HostConfig{
-			AutoRemove:  true,
+			AutoRemove:  false,
 			NetworkMode: container.NetworkMode(networkMode),
 		},
 	)
 
-	cmd := []string{"apidump", fmt.Sprintf(`--project "%s"`, config.ProjectName)}
+	cmd := []string{"apidump", fmt.Sprintf(`--project=%s`, config.ProjectName)}
 	if config.TargetPort != nil {
-		cmd = append(cmd, fmt.Sprintf(`--filter "port %d"`, *config.TargetPort))
+		cmd = append(cmd, fmt.Sprintf(`--filter="port %d"`, *config.TargetPort))
 	}
 
 	runOpts.WithContainerConfig(
 		&container.Config{
 			Env: []string{
-				fmt.Sprintf("AKITA_API_KEY=%s", config.APIKey),
+				fmt.Sprintf("AKITA_API_KEY_ID=%s", config.APIKey),
 				fmt.Sprintf("AKITA_API_KEY_SECRET=%s", config.APISecret),
 			},
 			Labels: map[string]string{
 				AgentLabelKey: AgentLabelValue,
 			},
-			Cmd: cmd,
+			Cmd:   cmd,
+			Image: ImageName,
 		},
 	)
 
@@ -145,7 +151,7 @@ func (a AgentRepository) getAgentContainer(ctx context.Context) (*dockertypes.Co
 			Filters: filters.NewArgs(
 				filters.Arg("name", ContainerName),
 				filters.Arg("label", AgentLabelKey),
-				filters.Arg("image:tag", ImageName),
+				filters.Arg("ancestor", ImageName),
 			),
 		},
 	)

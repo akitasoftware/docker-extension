@@ -3,6 +3,7 @@ package main
 import (
 	"akita/app"
 	"akita/infrastructure/datasource"
+	"akita/infrastructure/datasource/docker"
 	"akita/infrastructure/repo"
 	"akita/ports"
 	"context"
@@ -37,7 +38,12 @@ func main() {
 		log.Fatalf("Failed to create analytics client: %v", err)
 	}
 
-	agentRepo := repo.NewAgentRepository(database)
+	dockerClient, err := docker.NewClient()
+	if err != nil {
+		log.Fatalf("Failed to create docker client: %v", err)
+	}
+
+	agentRepo := repo.NewAgentRepository(database, dockerClient)
 
 	appInstance := app.NewApp(agentRepo)
 
@@ -86,18 +92,17 @@ func provideAnalyticsClient() (analytics.Client, error) {
 
 func runPeriodicTasks(ctx context.Context, app *app.App, interval time.Duration) error {
 	agentTicker := time.NewTicker(interval)
-	errCh := make(chan error)
 
 	for {
 		select {
 		case <-agentTicker.C:
+			log.Println("Running periodic tasks")
 			err := app.ManageAgentLifecycle.Handle(ctx)
 			if err != nil {
-				errCh <- err
+				log.Printf("Failed to run periodic tasks: %v", err)
 			}
-		case err := <-errCh:
-			log.Printf("Error while running periodic agent task: %v", err)
 		case <-ctx.Done():
+			log.Println("Context is done. Stopping periodic tasks")
 			return nil
 		}
 	}

@@ -6,6 +6,7 @@ import (
 	"akita/domain/failure"
 	"errors"
 	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
 )
 
 type agentHandler struct {
@@ -56,6 +57,8 @@ func (a agentHandler) removeAgentConfig(ctx echo.Context) error {
 }
 
 func handleError(err error, ctx echo.Context) {
+	log.Error(err)
+
 	body := map[string]string{
 		"errorMessage": err.Error(),
 	}

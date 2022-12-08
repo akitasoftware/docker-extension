@@ -82,6 +82,17 @@ func (c Client) ContainerExists(
 	return true, nil
 }
 
+func (c Client) PullImage(ctx context.Context, image string, opts types.ImagePullOptions) error {
+	reader, err := c.cli.ImagePull(ctx, image, opts)
+	if err != nil {
+		return err
+	}
+
+	_, _ = io.Copy(os.Stdout, reader)
+
+	return nil
+}
+
 func (c Client) Run(ctx context.Context, opts *RunOptions) error {
 	retryableFunc := func() error {
 		return c.run(ctx, opts)
@@ -92,13 +103,6 @@ func (c Client) Run(ctx context.Context, opts *RunOptions) error {
 }
 
 func (c Client) run(ctx context.Context, opts *RunOptions) error {
-	reader, err := c.cli.ImagePull(ctx, opts.image, opts.imagePullOptions)
-	if err != nil {
-		return fmt.Errorf("failed to pull image: %w", err)
-	}
-
-	_, _ = io.Copy(os.Stdout, reader)
-
 	resp, err := c.cli.ContainerCreate(
 		ctx,
 		opts.containerConfig,

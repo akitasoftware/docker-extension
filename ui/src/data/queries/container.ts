@@ -83,34 +83,6 @@ const startAkitaAgent = async (
 ): Promise<ContainerInfo> => {
   if (!config) return;
 
-  const container = await getAkitaContainer(client);
-  if (container) {
-    console.log("Akita agent already running. container:", container);
-    return container;
-  }
-
-  // Pull the latest image of Akita CLI
-  await client.docker.cli.exec("pull", ["public.ecr.aws/akitasoftware/akita-cli:latest"]);
-
-  // Start the Akita agent
-  const networkArg = config.target_container ? `container:${config.target_container}` : "host";
-  const runArgs = [
-    "--rm",
-    `--network ${networkArg}`,
-    `--name ${AgentContainerName}`,
-    `-e AKITA_API_KEY_ID=${config.api_key}`,
-    `-e AKITA_API_KEY_SECRET=${config.api_secret}`,
-    `${AgentImageName} apidump`,
-    `--project ${config.project_name}`,
-  ];
-  if (config.target_port) {
-    runArgs.push(`--filter "port ${config.target_port}"`);
-  }
-
-  console.log("Starting Akita agent with args:", runArgs);
-
-  await client.docker.cli.exec("run", runArgs);
-
   // Poll for agent container info using the `docker ps` command
   return retryPromise(() => getAkitaContainer(client), 3, 2000).catch((err) => Promise.reject(err));
 };

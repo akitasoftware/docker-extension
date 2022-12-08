@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	ContainerName   = "akita-docker-extension-agent"
+	ContainerName   = "akita-extension-agent"
 	ImageName       = "public.ecr.aws/akitasoftware/akita-cli:latest"
 	AgentLabelKey   = "akita-extension-agent"
 	AgentLabelValue = "true"
@@ -93,9 +93,9 @@ func (a AgentRepository) RunAgent(ctx context.Context) error {
 		},
 	)
 
-	cmd := []string{"apidump", fmt.Sprintf(`--project=%s`, config.ProjectName)}
+	cmd := []string{"apidump", fmt.Sprintf("--project=%s", config.ProjectName)}
 	if config.TargetPort != nil {
-		cmd = append(cmd, fmt.Sprintf(`--filter="port %d"`, *config.TargetPort))
+		cmd = append(cmd, fmt.Sprintf(`--filter=port %d`, *config.TargetPort))
 	}
 
 	runOpts.WithContainerConfig(

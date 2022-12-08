@@ -2,10 +2,12 @@ package datasource
 
 import (
 	"github.com/akitasoftware/akita-libs/analytics"
+	"github.com/labstack/gommon/log"
 )
 
 func ProvideAnalyticsClient(config analytics.Config, enabled bool) (analytics.Client, error) {
 	if !enabled {
+		log.Infof("No Segment write key provided, analytics will be disabled")
 		return &disabledAnalyticsClient{}, nil
 	}
 

@@ -90,6 +90,7 @@ func provideAnalyticsClient() (analytics.Client, error) {
 	return analytics.NewClient(config)
 }
 
+// TODO: Maybe use gocron here?
 func runPeriodicTasks(ctx context.Context, app *app.App, interval time.Duration) error {
 	agentTicker := time.NewTicker(interval)
 

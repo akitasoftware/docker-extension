@@ -78,5 +78,6 @@ func (h *ManageAgentLifecycle) Handle(ctx context.Context) error {
 		return err
 	}
 
+	// TODO: What should we do if the agent fails to start?
 	return h.repo.RunAgent(ctx)
 }

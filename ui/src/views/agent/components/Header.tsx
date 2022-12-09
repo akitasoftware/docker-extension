@@ -45,7 +45,7 @@ export const Header = ({ onSettingsClick, agentConfig, onSendAnalyticsEvent }: H
         </Tooltip>
       </Box>
       <Box m={2}>
-        <Button variant={"contained"} color={"error"} onClick={onStopClicked}>
+        <Button variant={"outlined"} color={"error"} onClick={onStopClicked}>
           Stop Akita
         </Button>
       </Box>

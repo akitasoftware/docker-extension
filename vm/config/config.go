@@ -2,56 +2,57 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"github.com/akitasoftware/akita-libs/analytics"
+	"github.com/akitasoftware/go-utils/optionals"
+	"gopkg.in/yaml.v3"
+	"os"
 )
 
 type Config struct {
-	// The unix domain socket the server will listen on.
 	socketPath string
-	// The Segment write key used to send events to Segment.
-	// If this is empty, then Segment will not be used.
-	segmentWriteKey string
+	analytics  optionals.Optional[analytics.Config]
 }
 
-func Parse() *Config {
-	var (
-		socketPath      string
-		segmentWriteKey string
-	)
+type rawConfig struct {
+	Analytics struct {
+		// Configures the analytics client.
+		analytics.Config `yaml:",inline"`
+		// Whether analytics are enabled.
+		Enabled bool `yaml:"enabled"`
+	} `yaml:"analytics"`
+}
 
+func Parse(raw []byte) (*Config, error) {
+	var parsedConfig *rawConfig
+
+	if err := yaml.Unmarshal(raw, &parsedConfig); err != nil {
+		return nil, fmt.Errorf("failed to parse config: %w", err)
+	}
+
+	var socketPath string
 	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
-	flag.StringVar(&segmentWriteKey, "segment-write-key", "", "Segment write key")
 	flag.Parse()
 
-	return &Config{
-		socketPath:      socketPath,
-		segmentWriteKey: segmentWriteKey,
-	}
-}
+	_ = os.RemoveAll(socketPath)
 
-func (c Config) SocketPath() string {
-	return c.socketPath
+	analyticsConfig := optionals.Some(parsedConfig.Analytics.Config)
+	if !parsedConfig.Analytics.Enabled {
+		analyticsConfig = optionals.None[analytics.Config]()
+	}
+
+	return &Config{
+		socketPath: socketPath,
+		analytics:  analyticsConfig,
+	}, nil
 }
 
 // Returns a analytics client config parsed from the command line flags.
 // If no Segment write key was provided, then an empty config and false will be returned.
 func (c Config) AnalyticsConfig() (analytics.Config, bool) {
-	if !c.isAnalyticsEnabled() {
-		return analytics.Config{}, false
-	}
-
-	return analytics.Config{
-		App: analytics.AppInfo{
-			Name: "docker-extension",
-		},
-		DefaultIntegrations: map[string]bool{
-			"All": true,
-		},
-		WriteKey:  c.segmentWriteKey,
-		BatchSize: 1,
-	}, true
+	return c.analytics.Get()
 }
 
-func (c Config) isAnalyticsEnabled() bool {
-	return c.segmentWriteKey != ""
+func (c Config) SocketPath() string {
+	return c.socketPath
 }

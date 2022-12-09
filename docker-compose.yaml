@@ -1,7 +1,9 @@
 services:
   akita:
+    container_name: akita-extension-backend
     image: ${DESKTOP_PLUGIN_IMAGE}
   akita-db:
+    container_name: akita-extension-db
     image: mongo:6.0.1
     ports:
       - ":27017"

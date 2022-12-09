@@ -1,17 +1,18 @@
-IMAGE?=akitasoftware/akita-docker-extension
-TAG?=latest
+IMAGE ?= akitasoftware/akita-docker-extension
+TAG ?= latest
+CONFIG_FILE ?= application.yml
 
 BUILDER=buildx-multi-arch
 
 INFO_COLOR = \033[0;36m
 NO_COLOR   = \033[m
 
-rm-extension: ## Removes the extension
+remove-extension: ## Removes the extension
 	docker extension rm $(IMAGE):$(TAG)
 .PHONY: rm-extension
 
 build-extension: ## Build service image to be deployed as a desktop extension
-	docker build --tag=$(IMAGE):$(TAG) .
+	docker build --tag=$(IMAGE):$(TAG) --secret id=application.yml,src=$(CONFIG_FILE) .
 .PHONY: build-extension
 
 

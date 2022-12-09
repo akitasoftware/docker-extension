@@ -6,17 +6,20 @@ import (
 	"akita/infrastructure/repo"
 	"akita/ports"
 	"context"
+	_ "embed"
+	"github.com/sirupsen/logrus"
 	"log"
 	"net"
-	"os"
-
-	"github.com/sirupsen/logrus"
 )
 
-func main() {
-	appConfig := config.Parse()
+//go:embed application.yml
+var applicationYML []byte
 
-	_ = os.RemoveAll(appConfig.SocketPath())
+func main() {
+	appConfig, err := config.Parse(applicationYML)
+	if err != nil {
+		log.Fatalf("failed to parse config: %v", err)
+	}
 
 	logrus.New().Infof("Starting listening on %s\n", appConfig.SocketPath())
 

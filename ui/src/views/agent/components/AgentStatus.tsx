@@ -131,7 +131,7 @@ export const AgentStatus = ({
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
       <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
-        <Button variant={"outlined"} onClick={handleViewContainer} disabled={!canViewContainer}>
+        <Button variant={"contained"} onClick={handleViewContainer} disabled={!canViewContainer}>
           View Container
         </Button>
       </Box>

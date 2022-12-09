@@ -15,7 +15,7 @@ func newEventHandler(analyticsClient analytics.Client) *eventHandler {
 }
 
 func (e eventHandler) postEvent(ctx echo.Context) error {
-	payload, err := event.DecodeConfig(ctx.Request().Body)
+	payload, err := event.Decode(ctx.Request().Body)
 	if err != nil {
 		return err
 	}

@@ -17,7 +17,7 @@ type Event struct {
 	Properties map[string]any `json:"properties"`
 }
 
-func DecodeConfig(r io.Reader) (*Event, error) {
+func Decode(r io.Reader) (*Event, error) {
 	var result *Event
 
 	if err := json.NewDecoder(r).Decode(&result); err != nil {

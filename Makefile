@@ -33,11 +33,24 @@ prepare-buildx: ## Create buildx builder for multi-arch build, if not exists
 .PHONY: prepare-buildx
 
 push-extension: prepare-buildx ## Build & Upload extension image to hub. Do not push if tag already exists: make push-extension tag=0.1
-	docker pull $(IMAGE):$(TAG) && echo "Failure: Tag already exists" || docker buildx build --push --builder=$(BUILDER) --platform=linux/amd64,linux/arm64 --build-arg TAG=$(TAG) --tag=$(IMAGE):$(TAG) .
+	docker pull $(IMAGE):$(TAG) && echo "Failure: Tag already exists" || docker buildx build \
+		--push \
+		--builder=$(BUILDER) \
+		--platform=linux/amd64,linux/arm64 \
+		--build-arg TAG=$(TAG) \
+		--tag=$(IMAGE):$(TAG) \
+		--secret id=application.yml,src=$(CONFIG_FILE) .
 .PHONY: push-extension
 
 push-extension-latest: prepare-buildx ## Build & Upload extension image to hub with special tag "latest"
-	docker pull $(IMAGE):$(TAG) && echo "Failure: Tag already exists" || docker buildx build --push --builder=$(BUILDER) --platform=linux/amd64,linux/arm64 --build-arg TAG=$(TAG) --tag=$(IMAGE):$(TAG) --tag=$(IMAGE):latest .
+	docker pull $(IMAGE):$(TAG) && echo "Failure: Tag already exists" || docker buildx build \
+		--push \
+		--builder=$(BUILDER)
+		--platform=linux/amd64,linux/arm64 \
+		--build-arg TAG=$(TAG) \
+		--tag=$(IMAGE):$(TAG) \
+		--tag=$(IMAGE):latest \
+		--secret id=application.yml,src=$(CONFIG_FILE) .
 .PHONY: push-extension-latest
 
 help: ## Show this help

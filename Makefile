@@ -21,8 +21,7 @@ install-extension: build-extension ## Install the extension
 .PHONY: install-extension
 
 dev-extension: install-extension
-	@docker extension dev-ui source $(IMAGE):$(TAG) http://localhost:3000
-	@npm start --prefix ui
+	@docker extension dev ui-source $(IMAGE):$(TAG) http://localhost:3000 && npm run dev --prefix ui
 .PHONY: dev-extension
 
 update-extension: build-extension ## Update the extension

@@ -45,7 +45,7 @@ push-extension: prepare-buildx ## Build & Upload extension image to hub. Do not 
 push-extension-latest: prepare-buildx ## Build & Upload extension image to hub with special tag "latest"
 	docker pull $(IMAGE):$(TAG) && echo "Failure: Tag already exists" || docker buildx build \
 		--push \
-		--builder=$(BUILDER)
+		--builder=$(BUILDER) \
 		--platform=linux/amd64,linux/arm64 \
 		--build-arg TAG=$(TAG) \
 		--tag=$(IMAGE):$(TAG) \

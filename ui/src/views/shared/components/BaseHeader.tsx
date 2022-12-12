@@ -15,7 +15,7 @@ export const BaseHeader = ({ children, sx }: BaseHeaderProps) => (
         Akita
       </Typography>
       <Typography variant={"subtitle1"} color={"InactiveCaptionText"}>
-        Drop in Agent for API Monitoring and Observability
+        Drop-in Agent for API Monitoring and Observability
       </Typography>
     </Box>
     <Box alignContent={"flex-end"}>{children}</Box>

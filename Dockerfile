@@ -24,7 +24,7 @@ COPY ui /ui
 RUN npm run build
 
 FROM alpine
-LABEL org.opencontainers.image.title="Akita" \
+LABEL org.opencontainers.image.title="Akita API Extension" \
     org.opencontainers.image.description="Drop in Agent for API Monitoring and Observability" \
     org.opencontainers.image.vendor="Akita Software" \
     com.docker.desktop.extension.api.version="0.3.0" \

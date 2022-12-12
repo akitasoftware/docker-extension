@@ -161,7 +161,7 @@ export const ConfigPage = () => {
     );
   };
 
-  const isSubmitEnabled = () =>
+  const isSubmitEnabled =
     isConfigInputStateValid(configInput) &&
     !isInvalidAPICredentials &&
     !isInvalidProjectName &&
@@ -252,7 +252,7 @@ export const ConfigPage = () => {
                     ))}
                   </TextField>
                   <Button
-                    disabled={!isSubmitEnabled()}
+                    disabled={!isSubmitEnabled}
                     variant="contained"
                     onClick={handleSubmitClick}
                     sx={{ mt: 3, mb: 2 }}

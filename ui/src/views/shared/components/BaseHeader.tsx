@@ -12,7 +12,7 @@ export const BaseHeader = ({ children, sx }: BaseHeaderProps) => (
   <Box sx={{ display: "flex", width: "100%", alignItems: "center", ...sx }} my={1}>
     <Box alignContent={"flex-start"} textAlign={"left"} flexGrow={1}>
       <Typography sx={{ fontWeight: "bolder" }} variant={"h5"}>
-        Akita
+        Akita API Extension
       </Typography>
       <Typography variant={"subtitle1"} color={"InactiveCaptionText"}>
         Drop-in Agent for API Monitoring and Observability

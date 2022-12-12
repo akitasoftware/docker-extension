@@ -22,6 +22,7 @@ import { useContainers } from "../../data/queries/container";
 import { getServices } from "../../data/queries/service";
 import { useAgentConfig } from "../../hooks/use-agent-config";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
+import { BaseHeader } from "../shared/components/BaseHeader";
 import { HelpSpeedDial } from "../shared/components/HelpSpeedDial";
 import { SubmitWarningDialog } from "./components/SubmitWarningDialog";
 
@@ -160,7 +161,7 @@ export const ConfigPage = () => {
     );
   };
 
-  const isSubmitEnabled = () =>
+  const isSubmitEnabled =
     isConfigInputStateValid(configInput) &&
     !isInvalidAPICredentials &&
     !isInvalidProjectName &&
@@ -168,98 +169,101 @@ export const ConfigPage = () => {
 
   return (
     <>
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <Container maxWidth={"xs"}>
-          <Card elevation={2}>
-            <CardMedia
-              component={AkitaLogo}
-              sx={{
-                padding: 4,
-              }}
-            />
-            <CardContent>
-              <Stack spacing={2}>
-                <Alert severity="info">
-                  <AlertTitle>{"We're in beta!"}</AlertTitle>
-                  {"If you're not in our beta program"},{" "}
-                  <Link
-                    onClick={handleSignupClick}
-                    sx={{
-                      cursor: "pointer",
-                    }}
+      <Box display="flex" flexDirection="column">
+        <BaseHeader />
+        <Box display="flex" justifyContent="center" alignItems="center" marginTop={8}>
+          <Container maxWidth={"xs"}>
+            <Card elevation={2}>
+              <CardMedia
+                component={AkitaLogo}
+                sx={{
+                  padding: 4,
+                }}
+              />
+              <CardContent>
+                <Stack spacing={2}>
+                  <Alert severity="info">
+                    <AlertTitle>{"We're in beta!"}</AlertTitle>
+                    {"If you're not in our beta program"},{" "}
+                    <Link
+                      onClick={handleSignupClick}
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      sign up here
+                    </Link>
+                  </Alert>
+                  <TextField
+                    error={isInvalidAPICredentials}
+                    required
+                    label={"API Key"}
+                    name={"apiKey"}
+                    type={"text"}
+                    margin={"normal"}
+                    value={configInput.apiKey}
+                    onChange={handleInputChange}
+                  />
+                  <TextField
+                    error={isInvalidAPICredentials}
+                    required
+                    label={"API Secret"}
+                    name={"apiSecret"}
+                    type={"password"}
+                    margin={"normal"}
+                    value={configInput.apiSecret}
+                    onChange={handleInputChange}
+                  />
+                  <TextField
+                    error={isInvalidProjectName}
+                    helperText={isInvalidProjectName ? "Project does not exist" : ""}
+                    required
+                    label={"Project"}
+                    name={"projectName"}
+                    type={"text"}
+                    margin={"normal"}
+                    value={configInput.projectName}
+                    onChange={handleInputChange}
+                  />
+                  <TextField
+                    label={"Target Port"}
+                    name={"targetPort"}
+                    type={"number"}
+                    margin={"normal"}
+                    value={configInput.targetPort}
+                    onChange={handleInputChange}
+                  />
+                  <TextField
+                    label={"Target Container"}
+                    name={"targetContainer"}
+                    type={"text"}
+                    margin={"normal"}
+                    select
+                    value={configInput.targetContainer}
+                    onChange={handleInputChange}
                   >
-                    sign up here
-                  </Link>
-                </Alert>
-                <TextField
-                  error={isInvalidAPICredentials}
-                  required
-                  label={"API Key"}
-                  name={"apiKey"}
-                  type={"text"}
-                  margin={"normal"}
-                  value={configInput.apiKey}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  error={isInvalidAPICredentials}
-                  required
-                  label={"API Secret"}
-                  name={"apiSecret"}
-                  type={"password"}
-                  margin={"normal"}
-                  value={configInput.apiSecret}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  error={isInvalidProjectName}
-                  helperText={isInvalidProjectName ? "Project does not exist" : ""}
-                  required
-                  label={"Project"}
-                  name={"projectName"}
-                  type={"text"}
-                  margin={"normal"}
-                  value={configInput.projectName}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  label={"Target Port"}
-                  name={"targetPort"}
-                  type={"number"}
-                  margin={"normal"}
-                  value={configInput.targetPort}
-                  onChange={handleInputChange}
-                />
-                <TextField
-                  label={"Target Container"}
-                  name={"targetContainer"}
-                  type={"text"}
-                  margin={"normal"}
-                  select
-                  value={configInput.targetContainer}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem key={"none"} value={""}>
-                    <em>None</em>
-                  </MenuItem>
-                  {containers.map((container) => (
-                    <MenuItem key={container.Id} value={container.Id}>
-                      {container.Names[0].replace(/^\//g, "")}
+                    <MenuItem key={"none"} value={""}>
+                      <em>None</em>
                     </MenuItem>
-                  ))}
-                </TextField>
-                <Button
-                  disabled={!isSubmitEnabled()}
-                  variant="contained"
-                  onClick={handleSubmitClick}
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Start Akita Agent
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </Container>
+                    {containers.map((container) => (
+                      <MenuItem key={container.Id} value={container.Id}>
+                        {container.Names[0].replace(/^\//g, "")}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                  <Button
+                    disabled={!isSubmitEnabled}
+                    variant="contained"
+                    onClick={handleSubmitClick}
+                    sx={{ mt: 3, mb: 2 }}
+                  >
+                    Start Akita Agent
+                  </Button>
+                </Stack>
+              </CardContent>
+            </Card>
+          </Container>
+        </Box>
       </Box>
       <HelpSpeedDial sx={{ position: "absolute", bottom: 32, right: 32 }} />
       <SubmitWarningDialog

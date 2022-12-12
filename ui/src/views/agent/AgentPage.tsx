@@ -7,8 +7,8 @@ import { useAkitaAgent } from "../../hooks/use-akita-agent";
 import { useAkitaUser } from "../../hooks/use-akita-user";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
 import { HelpSpeedDial } from "../shared/components/HelpSpeedDial";
+import { AgentHeader } from "./components/AgentHeader";
 import { AgentStatus } from "./components/AgentStatus";
-import { Header } from "./components/Header";
 import { SettingsDialog } from "./components/SettingsDialog";
 
 export const AgentPage = () => {
@@ -75,8 +75,8 @@ export const AgentPage = () => {
 
   return (
     <>
-      <Stack spacing={4} marginX={8}>
-        <Header
+      <Stack spacing={4}>
+        <AgentHeader
           onSettingsClick={() => setIsSettingsOpen(true)}
           agentConfig={config}
           onSendAnalyticsEvent={sendAnalyticsEvent}

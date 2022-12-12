@@ -1,6 +1,6 @@
 import DoneOutlineIcon from "@mui/icons-material/DoneOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import { Box, Button, Chip, CircularProgress, Link, Paper, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Link, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { useContainerState } from "../../../hooks/use-container-state";
@@ -90,15 +90,9 @@ export const AgentStatus = ({
         alignItems: "center",
       }}
     >
-      <Chip
-        variant={"filled"}
-        color={status === "Running" ? "success" : status === "Failed" ? "error" : "warning"}
-        label={status}
-        sx={{ padding: 2, fontSize: "1rem" }}
-      />
       <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
         {status === "Running" ? (
-          <DoneOutlineIcon />
+          <DoneOutlineIcon color={"success"} />
         ) : status === "Failed" ? (
           <ErrorOutlineOutlinedIcon />
         ) : (
@@ -131,7 +125,12 @@ export const AgentStatus = ({
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
       <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
-        <Button variant={"outlined"} onClick={handleViewContainer} disabled={!canViewContainer}>
+        <Button
+          variant={"contained"}
+          color={"primary"}
+          onClick={handleViewContainer}
+          disabled={!canViewContainer}
+        >
           View Container
         </Button>
       </Box>

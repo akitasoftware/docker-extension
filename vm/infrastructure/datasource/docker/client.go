@@ -44,7 +44,7 @@ func (c clientImpl) ListContainers(
 
 // Options for methods that filter the list of Docker containers.
 type ContainerFilterOptions struct {
-	// A list of filters consisting of a key and a value pairs.
+	// A list of filters consisting of a key and value pairs. This corresponds to the Docker API's filters parameter.
 	Filters filters.Args
 	// A function that returns true if the container should be included in the result.
 	Predicate func(dockertypes.Container) bool

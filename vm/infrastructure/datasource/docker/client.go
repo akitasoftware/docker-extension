@@ -3,6 +3,7 @@ package docker
 import (
 	"akita/domain/failure"
 	"context"
+	"errors"
 	dockertypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/filters"
 	docker "github.com/docker/docker/client"
@@ -16,6 +17,9 @@ type (
 		// Returns a container from the docker host that matches the input filter options.
 		// If no container is found, a failure.ErrNotFound error is returned.
 		GetContainer(ctx context.Context, opts ContainerFilterOptions) (*dockertypes.Container, error)
+		// Returns true if a container exists in the docker host that matches the input filter options.
+		// If an error occurs, false is returned along with the error.
+		ContainerExists(ctx context.Context, opts ContainerFilterOptions) (bool, error)
 	}
 	clientImpl struct {
 		cli *docker.Client
@@ -67,4 +71,15 @@ func (c clientImpl) GetContainer(ctx context.Context, opts ContainerFilterOption
 	}
 
 	return nil, failure.NotFoundf("no container found matching the given predicate")
+}
+
+func (c clientImpl) ContainerExists(ctx context.Context, opts ContainerFilterOptions) (bool, error) {
+	_, err := c.GetContainer(ctx, opts)
+	if err != nil {
+		if errors.Is(err, failure.ErrNotFound) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 }

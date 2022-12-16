@@ -2,6 +2,8 @@ services:
   akita:
     container_name: akita-extension-backend
     image: ${DESKTOP_PLUGIN_IMAGE}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   akita-db:
     container_name: akita-extension-db
     image: mongo:6.0.1

@@ -77,6 +77,12 @@ export const startAgentWithRetry = async (
   );
 };
 
+/*
+TODO: In the future, we should use Docker's Go SDK to start the container instead of using the Extension API.
+This is because the Extension API does not support creating viewable containers without a user enabling viewable system containers in Docker Desktop.
+Also, the GO SDK will allow us to manage the container lifecycle even when the UI is not in focus.
+Ticket: https://app.asana.com/0/1203271196692292/1203520436365754
+ */
 const startAkitaAgent = async (
   client: v1.DockerDesktopClient,
   config?: AgentConfig

@@ -51,7 +51,7 @@ type ContainerFilterOptions struct {
 }
 
 func (c clientImpl) GetContainer(ctx context.Context, opts ContainerFilterOptions) (*dockertypes.Container, error) {
-	containers, err := c.ListContainers(ctx, dockertypes.ContainerListOptions{Filters: opts.Filters})
+	containers, err := c.ListContainers(ctx, dockertypes.ContainerListOptions{All: true, Filters: opts.Filters})
 	if err != nil {
 		return nil, err
 	}

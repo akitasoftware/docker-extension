@@ -42,7 +42,7 @@ func (c clientImpl) ListContainers(
 	return c.cli.ContainerList(ctx, opts)
 }
 
-// Options for filtering the list of containers returned by GetContainer.
+// Options for methods that filter the list of Docker containers.
 type ContainerFilterOptions struct {
 	// A list of filters consisting of a key and a value pairs.
 	Filters filters.Args

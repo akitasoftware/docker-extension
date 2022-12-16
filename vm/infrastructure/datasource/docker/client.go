@@ -6,20 +6,26 @@ import (
 	docker "github.com/docker/docker/client"
 )
 
-type Client struct {
-	cli *docker.Client
-}
+type (
+	// Custom Docker client that provides a subset of the Docker API's functionality and additional utility methods.
+	Client interface {
+		ListContainers(ctx context.Context, opts dockertypes.ContainerListOptions) ([]dockertypes.Container, error)
+	}
+	clientImpl struct {
+		cli *docker.Client
+	}
+)
 
-func NewClient() (*Client, error) {
-	cli, err := docker.NewClientWithOpts(docker.FromEnv)
+func NewClient() (Client, error) {
+	cli, err := docker.NewClientWithOpts(docker.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
 
-	return &Client{cli: cli}, nil
+	return &clientImpl{cli: cli}, nil
 }
 
-func (c Client) ListContainers(
+func (c clientImpl) ListContainers(
 	ctx context.Context,
 	opts dockertypes.ContainerListOptions,
 ) ([]dockertypes.Container, error) {

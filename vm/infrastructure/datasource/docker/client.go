@@ -20,6 +20,7 @@ type (
 		// Returns true if a container exists in the docker host that matches the input filter options.
 		// If an error occurs, false is returned along with the error.
 		ContainerExists(ctx context.Context, opts ContainerFilterOptions) (bool, error)
+		Close() error
 	}
 	clientImpl struct {
 		cli *docker.Client
@@ -33,6 +34,10 @@ func NewClient() (Client, error) {
 	}
 
 	return &clientImpl{cli: cli}, nil
+}
+
+func (c clientImpl) Close() error {
+	return c.cli.Close()
 }
 
 func (c clientImpl) ListContainers(

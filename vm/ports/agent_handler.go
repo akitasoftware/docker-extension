@@ -64,6 +64,8 @@ func handleError(err error, ctx echo.Context) {
 		_ = ctx.JSON(400, body)
 	} else if errors.Is(err, failure.ErrNotFound) {
 		_ = ctx.JSON(404, body)
+	} else if errors.Is(err, failure.ErrUnprocessable) {
+		_ = ctx.JSON(422, body)
 	} else {
 		_ = ctx.JSON(500, body)
 	}

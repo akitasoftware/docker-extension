@@ -12,8 +12,8 @@ type agentHandler struct {
 	app *app.App
 }
 
-func newAgentHandler(app app.App) *agentHandler {
-	return &agentHandler{app: &app}
+func newAgentHandler(app *app.App) *agentHandler {
+	return &agentHandler{app: app}
 }
 
 func (a agentHandler) getAgentConfig(ctx echo.Context) error {

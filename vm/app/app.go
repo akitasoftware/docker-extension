@@ -21,7 +21,7 @@ type (
 func New(agentRepo agent.Repository, containerRepo container.Repository, userRepo user.Repository) *App {
 	return &App{
 		Interactors: Interactors{
-			RetrieveAgentConfig: interactor.NewRetrieveAgentConfigInteractor(agentRepo, containerRepo),
+			RetrieveAgentConfig: interactor.NewRetrieveAgentConfigInteractor(agentRepo, containerRepo, userRepo),
 			SaveAgentConfig:     interactor.NewSaveAgentConfigInteractor(agentRepo, containerRepo, userRepo),
 			RemoveAgentConfig:   interactor.NewRemoveAgentConfigInteractor(agentRepo),
 		},

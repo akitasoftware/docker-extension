@@ -49,7 +49,7 @@ func main() {
 
 	agentRepo := repo.NewAgentRepository(database)
 	containerRepo := repo.NewContainerRepository(dockerClient)
-	userRepo := repo.NewUserRepository(akitaAPIClient)
+	userRepo := repo.NewUserRepository(akitaAPIClient, analyticsClient)
 
 	appInstance := app.New(agentRepo, containerRepo, userRepo)
 

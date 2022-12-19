@@ -34,7 +34,7 @@ func (s SaveAgentConfig) Handle(ctx context.Context, config *agent.Config) error
 	}
 
 	// Check that the user exists.
-	if _, err := s.userRepo.GetUser(config.APIKey, config.APISecret); err != nil {
+	if _, err := s.userRepo.GetUser(config.Credentials()); err != nil {
 		return err
 	}
 

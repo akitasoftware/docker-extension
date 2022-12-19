@@ -4,25 +4,31 @@ import (
 	"akita/domain/failure"
 	"akita/domain/user"
 	"fmt"
+	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/go-resty/resty/v2"
 )
 
 type UserRepository struct {
-	client *resty.Client
+	restyClient     *resty.Client
+	analyticsClient analytics.Client
 }
 
-func NewUserRepository(httpClient *resty.Client) *UserRepository {
+func NewUserRepository(httpClient *resty.Client, analyticsClient analytics.Client) *UserRepository {
 	return &UserRepository{
-		client: httpClient,
+		restyClient:     httpClient,
+		analyticsClient: analyticsClient,
 	}
 }
 
-func (u UserRepository) GetUser(apiKey string, apiSecret string) (*user.User, error) {
+func (u UserRepository) GetUser(credentials user.Credentials) (*user.User, error) {
 	const path = "/v1/user"
 
 	var result user.User
 
-	response, err := u.client.R().SetBasicAuth(apiKey, apiSecret).SetResult(&result).Get(path)
+	response, err := u.restyClient.R().SetBasicAuth(
+		credentials.APIKey,
+		credentials.APISecret,
+	).SetResult(&result).Get(path)
 	if err != nil {
 		if response != nil && response.StatusCode() == 401 {
 			return nil, failure.Unauthorizedf("no user found with the given API key and secret")
@@ -31,4 +37,13 @@ func (u UserRepository) GetUser(apiKey string, apiSecret string) (*user.User, er
 	}
 
 	return &result, nil
+}
+
+func (u UserRepository) EnqueueUserEvent(event *user.Event) error {
+	fetchedUser, err := u.GetUser(event.Credentials)
+	if err != nil {
+		return err
+	}
+
+	return u.analyticsClient.Track(fetchedUser.Email, event.Name, event.Properties)
 }

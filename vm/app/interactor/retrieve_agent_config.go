@@ -3,22 +3,27 @@ package interactor
 import (
 	"akita/domain/agent"
 	"akita/domain/container"
+	"akita/domain/user"
 	"context"
 	"github.com/akitasoftware/go-utils/optionals"
+	"github.com/labstack/gommon/log"
 )
 
 type RetrieveAgentConfig struct {
 	agentRepo     agent.Repository
 	containerRepo container.Repository
+	userRepo      user.Repository
 }
 
 func NewRetrieveAgentConfigInteractor(
 	agentRepository agent.Repository,
 	containerRepository container.Repository,
+	userRepository user.Repository,
 ) *RetrieveAgentConfig {
 	return &RetrieveAgentConfig{
 		agentRepo:     agentRepository,
 		containerRepo: containerRepository,
+		userRepo:      userRepository,
 	}
 }
 
@@ -56,6 +61,19 @@ func (r RetrieveAgentConfig) fixAgentConfig(ctx context.Context) error {
 
 	if containerExists {
 		return nil
+	}
+
+	err = r.userRepo.EnqueueUserEvent(
+		user.NewEvent(
+			agentConfig.Credentials(),
+			"Agent Automatically Disabled",
+			map[string]any{
+				"reason": "Targeted container no longer exists or is not running",
+			},
+		),
+	)
+	if err != nil {
+		log.Debugf("Failed to enqueue user event: %s", err)
 	}
 
 	// If the container doesn't exist or isn't running, then we should clear the

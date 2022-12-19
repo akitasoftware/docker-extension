@@ -4,6 +4,7 @@ import (
 	"akita/domain/agent"
 	"akita/domain/container"
 	"akita/domain/failure"
+	"akita/domain/user"
 	"context"
 	"github.com/akitasoftware/go-utils/optionals"
 )
@@ -11,20 +12,32 @@ import (
 type SaveAgentConfig struct {
 	agentRepo     agent.Repository
 	containerRepo container.Repository
+	userRepo      user.Repository
 }
 
 func NewSaveAgentConfigInteractor(
 	agentRepository agent.Repository,
 	containerRepository container.Repository,
+	userRepository user.Repository,
 ) *SaveAgentConfig {
 	return &SaveAgentConfig{
 		agentRepo:     agentRepository,
 		containerRepo: containerRepository,
+		userRepo:      userRepository,
 	}
 }
 
 // Saves the agent configuration.
 func (s SaveAgentConfig) Handle(ctx context.Context, config *agent.Config) error {
+	if config.Validate() != nil {
+		return failure.Invalidf("invalid agent configuration")
+	}
+
+	// Check that the user exists.
+	if _, err := s.userRepo.GetUser(config.APIKey, config.APISecret); err != nil {
+		return err
+	}
+
 	if config.TargetContainer == nil {
 		return s.agentRepo.SaveConfig(ctx, config)
 	}

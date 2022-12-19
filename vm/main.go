@@ -9,6 +9,7 @@ import (
 	"akita/ports"
 	"context"
 	_ "embed"
+	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net"
@@ -44,10 +45,13 @@ func main() {
 	}
 	defer analyticsClient.Close()
 
+	akitaAPIClient := resty.New().SetBaseURL("https://api.akita.software")
+
 	agentRepo := repo.NewAgentRepository(database)
 	containerRepo := repo.NewContainerRepository(dockerClient)
+	userRepo := repo.NewUserRepository(akitaAPIClient)
 
-	appInstance := app.New(agentRepo, containerRepo)
+	appInstance := app.New(agentRepo, containerRepo, userRepo)
 
 	router := ports.NewRouter(appInstance, analyticsClient)
 

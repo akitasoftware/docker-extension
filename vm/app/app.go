@@ -4,6 +4,7 @@ import (
 	"akita/app/interactor"
 	"akita/domain/agent"
 	"akita/domain/container"
+	"akita/domain/user"
 )
 
 type (
@@ -17,11 +18,11 @@ type (
 	}
 )
 
-func New(agentRepo agent.Repository, containerRepo container.Repository) *App {
+func New(agentRepo agent.Repository, containerRepo container.Repository, userRepo user.Repository) *App {
 	return &App{
 		Interactors: Interactors{
 			RetrieveAgentConfig: interactor.NewRetrieveAgentConfigInteractor(agentRepo, containerRepo),
-			SaveAgentConfig:     interactor.NewSaveAgentConfigInteractor(agentRepo, containerRepo),
+			SaveAgentConfig:     interactor.NewSaveAgentConfigInteractor(agentRepo, containerRepo, userRepo),
 			RemoveAgentConfig:   interactor.NewRemoveAgentConfigInteractor(agentRepo),
 		},
 	}

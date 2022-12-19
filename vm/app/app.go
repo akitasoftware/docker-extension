@@ -17,7 +17,7 @@ type (
 	}
 )
 
-func NewApp(agentRepo agent.Repository, containerRepo container.Repository) *App {
+func New(agentRepo agent.Repository, containerRepo container.Repository) *App {
 	return &App{
 		Interactors: Interactors{
 			RetrieveAgentConfig: interactor.NewRetrieveAgentConfigInteractor(agentRepo, containerRepo),

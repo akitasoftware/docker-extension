@@ -47,7 +47,7 @@ func main() {
 	agentRepo := repo.NewAgentRepository(database)
 	containerRepo := repo.NewContainerRepository(dockerClient)
 
-	appInstance := app.NewApp(agentRepo, containerRepo)
+	appInstance := app.New(agentRepo, containerRepo)
 
 	router := ports.NewRouter(appInstance, analyticsClient)
 

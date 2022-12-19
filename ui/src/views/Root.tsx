@@ -13,7 +13,7 @@ export const Root = () => {
       if (config.enabled) {
         navigate("/agent");
       } else {
-        navigate("/config");
+        removeAkitaContainer(ddClient).finally(() => navigate("/config"));
       }
     })
     .catch((e) => {

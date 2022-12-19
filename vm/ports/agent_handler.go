@@ -16,6 +16,9 @@ func newAgentHandler(app *app.App) *agentHandler {
 	return &agentHandler{app: app}
 }
 
+// getAgentConfig is called every time the UI comes into focus; it may have the
+// side effect of stopping the agent if the monitored container is no longer
+// present or running.
 func (a agentHandler) getAgentConfig(ctx echo.Context) error {
 	requestContext := ctx.Request().Context()
 	config, err := a.app.RetrieveAgentConfig.Handle(requestContext)

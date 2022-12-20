@@ -8,11 +8,13 @@ import (
 )
 
 type (
+	// Represents all interactions that can be performed within the application.
 	Interactors struct {
 		*interactor.RetrieveAgentConfig
 		*interactor.SaveAgentConfig
 		*interactor.RemoveAgentConfig
 	}
+	// Entry point for application logic and use case interactions.
 	App struct {
 		Interactors
 	}

@@ -2,6 +2,7 @@ package agent
 
 import (
 	"akita/domain/failure"
+	"akita/domain/user"
 	"encoding/json"
 	"io"
 )
@@ -28,6 +29,13 @@ func DecodeConfig(r io.Reader) (*Config, error) {
 	}
 
 	return result, nil
+}
+
+func (a *Config) Credentials() user.Credentials {
+	return user.Credentials{
+		APIKey:    a.APIKey,
+		APISecret: a.APISecret,
+	}
 }
 
 func (a *Config) Validate() error {

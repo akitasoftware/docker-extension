@@ -1,12 +1,15 @@
 package main
 
 import (
+	"akita/app"
 	"akita/config"
 	"akita/infrastructure/datasource"
+	"akita/infrastructure/datasource/docker"
 	"akita/infrastructure/repo"
 	"akita/ports"
 	"context"
 	_ "embed"
+	"github.com/go-resty/resty/v2"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net"
@@ -30,16 +33,27 @@ func main() {
 		log.Fatalf("failed to connect to mongo: %v", err)
 	}
 
+	dockerClient, err := docker.NewClient()
+	if err != nil {
+		log.Fatalf("failed to initialize docker client: %v", err)
+	}
+	defer dockerClient.Close()
+
 	analyticsClient, err := datasource.ProvideAnalyticsClient(appConfig.AnalyticsConfig())
 	if err != nil {
 		log.Fatalf("Failed to create analytics client: %v", err)
 	}
-
 	defer analyticsClient.Close()
 
-	agentRepo := repo.NewAgentRepository(database)
+	akitaAPIClient := resty.New().SetBaseURL("https://api.akita.software")
 
-	router := ports.NewRouter(agentRepo, analyticsClient)
+	agentRepo := repo.NewAgentRepository(database)
+	containerRepo := repo.NewContainerRepository(dockerClient)
+	userRepo := repo.NewUserRepository(akitaAPIClient, analyticsClient)
+
+	appInstance := app.New(agentRepo, containerRepo, userRepo)
+
+	router := ports.NewRouter(appInstance, analyticsClient)
 
 	startURL := ""
 

@@ -1,6 +1,7 @@
 package ports
 
 import (
+	"akita/app"
 	"akita/domain/agent"
 	"akita/domain/failure"
 	"errors"
@@ -8,16 +9,19 @@ import (
 )
 
 type agentHandler struct {
-	agentRepo agent.Repository
+	app *app.App
 }
 
-func newAgentHandler(agentRepo agent.Repository) *agentHandler {
-	return &agentHandler{agentRepo: agentRepo}
+func newAgentHandler(app *app.App) *agentHandler {
+	return &agentHandler{app: app}
 }
 
+// getAgentConfig is called every time the UI comes into focus; it may have the
+// side effect of stopping the agent if the monitored container is no longer
+// present or running.
 func (a agentHandler) getAgentConfig(ctx echo.Context) error {
 	requestContext := ctx.Request().Context()
-	config, err := a.agentRepo.GetConfig(requestContext)
+	config, err := a.app.RetrieveAgentConfig.Handle(requestContext)
 	if err != nil {
 		return err
 	}
@@ -37,7 +41,7 @@ func (a agentHandler) createAgentConfig(ctx echo.Context) error {
 
 	requestContext := ctx.Request().Context()
 
-	if err := a.agentRepo.SaveConfig(requestContext, config); err != nil {
+	if err := a.app.SaveAgentConfig.Handle(requestContext, config); err != nil {
 		return err
 	}
 
@@ -47,7 +51,7 @@ func (a agentHandler) createAgentConfig(ctx echo.Context) error {
 func (a agentHandler) removeAgentConfig(ctx echo.Context) error {
 	requestContext := ctx.Request().Context()
 
-	if err := a.agentRepo.DeleteConfig(requestContext); err != nil {
+	if err := a.app.RemoveAgentConfig.Handle(requestContext); err != nil {
 		return err
 	}
 
@@ -63,6 +67,10 @@ func handleError(err error, ctx echo.Context) {
 		_ = ctx.JSON(400, body)
 	} else if errors.Is(err, failure.ErrNotFound) {
 		_ = ctx.JSON(404, body)
+	} else if errors.Is(err, failure.ErrUnprocessable) {
+		_ = ctx.JSON(422, body)
+	} else if errors.Is(err, failure.ErrUnauthorized) {
+		_ = ctx.JSON(401, body)
 	} else {
 		_ = ctx.JSON(500, body)
 	}

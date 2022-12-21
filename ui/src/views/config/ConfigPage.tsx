@@ -1,6 +1,4 @@
 import {
-  Alert,
-  AlertTitle,
   Box,
   Button,
   Card,
@@ -11,6 +9,7 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Typography,
   useMediaQuery,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -171,7 +170,13 @@ export const ConfigPage = () => {
     <>
       <Box display="flex" flexDirection="column">
         <BaseHeader />
-        <Box display="flex" justifyContent="center" alignItems="center" marginTop={8}>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          marginTop={8}
+          flexDirection="column"
+        >
           <Container maxWidth={"xs"}>
             <Card elevation={2}>
               <CardMedia
@@ -182,18 +187,6 @@ export const ConfigPage = () => {
               />
               <CardContent>
                 <Stack spacing={2}>
-                  <Alert severity="info">
-                    <AlertTitle>{"We're in beta!"}</AlertTitle>
-                    {"If you're not in our beta program"},{" "}
-                    <Link
-                      onClick={handleSignupClick}
-                      sx={{
-                        cursor: "pointer",
-                      }}
-                    >
-                      sign up here
-                    </Link>
-                  </Alert>
                   <TextField
                     error={isInvalidAPICredentials}
                     required
@@ -263,6 +256,17 @@ export const ConfigPage = () => {
               </CardContent>
             </Card>
           </Container>
+          <Typography marginTop={2} variant={"body1"} color="text.secondary" align="center">
+            No account?{" "}
+            <Link
+              onClick={handleSignupClick}
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              Join the beta to get access.
+            </Link>
+          </Typography>
         </Box>
       </Box>
       <HelpSpeedDial sx={{ position: "absolute", bottom: 32, right: 32 }} />

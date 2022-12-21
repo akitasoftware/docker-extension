@@ -256,7 +256,7 @@ export const ConfigPage = () => {
               </CardContent>
             </Card>
           </Container>
-          <Typography marginTop={2} variant={"body1"} color="text.secondary" align="center">
+          <Typography marginTop={2} variant="body1" color="text.secondary" align="center">
             No account?{" "}
             <Link
               onClick={handleSignupClick}

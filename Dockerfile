@@ -93,4 +93,7 @@ COPY docker-compose.yaml .
 COPY metadata.json .
 COPY aki_full.svg .
 COPY --from=client-builder /ui/build ui
-CMD /service -socket /run/guest-services/extension-akita.sock
+CMD /service
+    -socket /run/guest-services/extension-akita.sock \
+    -target-os $TARGETOS \
+    -target-arch $TARGETARCH

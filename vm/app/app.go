@@ -16,6 +16,7 @@ type (
 		*interactor.SaveAgentConfig
 		*interactor.RemoveAgentConfig
 		*interactor.RecordUserAnalytics
+		*interactor.SaveHostDetails
 	}
 	// Entry point for application logic and use case interactions.
 	App struct {
@@ -41,6 +42,7 @@ func New(
 				userRepo,
 				agentRepo,
 			),
+			SaveHostDetails: interactor.NewSaveHostDetailsInteractor(hostRepo),
 		},
 	}
 }

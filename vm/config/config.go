@@ -1,6 +1,7 @@
 package config
 
 import (
+	"akita/domain/host"
 	"flag"
 	"fmt"
 	"github.com/akitasoftware/akita-libs/analytics"
@@ -73,4 +74,12 @@ func (c Config) AnalyticsConfig() (analytics.Config, bool) {
 
 func (c Config) SocketPath() string {
 	return c.socketPath
+}
+
+// Returns information about the target platform that the VM will run on.
+func (c Config) TargetPlatform() *host.TargetPlatform {
+	return &host.TargetPlatform{
+		OS:   c.targetOS,
+		Arch: c.targetArch,
+	}
 }

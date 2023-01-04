@@ -4,7 +4,9 @@ import (
 	"akita/app/interactor"
 	"akita/domain/agent"
 	"akita/domain/container"
+	"akita/domain/host"
 	"akita/domain/user"
+	"github.com/akitasoftware/akita-libs/analytics"
 )
 
 type (
@@ -13,6 +15,7 @@ type (
 		*interactor.RetrieveAgentConfig
 		*interactor.SaveAgentConfig
 		*interactor.RemoveAgentConfig
+		*interactor.RecordUserAnalytics
 	}
 	// Entry point for application logic and use case interactions.
 	App struct {
@@ -20,12 +23,24 @@ type (
 	}
 )
 
-func New(agentRepo agent.Repository, containerRepo container.Repository, userRepo user.Repository) *App {
+func New(
+	agentRepo agent.Repository,
+	hostRepo host.Repository,
+	containerRepo container.Repository,
+	userRepo user.Repository,
+	analyticsClient analytics.Client,
+) *App {
 	return &App{
 		Interactors: Interactors{
 			RetrieveAgentConfig: interactor.NewRetrieveAgentConfigInteractor(agentRepo, containerRepo, userRepo),
 			SaveAgentConfig:     interactor.NewSaveAgentConfigInteractor(agentRepo, containerRepo, userRepo),
 			RemoveAgentConfig:   interactor.NewRemoveAgentConfigInteractor(agentRepo),
+			RecordUserAnalytics: interactor.NewRecordUserAnalyticsInteractor(
+				analyticsClient,
+				hostRepo,
+				userRepo,
+				agentRepo,
+			),
 		},
 	}
 }

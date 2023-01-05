@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
-import { ContainerState, useContainers } from "../../../data/queries/container";
+import { ContainerInfo, ContainerState, useContainers } from "../../../data/queries/container";
 import { useAkitaServices } from "../../../hooks/user-akita-services";
 
 interface SettingsDialogProps {
@@ -41,6 +41,15 @@ const inputStateFromConfig = (config?: AgentConfig): InputState => ({
   targetContainer: config?.target_container ?? "",
 });
 
+const internalContainerNames = new Set([
+  "akita-extension-db",
+  "akita-extension-backend",
+  "akita-docker-extension-agent",
+]);
+
+// Removes slashes from the container name provided by the Docker CLI
+const fixContainerName = (name: string) => name.replace(/^\//g, "");
+
 export const SettingsDialog = ({
   isOpen,
   onConfigChange,
@@ -48,7 +57,13 @@ export const SettingsDialog = ({
   config,
   onSendAnalyticsEvent,
 }: SettingsDialogProps) => {
-  const containers = useContainers((container) => container.State === ContainerState.RUNNING);
+  const containers = useContainers(
+    (container: ContainerInfo) =>
+      // Filter out non-running and internal containers
+      container.State === ContainerState.RUNNING &&
+      container.Names.length > 0 &&
+      !container.Names.some((name) => internalContainerNames.has(fixContainerName(name)))
+  );
 
   const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
 
@@ -150,7 +165,7 @@ export const SettingsDialog = ({
               </MenuItem>
               {containers.map((container) => (
                 <MenuItem key={container.Id} value={container.Id}>
-                  {container.Names[0].replace(/^\//g, "")}
+                  {fixContainerName(container.Names[0])}
                 </MenuItem>
               ))}
             </TextField>

@@ -2,7 +2,9 @@ package ports
 
 import (
 	"akita/app"
+	"akita/app/interactor"
 	"akita/domain/event"
+	"github.com/akitasoftware/go-utils/optionals"
 	"github.com/labstack/echo"
 )
 
@@ -20,7 +22,11 @@ func (e eventHandler) postEvent(ctx echo.Context) error {
 		return err
 	}
 
-	err = e.app.RecordUserAnalytics.Handle(ctx.Request().Context(), payload.Name, payload.Properties)
+	err = e.app.RecordUserAnalytics.Handle(
+		ctx.Request().Context(), payload.Name, payload.Properties, interactor.RecordUserAnalyticsOptions{
+			UserEmail: optionals.Some(payload.DistinctID),
+		},
+	)
 	if err != nil {
 		return err
 	}

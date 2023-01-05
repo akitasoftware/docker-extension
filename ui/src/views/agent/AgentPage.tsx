@@ -1,5 +1,5 @@
 import { Stack } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig, deleteAgentConfig } from "../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../data/queries/container";
@@ -53,7 +53,7 @@ export const AgentPage = () => {
     }
   }, [config, ddClient]);
 
-  const handleFailure = () => {
+  const handleFailure = useCallback(() => {
     sendAnalyticsEvent("Agent Failed to Start");
     createAgentConfig(ddClient, { ...config, enabled: false })
       .then(() => removeAkitaContainer(ddClient))
@@ -64,14 +64,18 @@ export const AgentPage = () => {
           "Failed to start agent. Update the agent settings and try again."
         )
       );
-  };
+  }, [config, ddClient, navigate, sendAnalyticsEvent]);
 
-  const handleConfigChange = (config: AgentConfig) => {
-    createAgentConfig(ddClient, config)
-      .then(() => removeAkitaContainer(ddClient))
-      .then(() => navigate("/"))
-      .catch((e) => ddClient.desktopUI.toast.error(`Failed to update config: ${e.message}`));
-  };
+  const handleConfigChange = useCallback(
+    () => (config: AgentConfig) => {
+      createAgentConfig(ddClient, config)
+        .then(() => removeAkitaContainer(ddClient))
+        .then(() => restartAgent())
+        .then(() => navigate("/"))
+        .catch(handleFailure);
+    },
+    [ddClient, handleFailure, navigate, restartAgent]
+  );
 
   return (
     <>

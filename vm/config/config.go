@@ -39,6 +39,7 @@ func Parse(raw []byte) (*Config, error) {
 	}
 
 	socketPath, targetOS, targetArch := parseFlags()
+	fmt.Printf("socket path: %s, target OS: %s, target arch: %s\n", socketPath, targetOS, targetArch)
 
 	analyticsConfig := optionals.Some(parsedConfig.Analytics.Config)
 	if !parsedConfig.Analytics.Enabled {
@@ -57,8 +58,8 @@ func parseFlags() (socketPath, targetOS, targetArch string) {
 	const defaultPlatformValue = "unknown"
 
 	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
-	flag.StringVar(&targetOS, "target-os", defaultPlatformValue, "Target OS that the vm will run on")
-	flag.StringVar(&targetArch, "target-arch", defaultPlatformValue, "Target architecture that the vm will run on")
+	flag.StringVar(&targetOS, "os", defaultPlatformValue, "Target OS that the vm will run on")
+	flag.StringVar(&targetArch, "arch", defaultPlatformValue, "Target architecture that the vm will run on")
 	flag.Parse()
 
 	_ = os.RemoveAll(socketPath)

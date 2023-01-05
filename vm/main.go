@@ -59,7 +59,7 @@ func main() {
 		log.Fatalf("failed to save host details: %v", err)
 	}
 
-	router := ports.NewRouter(appInstance, analyticsClient)
+	router := ports.NewRouter(appInstance)
 
 	startURL := ""
 

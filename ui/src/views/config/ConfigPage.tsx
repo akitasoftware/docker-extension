@@ -6,7 +6,6 @@ import {
   CardMedia,
   Container,
   Link,
-  MenuItem,
   Stack,
   TextField,
   Typography,
@@ -17,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 import darkAkitaLogo from "../../assets/img/akita_logo_dark.svg";
 import lightAkitaLogo from "../../assets/img/akita_logo_light.svg";
 import { AgentConfig, createAgentConfig } from "../../data/queries/agent-config";
-import { useContainers } from "../../data/queries/container";
 import { getServices } from "../../data/queries/service";
 import { useAgentConfig } from "../../hooks/use-agent-config";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
@@ -73,7 +71,6 @@ export const ConfigPage = () => {
   const ddClient = useDockerDesktopClient();
   const agentConfig = useAgentConfig();
   const [configInput, setConfigInput] = useState<ConfigInputState>(initialConfigInputState);
-  const containers = useContainers((container) => container.State === "running");
   const navigate = useNavigate();
   const [isInvalidAPICredentials, setIsInvalidAPICredentials] = useState(false);
   const [isInvalidProjectName, setIsInvalidProjectName] = useState(false);
@@ -179,31 +176,28 @@ export const ConfigPage = () => {
         >
           <Container maxWidth={"xs"}>
             <Card elevation={2}>
-              <CardMedia
-                component={AkitaLogo}
-                sx={{
-                  padding: 4,
-                }}
-              />
+              <CardMedia component={AkitaLogo} />
               <CardContent>
-                <Stack spacing={2}>
+                <Stack spacing={4} marginX={1}>
                   <TextField
                     error={isInvalidAPICredentials}
                     required
+                    placeholder="API Key"
                     label={"API Key"}
                     name={"apiKey"}
                     type={"text"}
-                    margin={"normal"}
+                    variant={"outlined"}
                     value={configInput.apiKey}
                     onChange={handleInputChange}
                   />
                   <TextField
                     error={isInvalidAPICredentials}
                     required
+                    placeholder={"API Secret"}
                     label={"API Secret"}
                     name={"apiSecret"}
                     type={"password"}
-                    margin={"normal"}
+                    variant={"outlined"}
                     value={configInput.apiSecret}
                     onChange={handleInputChange}
                   />
@@ -212,61 +206,36 @@ export const ConfigPage = () => {
                     helperText={isInvalidProjectName ? "Project does not exist" : ""}
                     required
                     label={"Project"}
+                    placeholder={"Project"}
                     name={"projectName"}
                     type={"text"}
-                    margin={"normal"}
+                    variant={"outlined"}
                     value={configInput.projectName}
                     onChange={handleInputChange}
                   />
-                  <TextField
-                    label={"Target Port"}
-                    name={"targetPort"}
-                    type={"number"}
-                    margin={"normal"}
-                    value={configInput.targetPort}
-                    onChange={handleInputChange}
-                  />
-                  <TextField
-                    label={"Target Container"}
-                    name={"targetContainer"}
-                    type={"text"}
-                    margin={"normal"}
-                    select
-                    value={configInput.targetContainer}
-                    onChange={handleInputChange}
-                  >
-                    <MenuItem key={"none"} value={""}>
-                      <em>None</em>
-                    </MenuItem>
-                    {containers.map((container) => (
-                      <MenuItem key={container.Id} value={container.Id}>
-                        {container.Names[0].replace(/^\//g, "")}
-                      </MenuItem>
-                    ))}
-                  </TextField>
                   <Button
                     disabled={!isSubmitEnabled}
                     variant="contained"
                     onClick={handleSubmitClick}
-                    sx={{ mt: 3, mb: 2 }}
+                    size={"large"}
                   >
                     Start Akita Agent
                   </Button>
                 </Stack>
-              </CardContent>
+              </CardContent>{" "}
+              <Typography marginY={2} variant="body1" color="text.secondary" align="center">
+                No account?{" "}
+                <Link
+                  onClick={handleSignupClick}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Join the beta to get access
+                </Link>
+              </Typography>
             </Card>
           </Container>
-          <Typography marginTop={2} variant="body1" color="text.secondary" align="center">
-            No account?{" "}
-            <Link
-              onClick={handleSignupClick}
-              sx={{
-                cursor: "pointer",
-              }}
-            >
-              Join the beta to get access.
-            </Link>
-          </Typography>
         </Box>
       </Box>
       <HelpSpeedDial sx={{ position: "absolute", bottom: 32, right: 32 }} />

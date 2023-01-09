@@ -84,7 +84,7 @@ LABEL org.opencontainers.image.title="Akita API Extension" \
     " \
     com.docker.extension.publisher-url="https://www.akitasoftware.com" \
     com.docker.extension.additional-urls="" \
-    com.docker.extension.changelog="First Release!" \
+    com.docker.extension.changelog="See full <a href=\"https://github.com/akitasoftware/docker-extension/releases\">change log</a>" \
     com.docker.extension.account-info="required" \
     com.docker.extension.categories="networking,utility-tools"
 

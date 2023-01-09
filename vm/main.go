@@ -50,10 +50,16 @@ func main() {
 	agentRepo := repo.NewAgentRepository(database)
 	containerRepo := repo.NewContainerRepository(dockerClient)
 	userRepo := repo.NewUserRepository(akitaAPIClient, analyticsClient)
+	hostRepo := repo.NewHostRepository(database)
 
-	appInstance := app.New(agentRepo, containerRepo, userRepo)
+	appInstance := app.New(agentRepo, hostRepo, containerRepo, userRepo, analyticsClient)
 
-	router := ports.NewRouter(appInstance, analyticsClient)
+	err = appInstance.SaveHostDetails.Handle(appCtx, appConfig.TargetPlatform())
+	if err != nil {
+		log.Fatalf("failed to save host details: %v", err)
+	}
+
+	router := ports.NewRouter(appInstance)
 
 	startURL := ""
 

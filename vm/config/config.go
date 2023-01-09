@@ -1,6 +1,7 @@
 package config
 
 import (
+	"akita/domain/host"
 	"flag"
 	"fmt"
 	"github.com/akitasoftware/akita-libs/analytics"
@@ -10,8 +11,15 @@ import (
 )
 
 type Config struct {
+	// Path to the unix domain socket to listen on.
 	socketPath string
-	analytics  optionals.Optional[analytics.Config]
+	// The target OS that the VM will run on.
+	targetOS string
+	// The target architecture that the VM will run on.
+	targetArch string
+	// The analytics client config.
+	// If analytics are disabled, this will be None.
+	analytics optionals.Optional[analytics.Config]
 }
 
 type rawConfig struct {
@@ -30,11 +38,8 @@ func Parse(raw []byte) (*Config, error) {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}
 
-	var socketPath string
-	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
-	flag.Parse()
-
-	_ = os.RemoveAll(socketPath)
+	socketPath, targetOS, targetArch := parseFlags()
+	fmt.Printf("socket path: %s, target OS: %s, target arch: %s\n", socketPath, targetOS, targetArch)
 
 	analyticsConfig := optionals.Some(parsedConfig.Analytics.Config)
 	if !parsedConfig.Analytics.Enabled {
@@ -43,8 +48,23 @@ func Parse(raw []byte) (*Config, error) {
 
 	return &Config{
 		socketPath: socketPath,
+		targetOS:   targetOS,
+		targetArch: targetArch,
 		analytics:  analyticsConfig,
 	}, nil
+}
+
+func parseFlags() (socketPath, targetOS, targetArch string) {
+	const defaultPlatformValue = "unknown"
+
+	flag.StringVar(&socketPath, "socket", "/run/guest/volumes-service.sock", "Unix domain socket to listen on")
+	flag.StringVar(&targetOS, "os", defaultPlatformValue, "Target OS that the vm will run on")
+	flag.StringVar(&targetArch, "arch", defaultPlatformValue, "Target architecture that the vm will run on")
+	flag.Parse()
+
+	_ = os.RemoveAll(socketPath)
+
+	return
 }
 
 // Returns a analytics client config parsed from the command line flags.
@@ -55,4 +75,12 @@ func (c Config) AnalyticsConfig() (analytics.Config, bool) {
 
 func (c Config) SocketPath() string {
 	return c.socketPath
+}
+
+// Returns information about the target platform that the VM will run on.
+func (c Config) TargetPlatform() *host.TargetPlatform {
+	return &host.TargetPlatform{
+		OS:   c.targetOS,
+		Arch: c.targetArch,
+	}
 }

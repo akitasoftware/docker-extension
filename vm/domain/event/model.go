@@ -9,7 +9,7 @@ import (
 // Represents an analytics event.
 // This will be used to send events from the UI to Segment.
 type Event struct {
-	// The user identifier for the event.
+	// The distinct ID of the user.
 	DistinctID string `json:"distinct_id"`
 	// The name of the event.
 	Name string `json:"name"`

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ContainerInfo, getAkitaContainer, startAgentWithRetry } from "../data/queries/container";
 import { useAgentConfig } from "./use-agent-config";
 import { useDockerDesktopClient } from "./use-docker-desktop-client";
@@ -45,10 +45,11 @@ export const useAkitaAgent = () => {
       });
   }, [client, config, hasInitializationFailed, isInitialized]);
 
-  const restartAgent = () => {
+  const restartAgent = useCallback(() => {
     console.log("Restarting agent from useAkitaAgent hook");
     setIsInitialized(false);
-  };
+    setHasInitializationFailed(false);
+  }, []);
 
   return {
     config,

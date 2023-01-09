@@ -69,8 +69,9 @@ export const AgentPage = () => {
   const handleConfigChange = (config: AgentConfig) => {
     createAgentConfig(ddClient, config)
       .then(() => removeAkitaContainer(ddClient))
+      .then(() => restartAgent())
       .then(() => navigate("/"))
-      .catch((e) => ddClient.desktopUI.toast.error(`Failed to update config: ${e.message}`));
+      .catch(handleFailure);
   };
 
   return (

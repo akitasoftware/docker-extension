@@ -2,13 +2,12 @@ package ports
 
 import (
 	"akita/app"
-	"github.com/akitasoftware/akita-libs/analytics"
 	"github.com/labstack/echo"
 )
 
-func NewRouter(app *app.App, analyticsClient analytics.Client) *echo.Echo {
+func NewRouter(app *app.App) *echo.Echo {
 	agentHandler := newAgentHandler(app)
-	eventHandler := newEventHandler(analyticsClient)
+	eventHandler := newEventHandler(app)
 
 	router := echo.New()
 	router.HideBanner = true

@@ -1,17 +1,19 @@
 package ports
 
 import (
+	"akita/app"
+	"akita/app/interactor"
 	"akita/domain/event"
-	"github.com/akitasoftware/akita-libs/analytics"
+	"github.com/akitasoftware/go-utils/optionals"
 	"github.com/labstack/echo"
 )
 
 type eventHandler struct {
-	analyticsClient analytics.Client
+	app *app.App
 }
 
-func newEventHandler(analyticsClient analytics.Client) *eventHandler {
-	return &eventHandler{analyticsClient: analyticsClient}
+func newEventHandler(app *app.App) *eventHandler {
+	return &eventHandler{app: app}
 }
 
 func (e eventHandler) postEvent(ctx echo.Context) error {
@@ -20,14 +22,14 @@ func (e eventHandler) postEvent(ctx echo.Context) error {
 		return err
 	}
 
-	err = e.analyticsClient.TrackEvent(e.mapAnalyticsEvent(payload))
+	err = e.app.RecordUserAnalytics.Handle(
+		ctx.Request().Context(), payload.Name, payload.Properties, interactor.RecordUserAnalyticsOptions{
+			UserEmail: optionals.Some(payload.DistinctID),
+		},
+	)
 	if err != nil {
 		return err
 	}
 
 	return ctx.NoContent(204)
-}
-
-func (e eventHandler) mapAnalyticsEvent(eventPayload *event.Event) *analytics.Event {
-	return analytics.NewEvent(eventPayload.DistinctID, eventPayload.Name, eventPayload.Properties)
 }

@@ -88,9 +88,16 @@ LABEL org.opencontainers.image.title="Akita API Extension" \
     com.docker.extension.account-info="required" \
     com.docker.extension.categories="networking,utility-tools"
 
+ARG TARGETOS
+ARG TARGETARCH
+
 COPY --from=builder /backend/bin/service /
 COPY docker-compose.yaml .
 COPY metadata.json .
 COPY aki_full.svg .
 COPY --from=client-builder /ui/build ui
-CMD /service -socket /run/guest-services/extension-akita.sock
+
+ENV target_os=$TARGETOS
+ENV target_arch=$TARGETARCH
+
+CMD /service -socket=/run/guest-services/extension-akita.sock -os=$target_os -arch=$target_arch

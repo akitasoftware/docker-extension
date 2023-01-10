@@ -1,19 +1,19 @@
 # Akita Docker Extension
 
-This Repository hosts the code for
-Akita's [Docker Extension](https://hub.docker.com/repository/docker/akitasoftware/akita-docker-extension).
-The Extension lets Docker users run and configure the [Akita Agent](https://github.com/akitasoftware/akita-cli)
+This repository hosts the code for
+Akita's [Docker extension](https://hub.docker.com/repository/docker/akitasoftware/akita-docker-extension).
+This extension lets Docker users run and configure the [Akita Agent](https://github.com/akitasoftware/akita-cli)
 in Docker Desktop.
 
-## Getting Started
+## Getting started
 
-To get started with the Docker Extension you will need to install Docker Desktop 4.8.0 or later.
+To get started with the Akita Docker extension you will need to install Docker Desktop 4.8.0 or later.
 
-To Install the latest version of the Docker Extension, run the following command:
+To install the latest version of the extension, run the following command:
 
 ` docker extension install akitasoftware/akita-docker-extension:latest `
 
-To build the Docker Extension from source, navigate to the root of the repository and run the following command:
+To build the extension from source, navigate to the root of the repository and run the following command:
 
 ` make install-extension `
 
@@ -23,11 +23,11 @@ Navigate to Docker Desktop, and you should now see a new "Akita" section in the 
 
 * Please file bugs as issues to this repository.
 * We welcome contributions! If you want to make changes please see our [contributing guide](CONTRIBUTING.md).
-* We're always happy to answer any questions about the Docker Extension, or about how you
+* We're always happy to answer any questions about the Docker extension, or about how you
   can contribute. Email us at `opensource [at] akitasoftware [dot] com` or
   [request to join our Slack](https://docs.google.com/forms/d/e/1FAIpQLSfF-Mf4Li_DqysCHy042IBfvtpUDHGYrV6DOHZlJcQV8OIlAA/viewform?usp=sf_link)!
 
-## What is Akita
+## What is Akita?
 
 Drop-in API monitoring, no code changes necessary.
 
@@ -48,7 +48,7 @@ own dashboards.
 ## Related links
 
 * [Akita blog](https://www.akitasoftware.com/blog)
-* [Extension Docs](https://docs.akita.software/docs/docker-extension)
+* [Extension docs](https://docs.akita.software/docs/docker-extension)
 * [Akita docs](https://docs.akita.software/)
 * [Sign up for our private beta](https://www.akitasoftware.com/beta-signup)
 

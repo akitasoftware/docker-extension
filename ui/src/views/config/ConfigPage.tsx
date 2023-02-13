@@ -152,9 +152,7 @@ export const ConfigPage = () => {
   };
 
   const handleSignupClick = () => {
-    ddClient.host.openExternal(
-      "https://www.akitasoftware.com/beta-signup?utm_source=docker&utm_medium=link&utm_campaign=beta_from_docker"
-    );
+    ddClient.host.openExternal("https://app.akita.software/login");
   };
 
   const isSubmitEnabled =

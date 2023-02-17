@@ -3,6 +3,7 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { Box, Button, CircularProgress, Link, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
+import { Service } from "../../../data/queries/service";
 import { useContainerState } from "../../../hooks/use-container-state";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
@@ -13,6 +14,7 @@ interface AgentStatusProps {
   onFailure: () => void;
   onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
   hasInitializationFailed: boolean;
+  services: Service[];
 }
 
 export const AgentStatus = ({
@@ -22,6 +24,7 @@ export const AgentStatus = ({
   isInitialized,
   hasInitializationFailed,
   onSendAnalyticsEvent,
+  services,
 }: AgentStatusProps) => {
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
@@ -78,9 +81,21 @@ export const AgentStatus = ({
       .catch((err) => console.error("Failed to navigate to container", err));
   };
 
+  const resolveAPIModelURL = () => {
+    const service = services.find((service) => service.name === "akita-backend");
+    // If the service is not found, return the default dashboard URL
+    // It might not send them to the right project, but it's better than nothing ¯\_(ツ)_/¯
+    if (!service) {
+      return "https://app.akita.software";
+    }
+
+    // If the service is found, return the dashboard URL with the project ID
+    return `https://app.akita.software/services/${service.id}/deployment/default`;
+  };
+
   const handleViewWebDashboard = () => {
     onSendAnalyticsEvent("Opened Akita Web Dashboard");
-    ddClient.host.openExternal("https://app.akita.software");
+    ddClient.host.openExternal(resolveAPIModelURL());
   };
 
   return (

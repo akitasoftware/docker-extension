@@ -1,6 +1,7 @@
 import { AkitaURL, addAuthHeader } from "./utils";
 
 export interface Service {
+  id: string;
   name: string;
 }
 

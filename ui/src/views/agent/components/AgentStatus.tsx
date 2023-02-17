@@ -83,14 +83,14 @@ export const AgentStatus = ({
 
   const resolveAPIModelURL = () => {
     const service = services.find((service) => service.name === "akita-backend");
-    // If the service is not found, return the default dashboard URL
+    // If the service is not found, just send them to the dashboard's overview page
     // It might not send them to the right project, but it's better than nothing ¯\_(ツ)_/¯
     if (!service) {
       return "https://app.akita.software";
     }
 
     // If the service is found, return the dashboard URL with the project ID
-    return `https://app.akita.software/services/${service.id}/deployment/default`;
+    return `https://app.akita.software/services/${service.id}/deployment/default/model`;
   };
 
   const handleViewWebDashboard = () => {

@@ -89,6 +89,8 @@ export const ConfigPage = () => {
     }
   }, [agentConfig]);
 
+  // TODO: Validation doesn't work in dev mode because of CORS. We should probably add an env var to account for this.
+  // As a hacky workaround, you can comment out any checks in this function and just return true.
   const validateSubmission = async () => {
     const serviceResponse = await getServices(configInput.apiKey, configInput.apiSecret).catch(
       (err) => {

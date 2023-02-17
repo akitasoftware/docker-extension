@@ -100,6 +100,8 @@ export const AgentStatus = ({
     ddClient.host.openExternal(resolveAPIModelURL());
   };
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return (
     <Paper
       elevation={3}
@@ -124,15 +126,17 @@ export const AgentStatus = ({
       {status === "Running" ? (
         <Typography variant={"body1"}>
           Akita is running.{" "}
-          <Link
-            onClick={handleViewContainer}
-            sx={{
-              cursor: "pointer",
-            }}
-          >
-            Check the Agent container
-          </Link>{" "}
-          to view logs.
+          {canViewContainer && (
+            <Link
+              onClick={handleViewContainer}
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              Check the Agent container
+            </Link>
+          )}
+          {canViewContainer && " to view the logs."}
         </Typography>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
@@ -144,12 +148,7 @@ export const AgentStatus = ({
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
       <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
-        <Button
-          variant={"contained"}
-          color={"primary"}
-          onClick={handleViewWebDashboard}
-          disabled={!canViewContainer}
-        >
+        <Button variant={"contained"} color={"primary"} onClick={handleViewWebDashboard}>
           View API Model
         </Button>
       </Box>

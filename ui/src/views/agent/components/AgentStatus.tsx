@@ -15,6 +15,7 @@ interface AgentStatusProps {
   onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
   hasInitializationFailed: boolean;
   services: Service[];
+  targetedProjectName?: string;
 }
 
 export const AgentStatus = ({
@@ -25,6 +26,7 @@ export const AgentStatus = ({
   hasInitializationFailed,
   onSendAnalyticsEvent,
   services,
+  targetedProjectName,
 }: AgentStatusProps) => {
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
@@ -82,15 +84,15 @@ export const AgentStatus = ({
   };
 
   const resolveAPIModelURL = () => {
-    const service = services.find((service) => service.name === "akita-backend");
+    const service = services.find((service) => service.name === targetedProjectName);
     // If the service is not found, just send them to the dashboard's overview page
     // It might not send them to the right project, but it's better than nothing ¯\_(ツ)_/¯
     if (!service) {
       return "https://app.akita.software";
     }
 
-    // If the service is found, return the dashboard URL with the project ID
-    return `https://app.akita.software/services/${service.id}/deployment/default/model`;
+    // If the service is found, return the API Model URL with the project ID
+    return `https://app.akita.software/service/${service.id}/deployment/default/model`;
   };
 
   const handleViewWebDashboard = () => {

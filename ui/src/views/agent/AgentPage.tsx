@@ -85,6 +85,7 @@ export const AgentPage = () => {
           onSendAnalyticsEvent={sendAnalyticsEvent}
         />
         <AgentStatus
+          targetedProjectName={config?.project_name}
           services={services}
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}

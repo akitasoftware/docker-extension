@@ -1,7 +1,7 @@
 IMAGE ?= akitasoftware/akita-docker-extension
 TAG ?= latest
 CONFIG_FILE ?= application.yml
-
+CHROME_TOOLS ?= 0
 BUILDER=buildx-multi-arch
 
 INFO_COLOR = \033[0;36m
@@ -21,6 +21,13 @@ install-extension: build-extension ## Install the extension
 .PHONY: install-extension
 
 dev-extension: install-extension
+ifeq ($(CHROME_TOOLS),1)
+	@docker extension dev debug $(IMAGE):$(TAG)
+	echo "Chrome tools enabled. Open the extension in Docker Desktop to inspect the extension."
+else
+	@docker extension dev reset $(IMAGE):$(TAG)
+	echo "Chrome tools are disabled. To enable them, run 'make dev-extension CHROME_TOOLS=1'"
+endif
 	@docker extension dev ui-source $(IMAGE):$(TAG) http://localhost:3000 && npm run dev --prefix ui
 .PHONY: dev-extension
 

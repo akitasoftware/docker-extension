@@ -6,6 +6,7 @@ import { removeAkitaContainer } from "../../data/queries/container";
 import { useAkitaAgent } from "../../hooks/use-akita-agent";
 import { useAkitaUser } from "../../hooks/use-akita-user";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
+import { useAkitaServices } from "../../hooks/user-akita-services";
 import { HelpSpeedDial } from "../shared/components/HelpSpeedDial";
 import { AgentHeader } from "./components/AgentHeader";
 import { AgentStatus } from "./components/AgentStatus";
@@ -16,6 +17,7 @@ export const AgentPage = () => {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const { config, containerInfo, restartAgent, isInitialized, hasInitializationFailed } =
     useAkitaAgent();
+  const services = useAkitaServices(config);
   const navigate = useNavigate();
   const wasWarned = useRef(false);
   const wasViewEventSent = useRef(false);
@@ -83,6 +85,8 @@ export const AgentPage = () => {
           onSendAnalyticsEvent={sendAnalyticsEvent}
         />
         <AgentStatus
+          targetedProjectName={config?.project_name}
+          services={services}
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}
           onFailure={handleFailure}
@@ -93,6 +97,7 @@ export const AgentPage = () => {
       </Stack>
       <SettingsDialog
         config={config}
+        services={services}
         isOpen={isSettingsOpen && containerInfo !== undefined}
         onConfigChange={handleConfigChange}
         onCloseDialog={() => setIsSettingsOpen(false)}

@@ -78,6 +78,11 @@ export const AgentStatus = ({
       .catch((err) => console.error("Failed to navigate to container", err));
   };
 
+  const handleViewWebDashboard = () => {
+    onSendAnalyticsEvent("Opened Akita Web Dashboard");
+    ddClient.host.openExternal("https://app.akita.software");
+  };
+
   return (
     <Paper
       elevation={3}
@@ -101,19 +106,16 @@ export const AgentStatus = ({
       </Box>
       {status === "Running" ? (
         <Typography variant={"body1"}>
-          Akita is running. Check the{" "}
+          Akita is running.{" "}
           <Link
-            onClick={() => {
-              onSendAnalyticsEvent("Opened Akita Web Dashboard");
-              ddClient.host.openExternal("https://app.akita.software");
-            }}
+            onClick={handleViewContainer}
             sx={{
               cursor: "pointer",
             }}
           >
-            Akita Dashboard
+            Check the Agent container
           </Link>{" "}
-          to view your models.
+          to view logs.
         </Typography>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
@@ -128,10 +130,10 @@ export const AgentStatus = ({
         <Button
           variant={"contained"}
           color={"primary"}
-          onClick={handleViewContainer}
+          onClick={handleViewWebDashboard}
           disabled={!canViewContainer}
         >
-          View Container
+          View API Model
         </Button>
       </Box>
     </Paper>

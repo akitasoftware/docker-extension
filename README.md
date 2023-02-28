@@ -45,11 +45,12 @@ their usage in real time.
 Simply drop Akita into your system to understand your system behavior, without having to instrument code or build your
 own dashboards.
 
+[Create an account in the Akita App](https//app.akita.software/login?sign_up) to get started!
+
 ## Related links
 
 * [Akita blog](https://www.akitasoftware.com/blog)
 * [Extension docs](https://docs.akita.software/docs/docker-extension)
 * [Akita docs](https://docs.akita.software/)
-* [Sign up for our private beta](https://www.akitasoftware.com/beta-signup)
 
 

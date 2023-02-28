@@ -3,6 +3,7 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { Box, Button, CircularProgress, Link, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
+import { Service } from "../../../data/queries/service";
 import { useContainerState } from "../../../hooks/use-container-state";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
@@ -13,6 +14,8 @@ interface AgentStatusProps {
   onFailure: () => void;
   onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
   hasInitializationFailed: boolean;
+  services: Service[];
+  targetedProjectName?: string;
 }
 
 export const AgentStatus = ({
@@ -22,6 +25,8 @@ export const AgentStatus = ({
   isInitialized,
   hasInitializationFailed,
   onSendAnalyticsEvent,
+  services,
+  targetedProjectName,
 }: AgentStatusProps) => {
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
@@ -78,6 +83,25 @@ export const AgentStatus = ({
       .catch((err) => console.error("Failed to navigate to container", err));
   };
 
+  const resolveAPIModelURL = () => {
+    const service = services.find((service) => service.name === targetedProjectName);
+    // If the service is not found, just send them to the dashboard's overview page
+    // It might not send them to the right project, but it's better than nothing ¯\_(ツ)_/¯
+    if (!service) {
+      return "https://app.akita.software";
+    }
+
+    // If the service is found, return the API Model URL with the project ID
+    return `https://app.akita.software/service/${service.id}/deployment/default/model`;
+  };
+
+  const handleViewWebDashboard = () => {
+    onSendAnalyticsEvent("Opened Akita Web Dashboard");
+    ddClient.host.openExternal(resolveAPIModelURL());
+  };
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   return (
     <Paper
       elevation={3}
@@ -101,19 +125,18 @@ export const AgentStatus = ({
       </Box>
       {status === "Running" ? (
         <Typography variant={"body1"}>
-          Akita is running. Check the{" "}
-          <Link
-            onClick={() => {
-              onSendAnalyticsEvent("Opened Akita Web Dashboard");
-              ddClient.host.openExternal("https://app.akita.software");
-            }}
-            sx={{
-              cursor: "pointer",
-            }}
-          >
-            Akita Dashboard
-          </Link>{" "}
-          to view your models.
+          Akita is running.{" "}
+          {canViewContainer && (
+            <Link
+              onClick={handleViewContainer}
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              Check the Agent container
+            </Link>
+          )}
+          {canViewContainer && " to view the logs."}
         </Typography>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
@@ -125,13 +148,8 @@ export const AgentStatus = ({
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
       <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
-        <Button
-          variant={"contained"}
-          color={"primary"}
-          onClick={handleViewContainer}
-          disabled={!canViewContainer}
-        >
-          View Container
+        <Button variant={"contained"} color={"primary"} onClick={handleViewWebDashboard}>
+          View API Model
         </Button>
       </Box>
     </Paper>

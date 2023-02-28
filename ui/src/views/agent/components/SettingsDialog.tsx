@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
 import { ContainerInfo, ContainerState, useContainers } from "../../../data/queries/container";
-import { useAkitaServices } from "../../../hooks/user-akita-services";
+import { Service } from "../../../data/queries/service";
 
 interface SettingsDialogProps {
   config?: AgentConfig;
@@ -20,6 +20,7 @@ interface SettingsDialogProps {
   onConfigChange: (config: AgentConfig) => void;
   onCloseDialog: () => void;
   onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
+  services: Service[];
 }
 
 interface InputState {
@@ -56,6 +57,7 @@ export const SettingsDialog = ({
   onCloseDialog,
   config,
   onSendAnalyticsEvent,
+  services,
 }: SettingsDialogProps) => {
   const containers = useContainers(
     (container: ContainerInfo) =>
@@ -68,7 +70,6 @@ export const SettingsDialog = ({
   const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
 
   const [isUpdatedConfigValid, setIsUpdatedConfigValid] = useState(false);
-  const services = useAkitaServices(config);
 
   useEffect(() => {
     setInput(inputStateFromConfig(config));

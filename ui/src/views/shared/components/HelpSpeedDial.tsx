@@ -1,12 +1,10 @@
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import ForumOutlinedIcon from "@mui/icons-material/ForumOutlined";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutlined";
-import OndemandVideoOutlinedIcon from "@mui/icons-material/OndemandVideoOutlined";
 import { SpeedDial, SpeedDialAction, Theme } from "@mui/material";
 import { SxProps } from "@mui/system";
-import React, { MouseEvent, ReactNode, useState } from "react";
+import React, { MouseEvent, ReactNode } from "react";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
-import { YouTubePlayer } from "./YouTubePlayer";
 
 export interface HelpSpeedDialProps {
   sx?: SxProps<Theme>;
@@ -20,7 +18,6 @@ interface Action {
 
 export const HelpSpeedDial = ({ sx }: HelpSpeedDialProps) => {
   const ddClient = useDockerDesktopClient();
-  const [isVideoOpen, setIsVideoOpen] = useState<boolean>(false);
 
   const actions: Action[] = [
     {
@@ -31,13 +28,6 @@ export const HelpSpeedDial = ({ sx }: HelpSpeedDialProps) => {
       },
     },
     {
-      icon: <OndemandVideoOutlinedIcon />,
-      name: "View Tutorial Video",
-      operation: () => {
-        setIsVideoOpen(true);
-      },
-    },
-    {
       icon: <ArticleOutlinedIcon />,
       name: "View Documentation",
       operation: () => {
@@ -45,10 +35,6 @@ export const HelpSpeedDial = ({ sx }: HelpSpeedDialProps) => {
       },
     },
   ];
-
-  const handleVideoClose = () => {
-    setIsVideoOpen(false);
-  };
 
   const handleActionClick = (event: MouseEvent<HTMLDivElement>, action: Action) => {
     action.operation();
@@ -66,12 +52,6 @@ export const HelpSpeedDial = ({ sx }: HelpSpeedDialProps) => {
           />
         ))}
       </SpeedDial>
-      <YouTubePlayer
-        title={"Tutorial Video"}
-        embedId={"TMOxq4yjKYE"}
-        open={isVideoOpen}
-        onClose={handleVideoClose}
-      />
     </>
   );
 };

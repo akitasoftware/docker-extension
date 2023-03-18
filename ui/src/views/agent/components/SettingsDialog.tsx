@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Container,
   Dialog,
@@ -8,6 +9,7 @@ import {
   MenuItem,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
@@ -124,6 +126,7 @@ export const SettingsDialog = ({
           <Stack justifyContent={"center"} alignItems={"center"} spacing={3}>
             <TextField
               required
+              InputLabelProps={{ shrink: true }}
               label={"Project"}
               value={input.projectName}
               name={"projectName"}
@@ -133,6 +136,8 @@ export const SettingsDialog = ({
               type={"text"}
               select
               onChange={handleInputChange}
+              helperText={"The Akita project to send traffic data to."}
+              FormHelperTextProps={{ sx: { fontSize: "9px" } }}
             >
               {services.map((service) => (
                 <MenuItem key={service.name} value={service.name}>
@@ -140,36 +145,52 @@ export const SettingsDialog = ({
                 </MenuItem>
               ))}
             </TextField>
-            <TextField
-              label={"Target Port"}
-              name={"targetPort"}
-              value={input.targetPort}
-              variant={"standard"}
-              fullWidth
-              margin={"normal"}
-              type={"number"}
-              onChange={handleInputChange}
-            />
-            <TextField
-              label={"Target Container"}
-              name={"targetContainer"}
-              margin={"normal"}
-              variant={"standard"}
-              fullWidth
-              type={"text"}
-              value={input.targetContainer}
-              select
-              onChange={handleInputChange}
-            >
-              <MenuItem key={"none"} value={""}>
-                <em>None</em>
-              </MenuItem>
-              {containers.map((container) => (
-                <MenuItem key={container.Id} value={container.Id}>
-                  {fixContainerName(container.Names[0])}
+            <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+              <TextField
+                label={"Container to monitor"}
+                name={"targetContainer"}
+                InputLabelProps={{ shrink: true }}
+                variant={"standard"}
+                fullWidth
+                placeholder="All containers"
+                type={"text"}
+                value={input.targetContainer}
+                sx={{ marginRight: 1 }}
+                select
+                onChange={handleInputChange}
+                helperText={"Leave blank to monitor entire network."}
+                FormHelperTextProps={{ sx: { fontSize: "9px" } }}
+              >
+                <MenuItem key={"none"} value={""}>
+                  <em>All containers</em>
                 </MenuItem>
-              ))}
-            </TextField>
+                {containers.map((container) => (
+                  <MenuItem key={container.Id} value={container.Id}>
+                    {fixContainerName(container.Names[0])}
+                  </MenuItem>
+                ))}
+              </TextField>
+              <Typography variant="h4" sx={{ paddingTop: 2 }}>
+                :
+              </Typography>
+              <TextField
+                id="target-port"
+                label={"Target Port"}
+                InputLabelProps={{ shrink: true }}
+                name={"targetPort"}
+                value={input.targetPort}
+                InputProps={{
+                  inputProps: { min: 1, max: 65535 },
+                }}
+                variant={"standard"}
+                fullWidth
+                type={"number"}
+                sx={{ marginLeft: 1 }}
+                onChange={handleInputChange}
+                helperText={"Number between 1 and 65535. Leave blank to monitor all ports."}
+                FormHelperTextProps={{ sx: { fontSize: "9px" } }}
+              />
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions>

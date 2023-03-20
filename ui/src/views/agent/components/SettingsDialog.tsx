@@ -175,7 +175,7 @@ export const SettingsDialog = ({
               </Typography>
               <TextField
                 id="target-port"
-                label={"Target Port"}
+                label={"Target port"}
                 InputLabelProps={{ shrink: true }}
                 name={"targetPort"}
                 value={input.targetPort}

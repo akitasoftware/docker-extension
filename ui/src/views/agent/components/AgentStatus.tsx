@@ -20,6 +20,7 @@ interface AgentStatusProps {
   isInitialized: boolean;
   onRestartAgent: () => void;
   onFailure: () => void;
+  onSettingsClick: () => void;
   onSendAnalyticsEvent: (
     eventName: string,
     properties?: Record<string, any>
@@ -36,6 +37,7 @@ export const AgentStatus = ({
   isInitialized,
   hasInitializationFailed,
   onSendAnalyticsEvent,
+  onSettingsClick,
   services,
   targetedProjectName,
 }: AgentStatusProps) => {
@@ -101,18 +103,26 @@ export const AgentStatus = ({
     (service) => service.name === targetedProjectName
   );
   const fourHoursAgo = new Date(new Date().getTime() - 5 * 60 * 60 * 1000);
-  const projectLastSeenRecently =
-    !!targetProject &&
-    targetProject.deployment_infos.length > 0 &&
-    new Date(
-      Math.max(
-        ...targetProject.deployment_infos.map((d) =>
-          new Date(d.last_observed || 0).valueOf()
+  const projectLastSeenAt =
+    !!targetProject && targetProject.deployment_infos.length > 0
+      ? new Date(
+          Math.max(
+            ...targetProject.deployment_infos.map((d) =>
+              new Date(d.last_observed || 0).valueOf()
+            )
+          )
         )
-      )
-    ) > fourHoursAgo;
+      : undefined;
+  const projectLastSeenRecently =
+    !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
 
-  console.log(services, targetProject, fourHoursAgo, projectLastSeenRecently);
+  console.log(
+    services,
+    targetProject,
+    fourHoursAgo,
+    projectLastSeenAt,
+    projectLastSeenRecently
+  );
 
   const resolveAPIModelURL = () => {
     // If the project is not found, just send them to the dashboard's overview page
@@ -144,12 +154,7 @@ export const AgentStatus = ({
         alignItems: "center",
       }}
     >
-      <Box
-        alignContent={"center"}
-        display={"flex"}
-        alignItems={"center"}
-        mx={1}
-      >
+      <Box mx={1}>
         {status === "Running" ? (
           projectLastSeenRecently ? (
             <DoneOutlineIcon color={"success"} />
@@ -164,23 +169,81 @@ export const AgentStatus = ({
       </Box>
       {status === "Running" ? (
         <Typography variant={"body1"}>
-          Akita is running
-          {" "}
-          {projectLastSeenRecently ? "and your project is receiving traffic" : "but has not yet received any traffic. Please check your extension settings, or contact support@akitasoftware.com if this issue persists"}
-          .
-          {" "}
+          Akita is running{" "}
+          {projectLastSeenRecently ? (
+            "and your project is receiving traffic"
+          ) : (
+            <>
+              but has not seen any traffic {!!projectLastSeenAt ? "recently" : "yet"}. Please note that your app must
+              be running within Docker Desktop for Akita to see its traffic. If
+              this issue persists, check your{" "}
+              <Link
+                onClick={onSettingsClick}
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                extension settings
+              </Link>
+              , or contact us at{" "}
+              <Link
+                href="mailto:support@akitasoftware.com"
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                support@akitasoftware.com
+              </Link>{" "}
+              for help.{" "}
+            </>
+          )}
           {canViewContainer && !projectLastSeenRecently && (
-            <>You may also wish to{" "}
+            <>
+              You may also wish to{" "}
+              <Link
+                onClick={handleViewContainer}
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                view your Agent container logs
+              </Link>
+            </>
+          )}
+          {canViewContainer &&
+            !projectLastSeenRecently &&
+            " to debug this issue."}
+          {!!projectLastSeenAt ? (
+            <Typography sx={{ marginTop: 2 }}>
+              You have previously sent traffic to Akita.{" "}
+              <Link
+                onClick={handleViewWebDashboard}
+                sx={{
+                  cursor: "pointer",
+                }}
+              >
+                Click here to view your existing API model.
+              </Link>
+            </Typography>
+          ) : (
             <Link
-              onClick={handleViewContainer}
+              onClick={handleViewWebDashboard}
               sx={{
                 cursor: "pointer",
               }}
             >
-              view your Agent container logs
-            </Link></>
+              <Typography sx={{ marginTop: 2 }}>
+                <Link
+                  onClick={handleViewWebDashboard}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Click here to view your Akita dashboard.
+                </Link>
+              </Typography>
+            </Link>
           )}
-          {canViewContainer && !projectLastSeenRecently && " to debug this issue."}
         </Typography>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
@@ -193,20 +256,22 @@ export const AgentStatus = ({
           Fetching Akita Agent status...
         </Typography>
       )}
-      {projectLastSeenRecently && (<Box
-        alignContent={"center"}
-        marginLeft={"auto"}
-        whiteSpace={"nowrap"}
-        textAlign={"center"}
-      >
-        <Button
-          variant={"contained"}
-          color={"primary"}
-          onClick={handleViewWebDashboard}
+      {projectLastSeenRecently && (
+        <Box
+          alignContent={"center"}
+          marginLeft={"auto"}
+          whiteSpace={"nowrap"}
+          textAlign={"center"}
         >
-          View API Model
-        </Button>
-      </Box>)}
+          <Button
+            variant={"contained"}
+            color={"primary"}
+            onClick={handleViewWebDashboard}
+          >
+            View API Model
+          </Button>
+        </Box>
+      )}
     </Paper>
   );
 };

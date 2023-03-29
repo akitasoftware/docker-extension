@@ -160,70 +160,68 @@ export const AgentStatus = ({
         )}
       </Box>
       {status === "Running" ? (
-        <Typography variant={"body1"}>
-          Akita is running{" "}
-          {projectLastSeenRecently ? (
-            "and your project is receiving traffic"
-          ) : (
-            <>
-              but has not seen any traffic {!!projectLastSeenAt ? "recently" : "yet"}. Please note that your app must
-              be running within Docker Desktop for Akita to see its traffic. If
-              this issue persists, check your{" "}
-              <Link
-                onClick={onSettingsClick}
-                sx={{
-                  cursor: "pointer",
-                }}
-              >
-                extension settings
-              </Link>
-              , or contact us at{" "}
-              <Link
-                href="mailto:support@akitasoftware.com"
-                sx={{
-                  cursor: "pointer",
-                }}
-              >
-                support@akitasoftware.com
-              </Link>{" "}
-              for help.{" "}
-            </>
-          )}
-          {canViewContainer && !projectLastSeenRecently && (
-            <>
-              You may also wish to{" "}
-              <Link
-                onClick={handleViewContainer}
-                sx={{
-                  cursor: "pointer",
-                }}
-              >
-                view your Agent container logs
-              </Link>
-            </>
-          )}
-          {canViewContainer &&
-            !projectLastSeenRecently &&
-            " to debug this issue."}
-          {!!projectLastSeenAt ? (
-            <Typography sx={{ marginTop: 2 }}>
-              You have previously sent traffic to Akita.{" "}
-              <Link
-                onClick={handleViewWebDashboard}
-                sx={{
-                  cursor: "pointer",
-                }}
-              >
-                Click here to view your existing API model.
-              </Link>
-            </Typography>
-          ) : (
-            <Link
-              onClick={handleViewWebDashboard}
-              sx={{
-                cursor: "pointer",
-              }}
-            >
+        <Box>
+          <Typography variant={"body1"}>
+            Akita is running{" "}
+            {projectLastSeenRecently ? (
+              "and your project is receiving traffic"
+            ) : (
+              <>
+                but has not seen any traffic{" "}
+                {!!projectLastSeenAt ? "recently" : "yet"}. Please note that
+                your app must be running within Docker Desktop for Akita to see
+                its traffic. If this issue persists, check your{" "}
+                <Link
+                  onClick={onSettingsClick}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  extension settings
+                </Link>
+                , or contact us at{" "}
+                <Link
+                  href="mailto:support@akitasoftware.com"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  support@akitasoftware.com
+                </Link>{" "}
+                for help.{" "}
+              </>
+            )}
+            {canViewContainer && !projectLastSeenRecently && (
+              <>
+                You may also wish to{" "}
+                <Link
+                  onClick={handleViewContainer}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  view your Agent container logs
+                </Link>
+              </>
+            )}
+            {canViewContainer &&
+              !projectLastSeenRecently &&
+              " to debug this issue."}
+          </Typography>
+          {!projectLastSeenRecently &&
+            (!!projectLastSeenAt ? (
+              <Typography sx={{ marginTop: 2 }}>
+                You have previously sent traffic to Akita.{" "}
+                <Link
+                  onClick={handleViewWebDashboard}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Click here to view your existing API model.
+                </Link>
+              </Typography>
+            ) : (
               <Typography sx={{ marginTop: 2 }}>
                 <Link
                   onClick={handleViewWebDashboard}
@@ -234,9 +232,8 @@ export const AgentStatus = ({
                   Click here to view your Akita dashboard.
                 </Link>
               </Typography>
-            </Link>
-          )}
-        </Typography>
+            ))}
+        </Box>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
       ) : status === "Failed" ? (

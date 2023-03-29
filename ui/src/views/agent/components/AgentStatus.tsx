@@ -102,7 +102,7 @@ export const AgentStatus = ({
   const targetProject = services.find(
     (service) => service.name === targetedProjectName
   );
-  const fourHoursAgo = new Date(new Date().getTime() - 5 * 60 * 60 * 1000);
+  const fourHoursAgo = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
   const projectLastSeenAt =
     !!targetProject && targetProject.deployment_infos.length > 0
       ? new Date(
@@ -115,14 +115,6 @@ export const AgentStatus = ({
       : undefined;
   const projectLastSeenRecently =
     !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
-
-  console.log(
-    services,
-    targetProject,
-    fourHoursAgo,
-    projectLastSeenAt,
-    projectLastSeenRecently
-  );
 
   const resolveAPIModelURL = () => {
     // If the project is not found, just send them to the dashboard's overview page

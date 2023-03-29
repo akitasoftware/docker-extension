@@ -13,7 +13,11 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { AgentConfig } from "../../../data/queries/agent-config";
-import { ContainerInfo, ContainerState, useContainers } from "../../../data/queries/container";
+import {
+  ContainerInfo,
+  ContainerState,
+  useContainers,
+} from "../../../data/queries/container";
 import { Service } from "../../../data/queries/service";
 
 interface SettingsDialogProps {
@@ -21,7 +25,10 @@ interface SettingsDialogProps {
   isOpen: boolean;
   onConfigChange: (config: AgentConfig) => void;
   onCloseDialog: () => void;
-  onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
+  onSendAnalyticsEvent: (
+    eventName: string,
+    properties?: Record<string, any>
+  ) => void;
   services: Service[];
 }
 
@@ -31,11 +38,16 @@ interface InputState {
   targetContainer: string;
 }
 
-const resolveConfigFromInput = (config: AgentConfig, inputState: InputState): AgentConfig => ({
+const resolveConfigFromInput = (
+  config: AgentConfig,
+  inputState: InputState
+): AgentConfig => ({
   ...config,
   project_name: inputState.projectName,
-  target_port: inputState.targetPort != "" ? parseInt(inputState.targetPort) : undefined,
-  target_container: inputState.targetContainer != "" ? inputState.targetContainer : undefined,
+  target_port:
+    inputState.targetPort != "" ? parseInt(inputState.targetPort) : undefined,
+  target_container:
+    inputState.targetContainer != "" ? inputState.targetContainer : undefined,
 });
 
 const inputStateFromConfig = (config?: AgentConfig): InputState => ({
@@ -66,7 +78,9 @@ export const SettingsDialog = ({
       // Filter out non-running and internal containers
       container.State === ContainerState.RUNNING &&
       container.Names.length > 0 &&
-      !container.Names.some((name) => internalContainerNames.has(fixContainerName(name)))
+      !container.Names.some((name) =>
+        internalContainerNames.has(fixContainerName(name))
+      )
   );
 
   const [input, setInput] = useState<InputState>(inputStateFromConfig(config));
@@ -94,7 +108,8 @@ export const SettingsDialog = ({
         return value;
       });
 
-    const isConfigChanged = toJsonString(config) !== toJsonString(updatedConfig);
+    const isConfigChanged =
+      toJsonString(config) !== toJsonString(updatedConfig);
 
     const hasProjectName = updatedConfig.project_name !== "";
 
@@ -145,7 +160,13 @@ export const SettingsDialog = ({
                 </MenuItem>
               ))}
             </TextField>
-            <Box sx={{ width: "100%", display: "flex", justifyContent: "space-between" }}>
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
               <TextField
                 label={"Container to monitor"}
                 name={"targetContainer"}
@@ -187,7 +208,9 @@ export const SettingsDialog = ({
                 type={"number"}
                 sx={{ marginLeft: 1 }}
                 onChange={handleInputChange}
-                helperText={"Number between 1 and 65535. Leave blank to monitor all ports."}
+                helperText={
+                  "Number between 1 and 65535. Leave blank to monitor all ports."
+                }
                 FormHelperTextProps={{ sx: { fontSize: "9px" } }}
               />
             </Box>

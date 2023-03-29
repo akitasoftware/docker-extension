@@ -3,7 +3,15 @@ import { AkitaURL, addAuthHeader } from "./utils";
 export interface Service {
   id: string;
   name: string;
+  deployments: string[];
+  deployment_infos: DeploymentInfo[];
 }
+
+export type DeploymentInfo = {
+  first_observed: string; // "2022-03-15T00:26:00Z";
+  last_observed: string; // "2022-03-15T00:52:00Z";
+  name: string;
+};
 
 export interface ServiceResponse {
   services: Service[];

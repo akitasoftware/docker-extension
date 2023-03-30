@@ -103,12 +103,16 @@ export const AgentStatus = ({
     (service) => service.name === targetedProjectName
   );
   const fourHoursAgo = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
+
+  const previouslySeenDeploymentInfos = !!targetProject
+    ? targetProject.deployment_infos.filter((di) => !!di.last_observed)
+    : [];
   const projectLastSeenAt =
-    !!targetProject && targetProject.deployment_infos.length > 0
+    previouslySeenDeploymentInfos.length > 0
       ? new Date(
           Math.max(
-            ...targetProject.deployment_infos.map((d) =>
-              new Date(d.last_observed || 0).valueOf()
+            ...previouslySeenDeploymentInfos.map((di) =>
+              new Date(di.last_observed).valueOf()
             )
           )
         )

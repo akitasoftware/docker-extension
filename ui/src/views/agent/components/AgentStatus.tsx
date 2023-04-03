@@ -1,6 +1,14 @@
 import DoneOutlineIcon from "@mui/icons-material/DoneOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
-import { Box, Button, CircularProgress, Link, Paper, Typography } from "@mui/material";
+import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Link,
+  Paper,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { Service } from "../../../data/queries/service";
@@ -12,7 +20,11 @@ interface AgentStatusProps {
   isInitialized: boolean;
   onRestartAgent: () => void;
   onFailure: () => void;
-  onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
+  onSettingsClick: () => void;
+  onSendAnalyticsEvent: (
+    eventName: string,
+    properties?: Record<string, any>
+  ) => void;
   hasInitializationFailed: boolean;
   services: Service[];
   targetedProjectName?: string;
@@ -25,12 +37,15 @@ export const AgentStatus = ({
   isInitialized,
   hasInitializationFailed,
   onSendAnalyticsEvent,
+  onSettingsClick,
   services,
   targetedProjectName,
 }: AgentStatusProps) => {
   const ddClient = useDockerDesktopClient();
   const containerState = useContainerState(2000, containerInfo?.Id);
-  const [status, setStatus] = useState<"Loading" | "Running" | "Starting" | "Failed">("Loading");
+  const [status, setStatus] = useState<
+    "Loading" | "Running" | "Starting" | "Failed"
+  >("Loading");
   const [canViewContainer, setCanViewContainer] = useState(false);
 
   useEffect(() => {
@@ -83,16 +98,37 @@ export const AgentStatus = ({
       .catch((err) => console.error("Failed to navigate to container", err));
   };
 
+  // If we can't find the service on the backend, this will be undefined.
+  const targetProject = services.find(
+    (service) => service.name === targetedProjectName
+  );
+  const fourHoursAgo = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
+
+  const previouslySeenDeploymentInfos = !!targetProject
+    ? targetProject.deployment_infos.filter((di) => !!di.last_observed)
+    : [];
+  const projectLastSeenAt =
+    previouslySeenDeploymentInfos.length > 0
+      ? new Date(
+          Math.max(
+            ...previouslySeenDeploymentInfos.map((di) =>
+              new Date(di.last_observed).valueOf()
+            )
+          )
+        )
+      : undefined;
+  const projectLastSeenRecently =
+    !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
+
   const resolveAPIModelURL = () => {
-    const service = services.find((service) => service.name === targetedProjectName);
-    // If the service is not found, just send them to the dashboard's overview page
+    // If the project is not found, just send them to the dashboard's overview page
     // It might not send them to the right project, but it's better than nothing ¯\_(ツ)_/¯
-    if (!service) {
+    if (!targetProject) {
       return "https://app.akita.software";
     }
 
-    // If the service is found, return the API Model URL with the project ID
-    return `https://app.akita.software/service/${service.id}/deployment/default/model`;
+    // If the project is found, return the API Model URL with the project ID
+    return `https://app.akita.software/service/${targetProject.id}/deployment/default/model`;
   };
 
   const handleViewWebDashboard = () => {
@@ -114,9 +150,13 @@ export const AgentStatus = ({
         alignItems: "center",
       }}
     >
-      <Box alignContent={"center"} display={"flex"} alignItems={"center"} mx={1}>
+      <Box mx={1}>
         {status === "Running" ? (
-          <DoneOutlineIcon color={"success"} />
+          projectLastSeenRecently ? (
+            <DoneOutlineIcon color={"success"} />
+          ) : (
+            <MoreHorizOutlinedIcon color={"info"} />
+          )
         ) : status === "Failed" ? (
           <ErrorOutlineOutlinedIcon />
         ) : (
@@ -124,20 +164,80 @@ export const AgentStatus = ({
         )}
       </Box>
       {status === "Running" ? (
-        <Typography variant={"body1"}>
-          Akita is running.{" "}
-          {canViewContainer && (
-            <Link
-              onClick={handleViewContainer}
-              sx={{
-                cursor: "pointer",
-              }}
-            >
-              Check the Agent container
-            </Link>
-          )}
-          {canViewContainer && " to view the logs."}
-        </Typography>
+        <Box>
+          <Typography variant={"body1"}>
+            Akita is running{" "}
+            {projectLastSeenRecently ? (
+              "and your project is receiving traffic"
+            ) : (
+              <>
+                but has not seen any traffic{" "}
+                {!!projectLastSeenAt ? "recently" : "yet"}. Please note that
+                your app must be running within Docker Desktop for Akita to see
+                its traffic. If this issue persists, check your{" "}
+                <Link
+                  onClick={onSettingsClick}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  extension settings
+                </Link>
+                , or contact us at{" "}
+                <Link
+                  href="mailto:support@akitasoftware.com"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  support@akitasoftware.com
+                </Link>{" "}
+                for help.{" "}
+              </>
+            )}
+            {canViewContainer && !projectLastSeenRecently && (
+              <>
+                You may also wish to{" "}
+                <Link
+                  onClick={handleViewContainer}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  view your Agent container logs
+                </Link>
+              </>
+            )}
+            {canViewContainer &&
+              !projectLastSeenRecently &&
+              " to debug this issue."}
+          </Typography>
+          {!projectLastSeenRecently &&
+            (!!projectLastSeenAt ? (
+              <Typography sx={{ marginTop: 2 }}>
+                You have previously sent traffic to Akita.{" "}
+                <Link
+                  onClick={handleViewWebDashboard}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Click here to view your existing API model.
+                </Link>
+              </Typography>
+            ) : (
+              <Typography sx={{ marginTop: 2 }}>
+                <Link
+                  onClick={handleViewWebDashboard}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
+                  Click here to view your Akita dashboard.
+                </Link>
+              </Typography>
+            ))}
+        </Box>
       ) : status === "Starting" ? (
         <Typography variant={"body1"}>Akita is starting...</Typography>
       ) : status === "Failed" ? (
@@ -145,13 +245,26 @@ export const AgentStatus = ({
           Failed to start Akita. Update the configuration settings and try again
         </Typography>
       ) : (
-        <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
+        <Typography variant={"body1"}>
+          Fetching Akita Agent status...
+        </Typography>
       )}
-      <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
-        <Button variant={"contained"} color={"primary"} onClick={handleViewWebDashboard}>
-          View API Model
-        </Button>
-      </Box>
+      {projectLastSeenRecently && (
+        <Box
+          alignContent={"center"}
+          marginLeft={"auto"}
+          whiteSpace={"nowrap"}
+          textAlign={"center"}
+        >
+          <Button
+            variant={"contained"}
+            color={"primary"}
+            onClick={handleViewWebDashboard}
+          >
+            View API Model
+          </Button>
+        </Box>
+      )}
     </Paper>
   );
 };

@@ -155,7 +155,7 @@ export const ConfigPage = () => {
 
   const handleSignupClick = () => {
     ddClient.host.openExternal(
-      "https://app.akita.software/login?sign_up&utm_source=docker&utm_medium=link&utm_campaign=beta_from_docker"
+      "https://app.akita.software/login?sign_up&docker_desktop&utm_source=docker&utm_medium=link&utm_campaign=beta_from_docker"
     );
   };
 
@@ -182,6 +182,18 @@ export const ConfigPage = () => {
               <CardContent>
                 <Stack spacing={4} marginX={1}>
                   <TextField
+                    error={isInvalidProjectName}
+                    helperText={isInvalidProjectName ? "Project does not exist" : ""}
+                    required
+                    label={"Project"}
+                    placeholder={"Project"}
+                    name={"projectName"}
+                    type={"text"}
+                    variant={"outlined"}
+                    value={configInput.projectName}
+                    onChange={handleInputChange}
+                  />
+                  <TextField
                     error={isInvalidAPICredentials}
                     required
                     placeholder="API Key"
@@ -201,18 +213,6 @@ export const ConfigPage = () => {
                     type={"password"}
                     variant={"outlined"}
                     value={configInput.apiSecret}
-                    onChange={handleInputChange}
-                  />
-                  <TextField
-                    error={isInvalidProjectName}
-                    helperText={isInvalidProjectName ? "Project does not exist" : ""}
-                    required
-                    label={"Project"}
-                    placeholder={"Project"}
-                    name={"projectName"}
-                    type={"text"}
-                    variant={"outlined"}
-                    value={configInput.projectName}
                     onChange={handleInputChange}
                   />
                   <Button

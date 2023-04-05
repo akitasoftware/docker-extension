@@ -104,7 +104,7 @@ export const AgentStatus = ({
   );
   const fourHoursAgo = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
 
-  const previouslySeenDeploymentInfos = !!targetProject
+  const previouslySeenDeploymentInfos = targetProject
     ? targetProject.deployment_infos.filter((di) => !!di.last_observed)
     : [];
   const projectLastSeenAt =
@@ -172,9 +172,9 @@ export const AgentStatus = ({
             ) : (
               <>
                 but has not seen any traffic{" "}
-                {!!projectLastSeenAt ? "recently" : "yet"}. Please note that
-                your app must be running within Docker Desktop for Akita to see
-                its traffic. If this issue persists, check your{" "}
+                {projectLastSeenAt ? "recently" : "yet"}. Please note that your
+                app must be running within Docker Desktop for Akita to see its
+                traffic. If this issue persists, check your{" "}
                 <Link
                   onClick={onSettingsClick}
                   sx={{
@@ -213,7 +213,7 @@ export const AgentStatus = ({
               " to debug this issue."}
           </Typography>
           {!projectLastSeenRecently &&
-            (!!projectLastSeenAt ? (
+            (projectLastSeenAt ? (
               <Typography sx={{ marginTop: 2 }}>
                 You have previously sent traffic to Akita.{" "}
                 <Link

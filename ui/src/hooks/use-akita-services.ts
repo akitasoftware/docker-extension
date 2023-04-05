@@ -23,10 +23,10 @@ export const useAkitaServices = (pollInterval: number, config?: AgentConfig): Se
     };
 
     // Immediately fetch services once
-    fetchServices()
+    fetchServices();
     // and poll thereafter.
-    const interval = setInterval(fetchServices, pollInterval)
-    return () => clearInterval(interval)
+    const interval = setInterval(fetchServices, pollInterval);
+    return () => clearInterval(interval);
   }, [ddClient, config, pollInterval]);
 
   return services;

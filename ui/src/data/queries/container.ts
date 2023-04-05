@@ -59,6 +59,9 @@ export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise
     containers.find((container) => isAkitaContainer(container))
   );
 
+export const getAkitaContainer2 = async (client: v1.DockerDesktopClient) =>
+  await client.docker.cli.exec("inspect", ["akita-docker-extension-agent"])
+
 export const startAgentWithRetry = async (
   client: v1.DockerDesktopClient,
   config: AgentConfig,
@@ -94,6 +97,9 @@ const startAkitaAgent = async (
     console.log("Akita agent already running. container:", container);
     return container;
   }
+
+  const container2 = await getAkitaContainer2(client);
+  console.log("container2", container2)
 
   // Pull the latest image of Akita CLI
   await client.docker.cli.exec("pull", ["public.ecr.aws/akitasoftware/akita-cli:latest"]);

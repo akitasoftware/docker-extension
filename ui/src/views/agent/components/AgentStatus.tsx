@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { Service } from "../../../data/queries/service";
-import { useContainerState } from "../../../hooks/use-container-state";
+import { useAkitaAgentContainerState } from "../../../hooks/use-akita-agent-container-state";
 import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client";
 
 interface AgentStatusProps {
@@ -42,7 +42,7 @@ export const AgentStatus = ({
   targetedProjectName,
 }: AgentStatusProps) => {
   const ddClient = useDockerDesktopClient();
-  const containerState = useContainerState(2000, containerInfo?.Id);
+  const containerState = useAkitaAgentContainerState(2000);
   const [status, setStatus] = useState<
     "Loading" | "Running" | "Starting" | "Failed"
   >("Loading");

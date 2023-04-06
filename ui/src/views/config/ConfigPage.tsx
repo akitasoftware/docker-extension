@@ -21,7 +21,6 @@ import { useAgentConfig } from "../../hooks/use-agent-config";
 import { useDockerDesktopClient } from "../../hooks/use-docker-desktop-client";
 import { BaseHeader } from "../shared/components/BaseHeader";
 import { HelpSpeedDial } from "../shared/components/HelpSpeedDial";
-import { SubmitWarningDialog } from "./components/SubmitWarningDialog";
 
 const AkitaLogo = () => {
   const isDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -74,7 +73,6 @@ export const ConfigPage = () => {
   const navigate = useNavigate();
   const [isInvalidAPICredentials, setIsInvalidAPICredentials] = useState(false);
   const [isInvalidProjectName, setIsInvalidProjectName] = useState(false);
-  const [isSubmitWarningDialogOpen, setIsSubmitWarningDialogOpen] = useState(false);
 
   // If the agent config has already been set, pre-populate the form with the existing values.
   useEffect(() => {
@@ -130,7 +128,7 @@ export const ConfigPage = () => {
           return Promise.reject(new Error("Invalid submission"));
         }
       })
-      .then(() => setIsSubmitWarningDialogOpen(true))
+      .then(handleStart)
       .catch((e) => {
         if (e.message !== "Invalid submission") {
           ddClient.desktopUI.toast.error(`Submission failed: ${e.message}`);
@@ -160,10 +158,7 @@ export const ConfigPage = () => {
   };
 
   const isSubmitEnabled =
-    isConfigInputStateValid(configInput) &&
-    !isInvalidAPICredentials &&
-    !isInvalidProjectName &&
-    !isSubmitWarningDialogOpen;
+    isConfigInputStateValid(configInput) && !isInvalidAPICredentials && !isInvalidProjectName;
 
   return (
     <>
@@ -241,11 +236,6 @@ export const ConfigPage = () => {
         </Box>
       </Box>
       <HelpSpeedDial sx={{ position: "absolute", bottom: 32, right: 32 }} />
-      <SubmitWarningDialog
-        isOpen={isSubmitWarningDialogOpen}
-        onClose={() => setIsSubmitWarningDialogOpen(false)}
-        onConfirm={handleStart}
-      />
     </>
   );
 };

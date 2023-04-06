@@ -54,10 +54,38 @@ export const useContainers = (predicate?: (ContainerInfo) => boolean): Container
   return containers;
 };
 
-export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise<ContainerInfo> =>
-  await getContainers(client).then((containers) =>
-    containers.find((container) => isAkitaContainer(container))
-  );
+export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise<ContainerInfo> => {
+  let inspectResult;
+  try {
+    inspectResult = await client.docker.cli.exec("inspect", [
+      "--type",
+      "container",
+      AgentContainerName,
+    ]);
+  } catch (error) {
+    console.info(
+      "Error from inspect, probably didn't find container, which happens when it has not yet started. This is likely not an issue.",
+      error
+    );
+    return undefined;
+  }
+
+  const inspectJson: Array<any> = JSON.parse(inspectResult.stdout);
+  if (inspectJson.length !== 1) {
+    throw new Error(
+      "Unexpectedly got more than one container named 'akita-docker-extension-agent'"
+    );
+  }
+  const containerInfo = inspectJson[0];
+  return {
+    Id: containerInfo.Id,
+    Image: containerInfo.Image,
+    Command: (containerInfo.Config?.Cmd || []).join(" "),
+    Names: [containerInfo.Name],
+    State: containerInfo.State?.Status,
+    Labels: containerInfo?.Config?.Labels,
+  };
+};
 
 export const startAgentWithRetry = async (
   client: v1.DockerDesktopClient,
@@ -126,14 +154,4 @@ export const removeAkitaContainer = async (client: v1.DockerDesktopClient) => {
   if (container) {
     await client.docker.cli.exec("rm", ["-f", container.Id]);
   }
-};
-
-const isAkitaContainer = (containerInfo?: ContainerInfo): boolean => {
-  const doesMatchContainerName = containerInfo?.Names.some((name) =>
-    name.includes(AgentContainerName)
-  );
-  const doesMatchImageName = containerInfo?.Image.includes(AgentImageName);
-  const isDockerExtension = containerInfo?.Labels["com.docker.desktop.extension"] === "true";
-
-  return doesMatchContainerName && doesMatchImageName && isDockerExtension;
 };

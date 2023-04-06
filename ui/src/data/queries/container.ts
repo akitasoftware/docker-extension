@@ -76,7 +76,6 @@ export const getAkitaContainer = async (
     throw new Error("Unexpectedly got more than one container named 'akita-docker-extension-agent'")
   }
   const containerInfo = inspectJson[0];
-  console.log("containerInfo", containerInfo)
   return {
     Id: containerInfo.Id,
     Image: containerInfo.Image,

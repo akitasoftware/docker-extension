@@ -55,8 +55,9 @@ export const useContainers = (predicate?: (ContainerInfo) => boolean): Container
 };
 
 export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise<ContainerInfo> => {
+  let inspectResult;
   try {
-    var result = await client.docker.cli.exec("inspect", [
+    inspectResult = await client.docker.cli.exec("inspect", [
       "--type",
       "container",
       AgentContainerName,
@@ -69,7 +70,7 @@ export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise
     return undefined;
   }
 
-  const inspectJson: Array<any> = JSON.parse(result.stdout);
+  const inspectJson: Array<any> = JSON.parse(inspectResult.stdout);
   if (inspectJson.length !== 1) {
     throw new Error(
       "Unexpectedly got more than one container named 'akita-docker-extension-agent'"
@@ -153,14 +154,4 @@ export const removeAkitaContainer = async (client: v1.DockerDesktopClient) => {
   if (container) {
     await client.docker.cli.exec("rm", ["-f", container.Id]);
   }
-};
-
-const isAkitaContainer = (containerInfo?: ContainerInfo): boolean => {
-  const doesMatchContainerName = containerInfo?.Names.some((name) =>
-    name.includes(AgentContainerName)
-  );
-  const doesMatchImageName = containerInfo?.Image.includes(AgentImageName);
-  const isDockerExtension = containerInfo?.Labels["com.docker.desktop.extension"] === "true";
-
-  return doesMatchContainerName && doesMatchImageName && isDockerExtension;
 };

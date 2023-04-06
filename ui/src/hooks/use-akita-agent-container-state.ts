@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { ContainerState, getAkitaContainer } from "../data/queries/container";
 import { useDockerDesktopClient } from "./use-docker-desktop-client";
 
-export const useAkitaAgentContainerState = (
-  pollInterval: number,
-): ContainerState | undefined => {
+export const useAkitaAgentContainerState = (pollInterval: number): ContainerState | undefined => {
   const ddClient = useDockerDesktopClient();
   const [containerState, setContainerState] = useState<ContainerState | undefined>();
 

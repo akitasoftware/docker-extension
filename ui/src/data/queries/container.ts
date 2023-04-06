@@ -54,9 +54,7 @@ export const useContainers = (predicate?: (ContainerInfo) => boolean): Container
   return containers;
 };
 
-export const getAkitaContainer = async (
-  client: v1.DockerDesktopClient
-): Promise<ContainerInfo> => {
+export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise<ContainerInfo> => {
   try {
     var result = await client.docker.cli.exec("inspect", [
       "--type",
@@ -73,7 +71,9 @@ export const getAkitaContainer = async (
 
   const inspectJson: Array<any> = JSON.parse(result.stdout);
   if (inspectJson.length !== 1) {
-    throw new Error("Unexpectedly got more than one container named 'akita-docker-extension-agent'")
+    throw new Error(
+      "Unexpectedly got more than one container named 'akita-docker-extension-agent'"
+    );
   }
   const containerInfo = inspectJson[0];
   return {
@@ -145,9 +145,7 @@ const startAkitaAgent = async (
   await client.docker.cli.exec("run", runArgs);
 
   // Poll for agent container info using the `docker ps` command
-  return retryPromise(() => getAkitaContainer(client), 3, 2000).catch((err) =>
-    Promise.reject(err)
-  );
+  return retryPromise(() => getAkitaContainer(client), 3, 2000).catch((err) => Promise.reject(err));
 };
 
 export const removeAkitaContainer = async (client: v1.DockerDesktopClient) => {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { ContainerInfo, getAkitaContainer2, startAgentWithRetry } from "../data/queries/container";
+import { ContainerInfo, getAkitaContainer, startAgentWithRetry } from "../data/queries/container";
 import { useAgentConfig } from "./use-agent-config";
 import { useDockerDesktopClient } from "./use-docker-desktop-client";
 
@@ -13,7 +13,7 @@ export const useAkitaAgent = () => {
   useEffect(() => {
     if (!config) return;
 
-    getAkitaContainer2(client)
+    getAkitaContainer(client)
       .then((container) => {
         if (container) {
           setContainerInfo(container);

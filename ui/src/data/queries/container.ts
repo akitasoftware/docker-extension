@@ -54,20 +54,45 @@ export const useContainers = (predicate?: (ContainerInfo) => boolean): Container
   return containers;
 };
 
-export const getAkitaContainer = async (client: v1.DockerDesktopClient): Promise<ContainerInfo> =>
-  await getContainers(client).then((containers) =>
-    containers.find((container) => isAkitaContainer(container))
-  );
+export const getAkitaContainer2 = async (
+  client: v1.DockerDesktopClient
+): Promise<ContainerInfo> => {
+  try {
+    var result = await client.docker.cli.exec("inspect", [
+      "--type",
+      "container",
+      AgentContainerName,
+    ]);
+  } catch (error) {
+    console.info(
+      "Error from inspect, probably didn't find container, which happens when it has not yet started. This is likely not an issue.",
+      error
+    );
+    return undefined;
+  }
 
-export const getAkitaContainer2 = async (client: v1.DockerDesktopClient) =>
-  await client.docker.cli.exec("inspect", ["akita-docker-extension-agent"])
+  const inspectJson: Array<any> = JSON.parse(result.stdout);
+  if (inspectJson.length !== 1) {
+    throw new Error("Unexpectedly got more than one container named 'akita-docker-extension-agent'")
+  }
+  const containerInfo = inspectJson[0];
+  console.log("containerInfo", containerInfo)
+  return {
+    Id: containerInfo.Id,
+    Image: containerInfo.Image,
+    Command: (containerInfo.Config?.Cmd || []).join(" "),
+    Names: [containerInfo.Name],
+    State: containerInfo.State?.Status,
+    Labels: containerInfo?.Config?.Labels,
+  };
+};
 
 export const startAgentWithRetry = async (
   client: v1.DockerDesktopClient,
   config: AgentConfig,
   maxRetries = 3
 ): Promise<ContainerInfo> => {
-  const container: ContainerInfo | undefined = await getAkitaContainer(client).catch((err) => {
+  const container: ContainerInfo | undefined = await getAkitaContainer2(client).catch((err) => {
     console.error(err);
     return undefined;
   });
@@ -92,14 +117,11 @@ const startAkitaAgent = async (
 ): Promise<ContainerInfo> => {
   if (!config) return;
 
-  const container = await getAkitaContainer(client);
+  const container = await getAkitaContainer2(client);
   if (container) {
     console.log("Akita agent already running. container:", container);
     return container;
   }
-
-  const container2 = await getAkitaContainer2(client);
-  console.log("container2", container2)
 
   // Pull the latest image of Akita CLI
   await client.docker.cli.exec("pull", ["public.ecr.aws/akitasoftware/akita-cli:latest"]);
@@ -124,11 +146,13 @@ const startAkitaAgent = async (
   await client.docker.cli.exec("run", runArgs);
 
   // Poll for agent container info using the `docker ps` command
-  return retryPromise(() => getAkitaContainer(client), 3, 2000).catch((err) => Promise.reject(err));
+  return retryPromise(() => getAkitaContainer2(client), 3, 2000).catch((err) =>
+    Promise.reject(err)
+  );
 };
 
 export const removeAkitaContainer = async (client: v1.DockerDesktopClient) => {
-  const container = await getAkitaContainer(client);
+  const container = await getAkitaContainer2(client);
   if (container) {
     await client.docker.cli.exec("rm", ["-f", container.Id]);
   }

@@ -22,7 +22,7 @@ func NewRouter(app *app.App) *echo.Echo {
 
 	// Analytics Endpoints
 	{
-		router.POST("analytics/event", eventHandler.postEvent)
+		router.POST("/analytics/event", eventHandler.postEvent)
 	}
 
 	return router

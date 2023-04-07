@@ -55,8 +55,8 @@ export const AgentPage = () => {
     }
   }, [config, ddClient]);
 
-  const handleFailure = () => {
-    sendAnalyticsEvent("Agent Failed to Start");
+  const handleFailure = (err: any) => {
+    sendAnalyticsEvent("Agent Failed to Start", { errorMessage: err?.message });
     createAgentConfig(ddClient, { ...config, enabled: false })
       .then(() => removeAkitaContainer(ddClient))
       .then(() => ddClient.desktopUI.toast.error("Failed to start Akita Agent."))

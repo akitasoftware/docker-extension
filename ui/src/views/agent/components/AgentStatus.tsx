@@ -101,7 +101,7 @@ export const AgentStatus = ({
           )
         )
       : undefined;
-  const projectLastSeenRecently = !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
+  const isProjectLastSeenRecently = !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
 
   const resolveAPIModelURL = () => {
     // If the project is not found, just send them to the dashboard's overview page
@@ -135,7 +135,7 @@ export const AgentStatus = ({
     >
       <Box mx={1}>
         {status === "Running" ? (
-          projectLastSeenRecently ? (
+          isProjectLastSeenRecently ? (
             <DoneOutlineIcon color={"success"} />
           ) : (
             <MoreHorizOutlinedIcon color={"info"} />
@@ -150,7 +150,7 @@ export const AgentStatus = ({
         <Box>
           <Typography variant={"body1"}>
             Akita is running{" "}
-            {projectLastSeenRecently ? (
+            {isProjectLastSeenRecently ? (
               "and your project is receiving traffic"
             ) : (
               <>
@@ -177,7 +177,7 @@ export const AgentStatus = ({
                 for help.{" "}
               </>
             )}
-            {canViewContainer && !projectLastSeenRecently && (
+            {canViewContainer && !isProjectLastSeenRecently && (
               <>
                 You may also wish to{" "}
                 <Link
@@ -190,9 +190,9 @@ export const AgentStatus = ({
                 </Link>
               </>
             )}
-            {canViewContainer && !projectLastSeenRecently && " to debug this issue."}
+            {canViewContainer && !isProjectLastSeenRecently && " to debug this issue."}
           </Typography>
-          {!projectLastSeenRecently &&
+          {!isProjectLastSeenRecently &&
             (projectLastSeenAt ? (
               <Typography sx={{ marginTop: 2 }}>
                 You have previously sent traffic to Akita.{" "}
@@ -227,7 +227,7 @@ export const AgentStatus = ({
       ) : (
         <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
-      {projectLastSeenRecently && (
+      {isProjectLastSeenRecently && (
         <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
           <Button variant={"contained"} color={"primary"} onClick={handleViewWebDashboard}>
             View API Model

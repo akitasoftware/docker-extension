@@ -20,6 +20,7 @@
   "scripts": {
     "dev": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
     "start": "react-scripts start",
+    "lint:fix": "eslint . --ext=ts,tsx,js,jsx --fix;  exit 0",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

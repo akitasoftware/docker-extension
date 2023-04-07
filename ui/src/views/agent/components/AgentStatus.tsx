@@ -1,14 +1,7 @@
 import DoneOutlineIcon from "@mui/icons-material/DoneOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Link,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { Box, Button, CircularProgress, Link, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { Service } from "../../../data/queries/service";
@@ -21,10 +14,7 @@ interface AgentStatusProps {
   onRestartAgent: () => void;
   onFailure: (err) => void;
   onSettingsClick: () => void;
-  onSendAnalyticsEvent: (
-    eventName: string,
-    properties?: Record<string, any>
-  ) => void;
+  onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
   hasInitializationFailed: boolean;
   services: Service[];
   targetedProjectName?: string;
@@ -43,9 +33,7 @@ export const AgentStatus = ({
 }: AgentStatusProps) => {
   const ddClient = useDockerDesktopClient();
   const containerState = useAkitaAgentContainerState(2000);
-  const [status, setStatus] = useState<
-    "Loading" | "Running" | "Starting" | "Failed"
-  >("Loading");
+  const [status, setStatus] = useState<"Loading" | "Running" | "Starting" | "Failed">("Loading");
   const [canViewContainer, setCanViewContainer] = useState(false);
 
   useEffect(() => {
@@ -99,9 +87,7 @@ export const AgentStatus = ({
   };
 
   // If we can't find the service on the backend, this will be undefined.
-  const targetProject = services.find(
-    (service) => service.name === targetedProjectName
-  );
+  const targetProject = services.find((service) => service.name === targetedProjectName);
   const fourHoursAgo = new Date(new Date().getTime() - 4 * 60 * 60 * 1000);
 
   const previouslySeenDeploymentInfos = targetProject
@@ -111,14 +97,11 @@ export const AgentStatus = ({
     previouslySeenDeploymentInfos.length > 0
       ? new Date(
           Math.max(
-            ...previouslySeenDeploymentInfos.map((di) =>
-              new Date(di.last_observed).valueOf()
-            )
+            ...previouslySeenDeploymentInfos.map((di) => new Date(di.last_observed).valueOf())
           )
         )
       : undefined;
-  const projectLastSeenRecently =
-    !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
+  const projectLastSeenRecently = !!projectLastSeenAt && projectLastSeenAt > fourHoursAgo;
 
   const resolveAPIModelURL = () => {
     // If the project is not found, just send them to the dashboard's overview page
@@ -171,10 +154,9 @@ export const AgentStatus = ({
               "and your project is receiving traffic"
             ) : (
               <>
-                but has not seen any traffic{" "}
-                {projectLastSeenAt ? "recently" : "yet"}. Please note that your
-                app must be running within Docker Desktop for Akita to see its
-                traffic. If this issue persists, check your{" "}
+                but has not seen any traffic {projectLastSeenAt ? "recently" : "yet"}. Please note
+                that your app must be running within Docker Desktop for Akita to see its traffic. If
+                this issue persists, check your{" "}
                 <Link
                   onClick={onSettingsClick}
                   sx={{
@@ -208,9 +190,7 @@ export const AgentStatus = ({
                 </Link>
               </>
             )}
-            {canViewContainer &&
-              !projectLastSeenRecently &&
-              " to debug this issue."}
+            {canViewContainer && !projectLastSeenRecently && " to debug this issue."}
           </Typography>
           {!projectLastSeenRecently &&
             (projectLastSeenAt ? (
@@ -245,22 +225,11 @@ export const AgentStatus = ({
           Failed to start Akita. Update the configuration settings and try again
         </Typography>
       ) : (
-        <Typography variant={"body1"}>
-          Fetching Akita Agent status...
-        </Typography>
+        <Typography variant={"body1"}>Fetching Akita Agent status...</Typography>
       )}
       {projectLastSeenRecently && (
-        <Box
-          alignContent={"center"}
-          marginLeft={"auto"}
-          whiteSpace={"nowrap"}
-          textAlign={"center"}
-        >
-          <Button
-            variant={"contained"}
-            color={"primary"}
-            onClick={handleViewWebDashboard}
-          >
+        <Box alignContent={"center"} marginLeft={"auto"} whiteSpace={"nowrap"} textAlign={"center"}>
+          <Button variant={"contained"} color={"primary"} onClick={handleViewWebDashboard}>
             View API Model
           </Button>
         </Box>

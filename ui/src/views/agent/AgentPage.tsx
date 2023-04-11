@@ -76,10 +76,21 @@ export const AgentPage = () => {
       .catch(handleFailure);
   };
 
+  const handleDemoModeClick = () => {
+    // Set demo mode true and clear target port and container
+    handleConfigChange({
+      ...config,
+      demo_mode_enabled: !config.demo_mode_enabled, // toggle demo mode on/off
+      target_port: undefined,
+      target_container: undefined,
+    });
+  };
+
   return (
     <>
       <Stack spacing={4}>
         <AgentHeader
+          onDemoModeClick={handleDemoModeClick}
           onSettingsClick={() => setIsSettingsOpen(true)}
           agentConfig={config}
           onSendAnalyticsEvent={sendAnalyticsEvent}

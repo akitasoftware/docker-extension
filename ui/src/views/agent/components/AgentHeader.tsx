@@ -1,6 +1,6 @@
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import React from "react";
+import { Box, Button, IconButton, Stack, Tooltip } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig } from "../../../data/queries/agent-config";
 import { removeAkitaContainer } from "../../../data/queries/container";
@@ -9,6 +9,7 @@ import { BaseHeader } from "../../shared/components/BaseHeader";
 
 interface HeaderProps {
   onSettingsClick: () => void;
+  onDemoModeClick: () => void;
   agentConfig: AgentConfig;
   onSendAnalyticsEvent: (eventName: string, properties?: Record<string, any>) => void;
 }
@@ -16,10 +17,17 @@ interface HeaderProps {
 export const AgentHeader = ({
   onSettingsClick,
   agentConfig,
+  onDemoModeClick,
   onSendAnalyticsEvent,
 }: HeaderProps) => {
   const navigate = useNavigate();
   const ddClient = useDockerDesktopClient();
+  const [isSettingsDisabled, setIsSettingsDisabled] = useState(false);
+
+  useEffect(() => {
+    // If the agent is in demo mode, the settings should not be modifiable.
+    setIsSettingsDisabled(agentConfig.demo_mode_enabled);
+  }, [agentConfig]);
 
   const onStopClicked = () => {
     onSendAnalyticsEvent("Stopped Agent");
@@ -34,20 +42,25 @@ export const AgentHeader = ({
 
   return (
     <BaseHeader>
-      <Box display={"flex"} alignItems={"center"}>
+      <Stack direction={"row"} spacing={2} alignItems={"center"}>
         <Box>
           <Tooltip title={"Settings"}>
-            <IconButton onClick={onSettingsClick}>
+            <IconButton disabled={isSettingsDisabled} onClick={onSettingsClick}>
               <SettingsIcon />
             </IconButton>
           </Tooltip>
+        </Box>
+        <Box>
+          <Button variant={"outlined"} onClick={onDemoModeClick}>
+            {agentConfig.demo_mode_enabled ? "Disable Demo Mode" : "Enable Demo Mode"}
+          </Button>
         </Box>
         <Box m={2}>
           <Button variant={"outlined"} color={"error"} onClick={onStopClicked}>
             Stop Akita
           </Button>
         </Box>
-      </Box>
+      </Stack>
     </BaseHeader>
   );
 };

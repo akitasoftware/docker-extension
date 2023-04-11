@@ -5,12 +5,7 @@
       "name": "GET Breed - Success",
       "request": {
         "urlPattern": "/v1/breeds/(labrador|akita|goldenretriever|husky)",
-        "method": "GET",
-        "headers": {
-          "Accept": {
-            "contains": "json"
-          }
-        }
+        "method": "GET"
       },
       "response": {
         "status": 200,
@@ -23,16 +18,7 @@
           "lower": 20,
           "upper": 50
         },
-        "transformers": [
-          "response-template",
-          "response-template",
-          "response-template",
-          "response-template",
-          "response-template",
-          "response-template",
-          "response-template",
-          "response-template"
-        ]
+        "transformers": ["response-template"]
       },
       "uuid": "fc7d2bd4-0bdb-4d8b-9ef7-227db68c79f9",
       "persistent": true,
@@ -72,7 +58,7 @@
       },
       "uuid": "2d4690b5-ff50-44f6-ae2c-573e138159d5",
       "persistent": true,
-      "priority": 2,
+      "priority": 3,
       "metadata": {
         "mocklab": {
           "created": {
@@ -106,7 +92,7 @@
       },
       "uuid": "b5d9f7d1-5fb5-4c4c-9eb8-81b99411eab7",
       "persistent": true,
-      "priority": 5,
+      "priority": 2,
       "metadata": {
         "mocklab": {
           "created": {
@@ -140,7 +126,7 @@
       },
       "uuid": "5505d6e8-e95a-4a30-b872-1adaf1e1035a",
       "persistent": true,
-      "priority": 5,
+      "priority": 4,
       "metadata": {
         "mocklab": {
           "created": {

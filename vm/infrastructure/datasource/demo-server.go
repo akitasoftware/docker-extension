@@ -87,10 +87,12 @@ func (d demoServerImpl) PostTrick() error {
 
 // Adds stubs & mappings to the demo server.
 func (d demoServerImpl) addConfiguration(configuration []byte) error {
-	_, err := d.client.R().SetBody(configuration).Post("/__admin/mappings/save")
+	_, err := d.client.R().SetBody(configuration).Post("/__admin/mappings/import")
 	if err != nil {
 		return fmt.Errorf("failed to add configuration to demo server: %w", err)
 	}
+
+	return nil
 }
 
 func init() {

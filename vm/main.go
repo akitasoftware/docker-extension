@@ -19,6 +19,9 @@ import (
 //go:embed application.yml
 var applicationYML []byte
 
+//go:embed demo-server/mappings/stubs.json
+var demoServerStubs []byte
+
 func main() {
 	appConfig, err := config.Parse(applicationYML)
 	if err != nil {
@@ -46,7 +49,10 @@ func main() {
 	}
 	defer analyticsClient.Close()
 
-	mockServer := datasource.ProvideDemoServer(8080)
+	mockServer, err := datasource.ProvideDemoServer(8080, demoServerStubs)
+	if err != nil {
+		log.Fatalf("Failed to create mock server: %v", err)
+	}
 
 	akitaAPIClient := resty.New().SetBaseURL("https://api.akita.software")
 

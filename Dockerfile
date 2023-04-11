@@ -6,6 +6,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go mod download
 COPY vm .
+COPY demo-server .
 RUN --mount=type=secret,id=application.yml,dst=./application.yml \
     --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
@@ -96,7 +97,6 @@ COPY docker-compose.yaml .
 COPY metadata.json .
 COPY aki_full.svg .
 COPY --from=client-builder /ui/build ui
-COPY demo-server demo-server
 
 ENV target_os=$TARGETOS
 ENV target_arch=$TARGETARCH

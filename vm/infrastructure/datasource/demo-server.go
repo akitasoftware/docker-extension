@@ -26,10 +26,12 @@ type (
 )
 
 // Creates a new demo server client.
-func ProvideDemoServer(port int) DemoServer {
-	return &demoServerImpl{
+func ProvideDemoServer(port int, configuration []byte) (DemoServer, error) {
+	server := &demoServerImpl{
 		client: resty.New().SetBaseURL(fmt.Sprintf("http://demo-server:%d", port)),
 	}
+
+	return server, server.addConfiguration(configuration)
 }
 
 func (d demoServerImpl) GetBreed() error {
@@ -81,6 +83,14 @@ func (d demoServerImpl) PostTrick() error {
 	}
 
 	return nil
+}
+
+// Adds stubs & mappings to the demo server.
+func (d demoServerImpl) addConfiguration(configuration []byte) error {
+	_, err := d.client.R().SetBody(configuration).Post("/__admin/mappings/save")
+	if err != nil {
+		return fmt.Errorf("failed to add configuration to demo server: %w", err)
+	}
 }
 
 func init() {

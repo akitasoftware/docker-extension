@@ -14,8 +14,6 @@ services:
   demo-server:
     container_name: akita-extension-demo-server
     image: wiremock/wiremock:2.32.0-alpine
-    volumes:
-      - ~/demo-server:/home/wiremock
     ports:
       - ":8080"
     command:

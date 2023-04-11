@@ -1,0 +1,198 @@
+{
+	"mappings": [
+		{
+			"id": "fc7d2bd4-0bdb-4d8b-9ef7-227db68c79f9",
+			"name": "GET Breed - Success",
+			"request": {
+				"urlPattern": "/v1/breeds/(labrador|akita|poodle|husky)",
+				"method": "GET"
+			},
+			"response": {
+				"status": 200,
+				"body": "{\n  \"id\": \"{{randomInt lower=1 upper=999}}\",\n  \"breed\": \"{{request.pathSegments.[2]}}\",\n  \"average_height\":\n    \"male\": {\n      \"min\": \"{{randomInt lower=40 upper=49}}\"\n      \"max\": \"{{randomInt lower=50 upper=80\"}}\"\"\n    },\n    \"female\": {\n      \"min\": \"{{randomInt lower=20 upper=29}}\"\n      \"max\": \"{{randomInt lower=30 upper=39}}\"\n    }\n  },\n  \"average_weight\": {\n   \"male\": {\n      \"min\": \"{{randomInt lower=40 upper=49}}\"\n      \"max\": \"{{randomInt lower=50 upper=80\"}}\"\"\n    },\n    \"female\": {\n      \"min\": \"{{randomInt lower=20 upper=29}}\"\n      \"max\": \"{{randomInt lower=30 upper=39}}\"\n    }\n  },\n  \"description\": \"{{request.pathSegments[2]}} is a kind loving breed that loves to play and cuddle.\",\n}\n\n",
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"delayDistribution": {
+					"type": "uniform",
+					"lower": 20,
+					"upper": 50
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"uuid": "fc7d2bd4-0bdb-4d8b-9ef7-227db68c79f9",
+			"persistent": true,
+			"priority": 1,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-11T12:13:55.727878519Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-11T18:08:03.981686126Z",
+						"via": "IMPORT",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
+		},
+		{
+			"id": "f48f03dc-82a5-479f-bffd-c9152cd887e6",
+			"name": "Example Mock API stub 5",
+			"request": {
+				"url": "/v1/breeds/sphynx",
+				"method": "GET"
+			},
+			"response": {
+				"status": 400,
+				"body": "{\n    \"code\": \"invalid_breed\",\n    \"message\": \"'sphynx' is an invalid dog breed\"\n}\n",
+				"headers": {},
+				"delayDistribution": {
+					"type": "uniform",
+					"lower": 20,
+					"upper": 50
+				},
+				"transformers": [
+					"response-template",
+					"response-template",
+					"response-template",
+					"response-template"
+				]
+			},
+			"uuid": "f48f03dc-82a5-479f-bffd-c9152cd887e6",
+			"persistent": true,
+			"priority": 2,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-11T18:11:10.136156621Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-11T18:14:00.479420658Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
+		},
+		{
+			"id": "b5d9f7d1-5fb5-4c4c-9eb8-81b99411eab7",
+			"name": "Perform trick -- Doggo needs a nap",
+			"request": {
+				"url": "/v1/tricks/rollover",
+				"method": "POST"
+			},
+			"response": {
+				"status": 500,
+				"body": "\n{\n    \"dog_id\": {{randomInt lower=1 upper=999}},\n    \"code\":\"doggo_is_tired\",\n    \"message\":\"Your doggo is tired. Maybe it's time to create a treats API?\"\n}\n\n",
+				"headers": {},
+				"transformers": [
+					"response-template",
+					"response-template"
+				]
+			},
+			"uuid": "b5d9f7d1-5fb5-4c4c-9eb8-81b99411eab7",
+			"persistent": true,
+			"priority": 2,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-11T14:11:53.306632982Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-11T18:11:59.078866043Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
+		},
+		{
+			"id": "2d4690b5-ff50-44f6-ae2c-573e138159d5",
+			"name": "Get breed - Not Found",
+			"request": {
+				"urlPathPattern": "/v1/breeds/([^/]+)",
+				"method": "GET"
+			},
+			"response": {
+				"status": 404,
+				"body": "\n{\n    \"code\": \"no_doggos_here\"\n    \"message\": \"Breed {{\"request.pathParameters[2]}} does not exist\"\n}\n",
+				"headers": {},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"uuid": "2d4690b5-ff50-44f6-ae2c-573e138159d5",
+			"persistent": true,
+			"priority": 3,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-11T13:55:38.724622388Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-11T18:08:03.978610733Z",
+						"via": "IMPORT",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
+		},
+		{
+			"id": "5505d6e8-e95a-4a30-b872-1adaf1e1035a",
+			"name": "Perform trick -- Success",
+			"request": {
+				"url": "/v1/tricks/([^/]+)",
+				"method": "POST"
+			},
+			"response": {
+				"status": 200,
+				"body": "{\n    \"body\":{\n        \"dog_id\": \"{{randomInt lower=1 upper=999}}\",\n        \"reaction\": \"You pet is excited and wagging its tail! Trick: {{request.pathSegments.[2]}}\"\n    }\n}\n\n",
+				"headers": {},
+				"delayDistribution": {
+					"type": "uniform",
+					"lower": 2000,
+					"upper": 3000
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"uuid": "5505d6e8-e95a-4a30-b872-1adaf1e1035a",
+			"persistent": true,
+			"priority": 4,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-11T14:01:06.093668264Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-11T18:08:03.968562382Z",
+						"via": "IMPORT",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
+		}
+	],
+	"meta": {
+		"total": 5
+	}
+}

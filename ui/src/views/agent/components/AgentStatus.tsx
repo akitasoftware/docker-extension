@@ -3,6 +3,7 @@ import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
 import { Box, Button, CircularProgress, Link, Paper, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { AgentConfig } from "../../../data/queries/agent-config";
 import { ContainerInfo, ContainerState } from "../../../data/queries/container";
 import { Service } from "../../../data/queries/service";
 import { useAkitaAgentContainerState } from "../../../hooks/use-akita-agent-container-state";
@@ -10,6 +11,7 @@ import { useDockerDesktopClient } from "../../../hooks/use-docker-desktop-client
 
 interface AgentStatusProps {
   containerInfo?: ContainerInfo;
+  agentConfig?: AgentConfig;
   isInitialized: boolean;
   onRestartAgent: () => void;
   onFailure: (err) => void;
@@ -22,6 +24,7 @@ interface AgentStatusProps {
 
 export const AgentStatus = ({
   containerInfo,
+  agentConfig,
   onRestartAgent,
   onFailure,
   isInitialized,
@@ -154,9 +157,10 @@ export const AgentStatus = ({
               "and your project is receiving traffic"
             ) : (
               <>
-                but has not seen any traffic {projectLastSeenAt ? "recently" : "yet"}. Please note
-                that your app must be running within Docker Desktop for Akita to see its traffic. If
-                this issue persists, check your{" "}
+                but has not seen any traffic {projectLastSeenAt ? "recently" : "yet"}.
+                {!agentConfig?.demo_mode_enabled &&
+                  "Please note that your app must be running within Docker Desktop for Akita to see its traffic. "}
+                If this issue persists, check your{" "}
                 <Link
                   onClick={onSettingsClick}
                   sx={{

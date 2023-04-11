@@ -47,7 +47,7 @@ func (d demoServerImpl) GetBreed() error {
 		return fmt.Errorf("failed to create breed faker: %w", err)
 	}
 
-	_, err = d.client.R().Get(fmt.Sprintf("/v1/breed/%s", pick))
+	_, err = d.client.R().Get(fmt.Sprintf("/v1/breeds/%s", pick))
 	if err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (d demoServerImpl) PostTrick() error {
 		gofakeit.Name(),
 		gofakeit.Address().Address,
 	)
-	url := fmt.Sprintf("/v1/trick/%s", pickedTrick)
+	url := fmt.Sprintf("/v1/tricks/%s", pickedTrick)
 
 	_, err = d.client.R().SetBody(body).Post(url)
 	if err != nil {

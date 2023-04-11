@@ -96,6 +96,7 @@ COPY docker-compose.yaml .
 COPY metadata.json .
 COPY aki_full.svg .
 COPY --from=client-builder /ui/build ui
+COPY demo-server demo-server
 
 ENV target_os=$TARGETOS
 ENV target_arch=$TARGETARCH

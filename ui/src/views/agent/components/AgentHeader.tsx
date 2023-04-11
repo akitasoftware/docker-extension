@@ -25,8 +25,8 @@ export const AgentHeader = ({
   const [isSettingsDisabled, setIsSettingsDisabled] = useState(false);
 
   useEffect(() => {
-    // If the agent is in demo mode, the settings should not be modifiable.
-    setIsSettingsDisabled(agentConfig.demo_mode_enabled);
+    // If the agent is in demo mode, or the configurations is undefined, the settings should not be modifiable.
+    setIsSettingsDisabled(agentConfig?.demo_mode_enabled ?? true);
   }, [agentConfig]);
 
   const onStopClicked = () => {
@@ -51,8 +51,8 @@ export const AgentHeader = ({
           </Tooltip>
         </Box>
         <Box>
-          <Button variant={"outlined"} onClick={onDemoModeClick}>
-            {agentConfig.demo_mode_enabled ? "Disable Demo Mode" : "Enable Demo Mode"}
+          <Button variant={"outlined"} disabled={!agentConfig} onClick={onDemoModeClick}>
+            {agentConfig?.demo_mode_enabled ? "Disable Demo Mode" : "Enable Demo Mode"}
           </Button>
         </Box>
         <Box m={2}>

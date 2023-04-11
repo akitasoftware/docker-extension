@@ -106,7 +106,7 @@ func handleBackgroundDemoTasks(ctx context.Context, app *app.App) {
 			// Send a random breed request to the demo server.
 			err := app.Interactors.SendDemoTraffic.Handle(ctx)
 			if err != nil {
-				logrus.New().Errorf("failed to send breed request: %v", err)
+				logrus.New().Errorf("failed to send demo traffic: %v", err)
 			}
 		}
 	}()

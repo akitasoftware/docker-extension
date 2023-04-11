@@ -45,14 +45,17 @@ func main() {
 	}
 	defer analyticsClient.Close()
 
+	mockServer := datasource.ProvideDemoServer(8080)
+
 	akitaAPIClient := resty.New().SetBaseURL("https://api.akita.software")
 
 	agentRepo := repo.NewAgentRepository(database)
 	containerRepo := repo.NewContainerRepository(dockerClient)
 	userRepo := repo.NewUserRepository(akitaAPIClient, analyticsClient)
 	hostRepo := repo.NewHostRepository(database)
+	demoRepo := repo.NewDemoRepository(mockServer)
 
-	appInstance := app.New(agentRepo, hostRepo, containerRepo, userRepo, analyticsClient)
+	appInstance := app.New(agentRepo, hostRepo, containerRepo, userRepo, demoRepo, analyticsClient)
 
 	err = appInstance.SaveHostDetails.Handle(appCtx, appConfig.TargetPlatform())
 	if err != nil {

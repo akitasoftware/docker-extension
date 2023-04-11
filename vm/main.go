@@ -13,6 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"log"
 	"net"
+	"time"
 )
 
 //go:embed application.yml
@@ -72,9 +73,35 @@ func main() {
 	}
 	router.Listener = ln
 
+	handleBackgroundDemoTasks(appCtx, appInstance)
+
 	log.Fatal(router.Start(startURL))
 }
 
 func listen(path string) (net.Listener, error) {
 	return net.Listen("unix", path)
+}
+
+// TODO: This doesn't belong here, but it's a convenient place to put it for now.
+// This is a demo worker that will send demo traffic to the Akita demo server in the background.
+func handleBackgroundDemoTasks(ctx context.Context, app *app.App) {
+	// Demo traffic is sent every 10 seconds.
+	interval := time.Second * 10
+
+	// Create a channel that sends a value every 10 seconds.
+	ticker := time.NewTicker(interval)
+
+	// Run the demo traffic loop in the background.
+	go func() {
+		for {
+			// Wait for the next tick.
+			<-ticker.C
+
+			// Send a random breed request to the demo server.
+			err := app.Interactors.SendDemoTraffic.Handle(ctx)
+			if err != nil {
+				logrus.New().Errorf("failed to send breed request: %v", err)
+			}
+		}
+	}()
 }

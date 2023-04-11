@@ -64,6 +64,7 @@ const mapInputToAgentConfig = (input: ConfigInputState): AgentConfig => ({
   target_port: input.targetPort !== "" ? parseInt(input.targetPort) : undefined,
   target_container: input.targetContainer !== "" ? input.targetContainer : undefined,
   enabled: true,
+  demo_mode_enabled: false, // Always start in demo mode disabled.
 });
 
 export const ConfigPage = () => {

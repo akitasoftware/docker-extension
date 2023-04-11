@@ -101,8 +101,9 @@ func init() {
 		"akita":    0.2,
 		"poodle":   0.1,
 		"husky":    0.1,
+		// Will return a 400
+		"spynx": 0.1,
 		// Will return 404s
-		gofakeit.Dog(): 0.1,
 		gofakeit.Dog(): 0.1,
 		gofakeit.Dog(): 0.1,
 		gofakeit.Dog(): 0.1,

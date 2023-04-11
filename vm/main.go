@@ -92,7 +92,7 @@ func listen(path string) (net.Listener, error) {
 // This is a demo worker that will send demo traffic to the Akita demo server in the background.
 func handleBackgroundDemoTasks(ctx context.Context, app *app.App) {
 	// Demo traffic is sent every 10 seconds.
-	interval := time.Second * 10
+	interval := time.Second * 1
 
 	// Create a channel that sends a value every 10 seconds.
 	ticker := time.NewTicker(interval)
@@ -106,7 +106,7 @@ func handleBackgroundDemoTasks(ctx context.Context, app *app.App) {
 			// Send a random breed request to the demo server.
 			err := app.Interactors.SendDemoTraffic.Handle(ctx)
 			if err != nil {
-				logrus.New().Errorf("failed to send breed request: %v", err)
+				logrus.New().Errorf("failed to send demo traffic: %v", err)
 			}
 		}
 	}()

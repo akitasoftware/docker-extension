@@ -161,7 +161,7 @@
 			},
 			"response": {
 				"status": 200,
-				"body": "{\n    \"body\":{\n        \"dog_id\": \"{{randomInt lower=1 upper=999}}\",\n        \"reaction\": \"You pet is excited and wagging its tail! Trick: {{request.pathSegments.[2]}}\"\n    }\n}\n\n",
+				"body": "{\n    \"body\":{\n        \"dog_id\": \"{{randomInt lower=1 upper=999}}\",\n        \"reaction\": \"Your pet is excited and wagging its tail! Trick: {{request.pathSegments.[2]}}\"\n    }\n}\n\n",
 				"headers": {},
 				"delayDistribution": {
 					"type": "uniform",

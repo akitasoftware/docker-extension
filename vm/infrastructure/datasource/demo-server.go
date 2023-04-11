@@ -2,14 +2,12 @@ package datasource
 
 import (
 	"fmt"
-	"github.com/brianvoe/gofakeit/v6"
-	"github.com/go-resty/resty/v2"
 )
 
 var (
-	// Represents the possible tricks that can be sent to the demo server with their respective weights.
+	// Represents the possible tricks that can be sent to the demo server with their respective probabilities.
 	tricks map[string]float32
-	// Represents the possible breeds that can be sent to the demo server with their respective weights.
+	// Represents the possible breeds that can be sent to the demo server with their respective probabilities.
 	breeds map[string]float32
 )
 
@@ -36,13 +34,13 @@ func ProvideDemoServer(port int, configuration []byte) (DemoServer, error) {
 
 func (d demoServerImpl) GetBreed() error {
 	var breedParams []interface{}
-	var weights []float32
+	var probabilities []float32
 	for breed, weight := range breeds {
 		breedParams = append(breedParams, breed)
-		weights = append(weights, weight)
+		probabilities = append(probabilities, weight)
 	}
 
-	pick, err := gofakeit.New(0).Weighted(breedParams, weights)
+	pick, err := gofakeit.New(0).Weighted(breedParams, probabilities)
 	if err != nil {
 		return fmt.Errorf("failed to create breed faker: %w", err)
 	}
@@ -57,13 +55,13 @@ func (d demoServerImpl) GetBreed() error {
 
 func (d demoServerImpl) PostTrick() error {
 	var trickParams []interface{}
-	var weights []float32
+	var probabilities []float32
 	for trick, weight := range tricks {
 		trickParams = append(trickParams, trick)
-		weights = append(weights, weight)
+		probabilities = append(probabilities, weight)
 	}
 
-	pickedTrick, err := gofakeit.New(0).Weighted(trickParams, weights)
+	pickedTrick, err := gofakeit.New(0).Weighted(trickParams, probabilities)
 	if err != nil {
 		return fmt.Errorf("failed to create trick faker: %w", err)
 	}
@@ -114,7 +112,7 @@ func init() {
 		"poodle":   0.1,
 		"husky":    0.1,
 		// Will return a 400
-		"spynx": 0.1,
+		"sphynx": 0.1,
 		// Will return 404s
 		gofakeit.Dog(): 0.1,
 		gofakeit.Dog(): 0.1,

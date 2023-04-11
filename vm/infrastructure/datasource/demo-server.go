@@ -91,6 +91,8 @@ func (d demoServerImpl) addConfiguration(configuration []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to add configuration to demo server: %w", err)
 	}
+
+	return nil
 }
 
 func init() {

@@ -4,7 +4,7 @@
 			"id": "40e029d0-dbc9-4037-8f8a-7b2107f91448",
 			"name": "Perform Trick - Invalid",
 			"request": {
-				"urlPattern": "/v1/pets/([^/]+)/tricks/(bb5a4789-8189-4905-a736-682de6a32375|69d48609-ac34-4d36-bd7f-46f1207ee80e|fa9fa3c3-c435-41b3-9f3b-949d7f23a16d)",
+				"urlPattern": "/v1/pets/([^/]+)/tricks/(bb5a4789-8189-4905-a736-682de6a32375|69d48609-ac34-4d36-bd7f-46f1207ee80e)",
 				"method": "POST",
 				"headers": {
 					"Content-Type": "application/json",
@@ -31,7 +31,7 @@
 			"id": "9470f68d-eea8-414a-8847-cf75b5a49376",
 			"name": "Perform Trick - Doggo needs a nap",
 			"request": {
-				"urlPattern": "/v1/pets/([^/]+)/tricks/(dc722acb-45e1-4e3e-a926-b186929e6570|f2821a1d-b5f6-4a16-a1ed-b78fce03703d|c2e5278b-9225-4078-975c-ba47fc828040)",
+				"urlPattern": "/v1/pets/([^/]+)/tricks/(dc722acb-45e1-4e3e-a926-b186929e6570|f2821a1d-b5f6-4a16-a1ed-b78fce03703d)",
 				"method": "POST",
 				"headers": {
 					"Content-Type": "application/json",

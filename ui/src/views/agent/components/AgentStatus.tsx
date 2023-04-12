@@ -158,13 +158,14 @@ export const AgentStatus = ({
             ) : (
               <>
                 but has not seen any traffic {projectLastSeenAt ? "recently" : "yet"}.
-                {!agentConfig?.demo_mode_enabled &&
-                  "Please note that your app must be running within Docker Desktop for Akita to see its traffic. "}
+                {agentConfig &&
+                  !agentConfig.demo_mode_enabled &&
+                  " Please note that your app must be running within Docker Desktop for Akita to see its traffic. "}
                 If this issue persists, check your{" "}
                 <Link
                   onClick={onSettingsClick}
                   sx={{
-                    cursor: "pointer",
+                    cursor: agentConfig && !agentConfig.demo_mode_enabled ? "pointer" : "default",
                   }}
                 >
                   extension settings

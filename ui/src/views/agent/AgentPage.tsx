@@ -47,7 +47,12 @@ export const AgentPage = () => {
       return;
     }
 
-    if (!config.demo_mode_enabled && !config.target_port && !config.target_container && !wasWarned.current) {
+    if (
+      !config.demo_mode_enabled &&
+      !config.target_port &&
+      !config.target_container &&
+      !wasWarned.current
+    ) {
       ddClient.desktopUI.toast.warning(
         "No filters specified. All traffic will be forwarded to the Akita Agent. Click the gear icon to configure."
       );
@@ -101,7 +106,7 @@ export const AgentPage = () => {
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}
           onFailure={handleFailure}
-          onSettingsClick={() => setIsSettingsOpen(true)}
+          onSettingsClick={() => config?.demo_mode_enabled && setIsSettingsOpen(true)}
           isInitialized={isInitialized}
           hasInitializationFailed={hasInitializationFailed}
           onSendAnalyticsEvent={sendAnalyticsEvent}

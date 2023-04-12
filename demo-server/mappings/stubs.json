@@ -195,7 +195,7 @@
 			},
 			"response": {
 				"status": 200,
-				"body": "{\n\t\"pet_id\": \"{{request.path.[2]}}\",\n\t\"trick_id\": \"{{request.path.[4]}}\",\n\t\"name\": \"{{pickRandom 'Sit' 'Down' 'Stay' 'Roll Over' 'Speak' 'Fetch' 'Lay Down'}}\",\n\t\"difficulty\": \"{{pickRandom 'Easy' 'Medium' 'Hard'}}\",\n\t\"pet_reaction\": \"{{picRandom 'Peformed trick with ease' 'Peformed trick with some difficulty' 'Peformed trick with great difficulty'}}\",\n\t\"performed_at\": \"{{now}}\"\n}\n\n",
+				"body": "{\n\t\"pet_id\": \"{{request.path.[2]}}\",\n\t\"trick_id\": \"{{request.path.[4]}}\",\n\t\"name\": \"{{pickRandom 'Sit' 'Down' 'Stay' 'Roll Over' 'Speak' 'Fetch' 'Lay Down'}}\",\n\t\"difficulty\": \"{{pickRandom 'Easy' 'Medium' 'Hard'}}\",\n\t\"pet_reaction\": \"{{pickRandom 'Peformed trick with ease' 'Peformed trick with some difficulty' 'Peformed trick with great difficulty'}}\",\n\t\"performed_at\": \"{{now}}\"\n}\n\n",
 				"headers": {
 					"Content-Type": "application/json"
 				},

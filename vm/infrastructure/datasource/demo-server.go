@@ -2,8 +2,10 @@ package datasource
 
 import (
 	"fmt"
+
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/go-resty/resty/v2"
+	"github.com/google/uuid"
 )
 
 var (
@@ -35,19 +37,7 @@ func ProvideDemoServer(port int, configuration []byte) (DemoServer, error) {
 }
 
 func (d demoServerImpl) GetBreed() error {
-	var breedParams []interface{}
-	var probabilities []float32
-	for breed, weight := range breeds {
-		breedParams = append(breedParams, breed)
-		probabilities = append(probabilities, weight)
-	}
-
-	pick, err := gofakeit.New(0).Weighted(breedParams, probabilities)
-	if err != nil {
-		return fmt.Errorf("failed to create breed faker: %w", err)
-	}
-
-	_, err = d.client.R().Get(fmt.Sprintf("/v1/breeds/%s", pick))
+	_, err := d.client.R().Get(fmt.Sprintf("/v1/breeds/%s", uuid.New()))
 	if err != nil {
 		return err
 	}

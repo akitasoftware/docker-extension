@@ -47,7 +47,12 @@ export const AgentPage = () => {
       return;
     }
 
-    if (!config.target_port && !config.target_container && !wasWarned.current) {
+    if (
+      !config.demo_mode_enabled &&
+      !config.target_port &&
+      !config.target_container &&
+      !wasWarned.current
+    ) {
       ddClient.desktopUI.toast.warning(
         "No filters specified. All traffic will be forwarded to the Akita Agent. Click the gear icon to configure."
       );
@@ -76,10 +81,21 @@ export const AgentPage = () => {
       .catch(handleFailure);
   };
 
+  const handleDemoModeClick = () => {
+    // Set demo mode true and clear target port and container
+    handleConfigChange({
+      ...config,
+      demo_mode_enabled: !config.demo_mode_enabled, // toggle demo mode on/off
+      target_port: undefined,
+      target_container: undefined,
+    });
+  };
+
   return (
     <>
       <Stack spacing={4}>
         <AgentHeader
+          onDemoModeClick={handleDemoModeClick}
           onSettingsClick={() => setIsSettingsOpen(true)}
           agentConfig={config}
           onSendAnalyticsEvent={sendAnalyticsEvent}
@@ -90,7 +106,7 @@ export const AgentPage = () => {
           containerInfo={containerInfo}
           onRestartAgent={restartAgent}
           onFailure={handleFailure}
-          onSettingsClick={() => setIsSettingsOpen(true)}
+          onSettingsClick={() => config?.demo_mode_enabled && setIsSettingsOpen(true)}
           isInitialized={isInitialized}
           hasInitializationFailed={hasInitializationFailed}
           onSendAnalyticsEvent={sendAnalyticsEvent}

@@ -2,6 +2,8 @@ package datasource
 
 import (
 	"fmt"
+	"github.com/brianvoe/gofakeit/v6"
+	"github.com/go-resty/resty/v2"
 )
 
 var (
@@ -45,7 +47,7 @@ func (d demoServerImpl) GetBreed() error {
 		return fmt.Errorf("failed to create breed faker: %w", err)
 	}
 
-	_, err = d.client.R().Get(fmt.Sprintf("/v1/breed/%s", pick))
+	_, err = d.client.R().Get(fmt.Sprintf("/v1/breeds/%s", pick))
 	if err != nil {
 		return err
 	}
@@ -73,7 +75,7 @@ func (d demoServerImpl) PostTrick() error {
 		gofakeit.Name(),
 		gofakeit.Address().Address,
 	)
-	url := fmt.Sprintf("/v1/trick/%s", pickedTrick)
+	url := fmt.Sprintf("/v1/tricks/%s", pickedTrick)
 
 	_, err = d.client.R().SetBody(body).Post(url)
 	if err != nil {
@@ -85,7 +87,7 @@ func (d demoServerImpl) PostTrick() error {
 
 // Adds stubs & mappings to the demo server.
 func (d demoServerImpl) addConfiguration(configuration []byte) error {
-	_, err := d.client.R().SetBody(configuration).Post("/__admin/mappings/save")
+	_, err := d.client.R().SetBody(configuration).Post("/__admin/mappings/import")
 	if err != nil {
 		return fmt.Errorf("failed to add configuration to demo server: %w", err)
 	}

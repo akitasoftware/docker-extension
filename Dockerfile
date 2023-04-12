@@ -6,7 +6,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
     go mod download
 COPY vm .
-COPY demo-server .
+COPY demo-server/mappings/stubs.json stubs.json
 RUN --mount=type=secret,id=application.yml,dst=./application.yml \
     --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \

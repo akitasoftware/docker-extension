@@ -19,7 +19,7 @@ import (
 //go:embed application.yml
 var applicationYML []byte
 
-//go:embed demo-server/mappings/stubs.json
+//go:embed stubs.json
 var demoServerStubs []byte
 
 func main() {

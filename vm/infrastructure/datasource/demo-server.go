@@ -72,7 +72,9 @@ func (d demoServerImpl) PostTrick() error {
 	)
 	url := fmt.Sprintf("/v1/pets/%s/tricks/%s", gofakeit.UUID(), trickID)
 
-	_, err = d.client.R().SetBody(body).Post(url)
+	_, err = d.client.
+		SetHeader("Accept", "application/json").
+		R().SetBody(body).Post(url)
 	if err != nil {
 		return err
 	}
@@ -125,5 +127,5 @@ func pickFromWeightedMap[T comparable](m map[T]float32) (T, error) {
 		return zeroVal, fmt.Errorf("failed to create faker: %w", err)
 	}
 
-	return pickedKey, nil
+	return pickedKey.(T), nil
 }

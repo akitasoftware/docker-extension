@@ -1,107 +1,155 @@
 {
 	"mappings": [
 		{
-			"id": "40e029d0-dbc9-4037-8f8a-7b2107f91448",
+			"id": "f34c0d91-843f-40bd-9f65-33664dcd76e3",
 			"name": "Perform Trick - Invalid",
 			"request": {
-				"urlPattern": "/v1/pets/([^/]+)/tricks/(bb5a4789-8189-4905-a736-682de6a32375|69d48609-ac34-4d36-bd7f-46f1207ee80e)",
+				"urlPathPattern": "/v1/pets/([^/]+)/tricks/(bb5a4789-8189-4905-a736-682de6a32375|69d48609-ac34-4d36-bd7f-46f1207ee80e)",
 				"method": "POST",
 				"headers": {
-					"Content-Type": "application/json",
-					"Accept": "application/json"
+					"Accept": {
+						"equalTo": "application/json"
+					},
+					"Content-Type": {
+						"equalTo": "application/json"
+					}
 				}
 			},
 			"response": {
 				"status": 400,
+				"body": "{\t\t\t\t\n\t\"code\": \"invalid_trick\",\n\t\"message\": \"Trick {{request.path.[4]}} is not valid for pet {{request.path.[2]}}\"\n}",
 				"headers": {
 					"Content-Type": "application/json"
 				},
-				"jsonBody": {
-					"code": "invalid_trick",
-					"message": "Trick {{request.path.[4]}} is not valid for pet {{request.path.[2]}}"
-				},
 				"transformers": [
+					"response-template",
+					"response-template",
+					"response-template",
 					"response-template"
 				]
 			},
+			"uuid": "f34c0d91-843f-40bd-9f65-33664dcd76e3",
 			"persistent": true,
-			"priority": 1
+			"priority": 1,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-12T16:13:31.630039265Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-12T21:29:21.701696153Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
 		},
 		{
-			"id": "9470f68d-eea8-414a-8847-cf75b5a49376",
-			"name": "Perform Trick - Doggo needs a nap",
+			"id": "a2cd71d2-748b-454e-b3d5-eb27af34cda8",
+			"name": "Peform Trick - Server Error",
 			"request": {
-				"urlPattern": "/v1/pets/([^/]+)/tricks/(dc722acb-45e1-4e3e-a926-b186929e6570|f2821a1d-b5f6-4a16-a1ed-b78fce03703d)",
+				"urlPathPattern": "/v1/pets/([^/]+)/tricks/(dc722acb-45e1-4e3e-a926-b186929e6570|f2821a1d-b5f6-4a16-a1ed-b78fce03703d)",
 				"method": "POST",
 				"headers": {
-					"Content-Type": "application/json",
-					"Accept": "application/json"
+					"Accept": {
+						"equalTo": "application/json"
+					},
+					"Content-Type": {
+						"equalTo": "application/json"
+					}
 				}
 			},
 			"response": {
 				"status": 500,
+				"body": "{\n\t\"code\": \"doggo_needs_a_nap\",\n\t\"message\": \"Doggo {{request.path.[2]}} needs a nap. Maybe you should try creating a treat API next?\"\n}\n",
 				"headers": {
 					"Content-Type": "application/json"
 				},
-				"jsonBody": {
-					"code": "doggo_needs_a_nap",
-					"message": "Doggo {{request.path.[2]}} needs a nap. Maybe you should try creating a treat API next?"
-				},
 				"transformers": [
+					"response-template",
 					"response-template"
 				]
 			},
+			"uuid": "a2cd71d2-748b-454e-b3d5-eb27af34cda8",
 			"persistent": true,
-			"priority": 2
+			"priority": 2,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-12T16:16:46.40523507Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-12T21:29:32.208652211Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
 		},
 		{
-			"id": "de7cbe4e-5576-48cd-a8d6-1f4a48193e31",
-			"name": "Get breed - Not Found",
+			"id": "4c02f214-7853-4b35-bb0a-8a12b6378740",
+			"name": "Get Breed - Not Found",
 			"request": {
-				"urlPattern": "/v1/breeds/(4e7bde8a-92a6-4a4a-a1e9-5547537e90f7|33f9889c-e4aa-4ef4-ba2d-560c1048bc9b|dcd6b113-19a1-41af-8037-84c02951b990|09348399-fb03-4fcc-9a4b-a1eaf796bd75)",
+				"urlPathPattern": "/v1/breeds/(4e7bde8a-92a6-4a4a-a1e9-5547537e90f7|33f9889c-e4aa-4ef4-ba2d-560c1048bc9b|dcd6b113-19a1-41af-8037-84c02951b990|09348399-fb03-4fcc-9a4b-a1eaf796bd75)",
 				"method": "GET",
 				"headers": {
-					"Accept": "application/json"
+					"Accept": {
+						"equalTo": "application/json"
+					}
 				}
 			},
 			"response": {
 				"status": 404,
+				"body": "{\n\t\"code\": \"no_doggo_found\",\n\t\"message\": \"Breed with id {{request.path.[2]}} not found\"\n    \n}",
 				"headers": {
 					"Content-Type": "application/json"
-				},
-				"jsonBody": {
-					"code": "no_doggo_found",
-					"message": "Breed with id {{request.path.[2]}} not found"
 				},
 				"transformers": [
 					"response-template"
 				]
 			},
+			"uuid": "4c02f214-7853-4b35-bb0a-8a12b6378740",
 			"persistent": true,
-			"priority": 3
+			"priority": 3,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-12T21:30:52.916160616Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-12T21:32:01.028341383Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
 		},
 		{
-			"id": "f4517383-c04a-4cb6-bfa3-b4f7fa5eab52",
-			"name": "Get owner",
+			"id": "f5db9b82-c8c5-4836-8322-c7820b36f547",
+			"name": "Get Owner - Success",
 			"request": {
-				"urlPattern": "/v1/owners/([^/]+)",
+				"urlPathPattern": "/v1/owners/([^/]+)",
 				"method": "GET",
 				"headers": {
-					"Accept": "application/json"
+					"Accept": {
+						"equalTo": "application/json"
+					}
 				}
 			},
 			"response": {
 				"status": 200,
+				"body": "{\n\t\"id\": \"{{request.path.[2]}}\",\n\t\"first_name\": \"{{pickRandom 'John' 'Jane' 'Bob' 'Sally' 'Joe' 'Mary'}}\",\n\t\"last_name\": \"{{pickRandom 'Smith' 'Doe' 'Johnson' 'Williams' 'Brown' 'Jones'}}\",\n\t\"email\": \"{{request.path.[2]}}@example.com\",\n\t\"phone\": \"{{randomInt lower=1000000000 upper=9999999999}}\",\n\t\"pet_id\": \"{{randomValue type='UUID'}}\"\n}\n",
 				"headers": {
 					"Content-Type": "application/json"
-				},
-				"jsonBody": {
-					"id": "{{request.path.[2]}}",
-					"first_name": "{{pickRandom 'John' 'Jane' 'Bob' 'Sally' 'Joe' 'Mary'}}",
-					"last_name": "{{pickRandom 'Smith' 'Doe' 'Johnson' 'Williams' 'Brown' 'Jones'}}",
-					"email": "{{request.path.[2]}}@example.com",
-					"phone": "{{randomInt lower=1000000000 upper=9999999999}}",
-					"pet_id": "{{randomValue type='UUID'}}"
 				},
 				"delayDistribution": {
 					"type": "uniform",
@@ -109,97 +157,88 @@
 					"upper": 500
 				},
 				"transformers": [
+					"response-template",
+					"response-template",
 					"response-template"
 				]
 			},
+			"uuid": "f5db9b82-c8c5-4836-8322-c7820b36f547",
 			"persistent": true,
-			"priority": 4
+			"priority": 4,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-12T21:34:21.829037851Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-12T21:42:29.826130631Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
 		},
 		{
-			"id": "1c28a103-e1b8-4da3-8cda-527024502139",
+			"id": "ed872e60-296c-41b5-baa8-fcdd61ed24f0",
 			"name": "Perform Trick - Success",
 			"request": {
-				"urlPattern": "/v1/pets/([^/]+)/tricks/([^/]+)",
+				"urlPathPattern": "/v1/pets/([^/]+)/tricks/([^/]+)",
 				"method": "POST",
 				"headers": {
-					"Content-Type": "application/json",
-					"Accept": "application/json"
+					"Accept": {
+						"equalTo": "application/json"
+					}
 				}
 			},
 			"response": {
 				"status": 200,
+				"body": "{\n\t\"pet_id\": \"{{request.path.[2]}}\",\n\t\"trick_id\": \"{{request.path.[4]}}\",\n\t\"name\": \"{{pickRandom 'Sit' 'Down' 'Stay' 'Roll Over' 'Speak' 'Fetch' 'Lay Down'}}\",\n\t\"difficulty\": \"{{pickRandom 'Easy' 'Medium' 'Hard'}}\",\n\t\"pet_reaction\": \"{{picRandom 'Peformed trick with ease' 'Peformed trick with some difficulty' 'Peformed trick with great difficulty'}}\",\n\t\"performed_at\": \"{{now}}\"\n}\n\n",
 				"headers": {
 					"Content-Type": "application/json"
 				},
-				"jsonBody": {
-					"pet_id": "{{request.path.[2]}}",
-					"trick_id": "{{request.path.[4]}}",
-					"name": "{{pickRandom 'Sit' 'Down' 'Stay' 'Roll Over' 'Speak' 'Fetch' 'Lay Down'}}",
-					"difficulty": "{{pickRandom 'Easy' 'Medium' 'Hard'}}",
-					"pet_reaction": "{{picRandom 'Peformed trick with ease' 'Peformed trick with some difficulty' 'Peformed trick with great difficulty'}}",
-					"performed_at": "{{now}}"
-				},
-				"transformers": [
-					"response-template"
-				],
 				"delayDistribution": {
 					"type": "uniform",
 					"lower": 2000,
 					"upper": 5000
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"uuid": "ed872e60-296c-41b5-baa8-fcdd61ed24f0",
+			"persistent": true,
+			"priority": 5,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-12T21:37:38.189210211Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
 				}
 			},
-			"persistent": true,
-			"priority": 5
+			"postServeActions": []
 		},
 		{
-			"id": "5da7d8e4-9dd8-4a30-92ff-b80a88adabd2",
+			"id": "cd96811c-636d-4bb5-ae59-42c7a4f1b1cc",
 			"name": "Get Breed By ID - Success",
 			"request": {
-				"urlPattern": "/v1/breeds/([^/]+)",
+				"urlPathPattern": "/v1/breeds/([^/]+)",
 				"method": "GET",
 				"headers": {
-					"Content-Type": "application/json",
-					"Accept": "application/json"
+					"Accept": {
+						"equalTo": "application/json"
+					}
 				}
 			},
 			"response": {
 				"status": 200,
+				"body": "{\n\t\t\t\t\t\"id\": \"{{request.path.[2]}}\",\n\t\t\t\t\t\"name\": \"{{pickRandom 'Labrador' 'Akita' 'Poodle' 'Husky' 'Maltese' 'German Shepard'}}\",\n\t\t\t\t\t\"group\": \"{{pickRandom 'Sporting' 'Hound' 'Working' 'Terrier' 'Toy' 'Non-Sporting'}}\",\n\t\t\t\t\t\"life_span\": {\n\t\t\t\t\t\t\"min\": \"{{randomInt lower=5 upper=9}}\",\n\t\t\t\t\t\t\"max\": \"{{randomInt lower=10 upper=15}}\",\n\t\t\t\t\t\t\"avg\": \"{{randomInt lower=10 upper=12}}\"\n\t\t\t\t\t},\n\t\t\t\t\t\"height\": {\n\t\t\t\t\t\t\"male\": {\n\t\t\t\t\t\t\t\"min\": \"{{randomInt lower=20 upper=29}}\",\n\t\t\t\t\t\t\t\"max\": \"{{randomInt lower={30 upper=40}}\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"female\": {\n\t\t\t\t\t\t\t\"min\": \"{{randomInt lower=15 upper=19}}\",\n\t\t\t\t\t\t\t\"max\": \"{{randomInt lower=20 upper=30}}\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"unit\": \"in\"\n\t\t\t\t\t},\n\t\t\t\t\t\"weight\": {\n\t\t\t\t\t\t\"male\": {\n\t\t\t\t\t\t\t\"min\": \"{{randomInt lower=65 upper=74}}\",\n\t\t\t\t\t\t\t\"max\": \"{{randomInt lower=75 upper=90}}\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"female\": {\n\t\t\t\t\t\t\t\"min\": \"{{randomInt lower=55 upper=64}}\",\n\t\t\t\t\t\t\t\"max\": \"{{randomInt lower=65 upper=80}}\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"unit\": \"lb\"\n\t\t\t\t\t},\n\t\t\t\t\t\"description\": \"{{pickRandom 'A loving dog' 'A loyal dog' 'A playful dog' 'A smart dog' 'A friendly dog' 'A protective dog'}}\",\n\t\t\t\t\t\"created_at\": \"{{now}}\"\n}\n\n",
 				"headers": {
 					"Content-Type": "application/json"
-				},
-				"jsonBody": {
-					"id": "{{request.path.[2]}}",
-					"name": "{{pickRandom 'Labrador' 'Akita' 'Poodle' 'Husky' 'Maltese' 'German Shepard'}}",
-					"group": "{{pickRandom 'Sporting' 'Hound' 'Working' 'Terrier' 'Toy' 'Non-Sporting'}}",
-					"life_span": {
-						"min": "{{randomInt lower=5 upper=9}}",
-						"max": "{{randomInt lower=10 upper=15}}",
-						"avg": "{{randomInt lower=10 upper=12}}"
-					},
-					"height": {
-						"male": {
-							"min": "{{randomInt lower=20 upper=29}}",
-							"max": "{{randomInt lower={30 upper=40}}"
-						},
-						"female": {
-							"min": "{{randomInt lower=15 upper=19}}",
-							"max": "{{randomInt lower=20 upper=30}}"
-						},
-						"unit": "in"
-					},
-					"weight": {
-						"male": {
-							"min": "{{randomInt lower=65 upper=74}}",
-							"max": "{{randomInt lower=75 upper=90}}"
-						},
-						"female": {
-							"min": "{{randomInt lower=55 upper=64}}",
-							"max": "{{randomInt lower=65 upper=80}}"
-						},
-						"unit": "lb"
-					},
-					"description": "{{pickRandom 'A loving dog' 'A loyal dog' 'A playful dog' 'A smart dog' 'A friendly dog' 'A protective dog'}}",
-					"created_at": "{{now}}"
 				},
 				"delayDistribution": {
 					"type": "uniform",
@@ -207,14 +246,32 @@
 					"upper": 50
 				},
 				"transformers": [
+					"response-template",
+					"response-template",
 					"response-template"
 				]
 			},
+			"uuid": "cd96811c-636d-4bb5-ae59-42c7a4f1b1cc",
 			"persistent": true,
-			"priority": 6
+			"priority": 6,
+			"metadata": {
+				"mocklab": {
+					"created": {
+						"at": "2023-04-12T21:42:08.022481394Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					},
+					"updated": {
+						"at": "2023-04-12T21:42:34.46991093Z",
+						"via": "ADMIN_API",
+						"by": "4e42y"
+					}
+				}
+			},
+			"postServeActions": []
 		}
 	],
 	"meta": {
-		"total": 5
+		"total": 6
 	}
 }

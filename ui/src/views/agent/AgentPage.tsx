@@ -47,7 +47,7 @@ export const AgentPage = () => {
       return;
     }
 
-    if (!config.target_port && !config.target_container && !wasWarned.current) {
+    if (!config.demo_mode_enabled && !config.target_port && !config.target_container && !wasWarned.current) {
       ddClient.desktopUI.toast.warning(
         "No filters specified. All traffic will be forwarded to the Akita Agent. Click the gear icon to configure."
       );

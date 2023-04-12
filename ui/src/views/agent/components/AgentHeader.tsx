@@ -40,7 +40,7 @@ export const AgentHeader = ({
 
   const onStopClicked = () => {
     onSendAnalyticsEvent("Stopped Agent");
-    createAgentConfig(ddClient, { ...agentConfig, enabled: false })
+    createAgentConfig(ddClient, { ...agentConfig, enabled: false, demo_mode_enabled: false })
       .then(() => removeAkitaContainer(ddClient))
       .then(() => navigate("/"))
       .catch((e) => {

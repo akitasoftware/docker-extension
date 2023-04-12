@@ -2,15 +2,9 @@ package datasource
 
 import (
 	"fmt"
+
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/go-resty/resty/v2"
-)
-
-var (
-	// Represents the possible tricks that can be sent to the demo server with their respective probabilities.
-	tricks map[string]float32
-	// Represents the possible breeds that can be sent to the demo server with their respective probabilities.
-	breeds map[string]float32
 )
 
 type (
@@ -35,19 +29,10 @@ func ProvideDemoServer(port int, configuration []byte) (DemoServer, error) {
 }
 
 func (d demoServerImpl) GetBreed() error {
-	var breedParams []interface{}
-	var probabilities []float32
-	for breed, weight := range breeds {
-		breedParams = append(breedParams, breed)
-		probabilities = append(probabilities, weight)
-	}
-
-	pick, err := gofakeit.New(0).Weighted(breedParams, probabilities)
-	if err != nil {
-		return fmt.Errorf("failed to create breed faker: %w", err)
-	}
-
-	_, err = d.client.R().Get(fmt.Sprintf("/v1/breeds/%s", pick))
+	breedID, err := getRandomBreedID()
+	_, err = d.client.
+		SetHeader("Accept", "application/json").
+		R().Get(fmt.Sprintf("/v1/breeds/%s", breedID))
 	if err != nil {
 		return err
 	}
@@ -55,34 +40,58 @@ func (d demoServerImpl) GetBreed() error {
 	return nil
 }
 
-func (d demoServerImpl) PostTrick() error {
-	var trickParams []interface{}
-	var probabilities []float32
-	for trick, weight := range tricks {
-		trickParams = append(trickParams, trick)
-		probabilities = append(probabilities, weight)
+func getRandomBreedID() (string, error) {
+	breeds := map[string]float32{
+		// Gives a 20% chance of returning a 404
+		"4e7bde8a-92a6-4a4a-a1e9-5547537e90f7": 0.05,
+		"33f9889c-e4aa-4ef4-ba2d-560c1048bc9b": 0.05,
+		"dcd6b113-19a1-41af-8037-84c02951b990": 0.05,
+		"09348399-fb03-4fcc-9a4b-a1eaf796bd75": 0.05,
+		// For the other 80%, just return a 200
+		gofakeit.UUID(): 0.8,
 	}
 
-	pickedTrick, err := gofakeit.New(0).Weighted(trickParams, probabilities)
+	return pickFromWeightedMap(breeds)
+}
+
+func (d demoServerImpl) PostTrick() error {
+	trickID, err := getRandomTrickID()
 	if err != nil {
-		return fmt.Errorf("failed to create trick faker: %w", err)
+		return err
 	}
 
 	body := fmt.Sprintf(
-		`{"trick":"%s", owner: {id: %s, name: %s, address: %s}}`,
-		pickedTrick,
+		`{owner: { id: %s, name: %s, address: %s }, treat_count: %d}`,
 		gofakeit.UUID(),
 		gofakeit.Name(),
 		gofakeit.Address().Address,
+		gofakeit.IntRange(0, 10),
 	)
-	url := fmt.Sprintf("/v1/tricks/%s", pickedTrick)
+	url := fmt.Sprintf("/v1/pets/%s/tricks/%s", gofakeit.UUID(), trickID)
 
-	_, err = d.client.R().SetBody(body).Post(url)
+	_, err = d.client.
+		SetHeader("Accept", "application/json").
+		R().SetBody(body).Post(url)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func getRandomTrickID() (string, error) {
+	tricks := map[string]float32{
+		// Gives a 10% chance to cause a 400
+		"bb5a4789-8189-4905-a736-682de6a32375": 0.05,
+		"69d48609-ac34-4d36-bd7f-46f1207ee80e": 0.05,
+		// Gives a 10% chance to cause a 500
+		"dc722acb-45e1-4e3e-a926-b186929e6570": 0.05,
+		"f2821a1d-b5f6-4a16-a1ed-b78fce03703d": 0.05,
+		// Gives an 80% chance of returning a 200
+		gofakeit.UUID(): 0.8,
+	}
+
+	return pickFromWeightedMap(tricks)
 }
 
 // Adds stubs & mappings to the demo server.
@@ -95,29 +104,22 @@ func (d demoServerImpl) addConfiguration(configuration []byte) error {
 	return nil
 }
 
-func init() {
-	tricks = map[string]float32{
-		"rollover":  0.3,
-		"fetch":     0.1,
-		"shake":     0.1,
-		"jump":      0.1,
-		"spin":      0.1,
-		"beg":       0.1,
-		"play-dead": 0.1,
-		"sit":       0.1,
+func pickFromWeightedMap[T comparable](m map[T]float32) (T, error) {
+	// `zeroVal` will be returned if an error occurs
+	var zeroVal T
+
+	var keys []interface{}
+	var probabilities []float32
+
+	for key, weight := range m {
+		keys = append(keys, key)
+		probabilities = append(probabilities, weight)
 	}
 
-	breeds = map[string]float32{
-		// Will return 200s
-		"labrador": 0.2,
-		"akita":    0.2,
-		"poodle":   0.1,
-		"husky":    0.1,
-		// Will return a 400
-		"sphynx": 0.1,
-		// Will return 404s
-		gofakeit.Dog(): 0.1,
-		gofakeit.Dog(): 0.1,
-		gofakeit.Dog(): 0.1,
+	pickedKey, err := gofakeit.New(0).Weighted(keys, probabilities)
+	if err != nil {
+		return zeroVal, fmt.Errorf("failed to create faker: %w", err)
 	}
+
+	return pickedKey.(T), nil
 }

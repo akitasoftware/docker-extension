@@ -1,5 +1,14 @@
 import SettingsIcon from "@mui/icons-material/Settings";
-import { Box, Button, IconButton, Stack, Tooltip } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  Stack,
+  Switch,
+  Tooltip,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AgentConfig, createAgentConfig } from "../../../data/queries/agent-config";
@@ -51,9 +60,19 @@ export const AgentHeader = ({
           </Tooltip>
         </Box>
         <Box>
-          <Button variant={"outlined"} disabled={!agentConfig} onClick={onDemoModeClick}>
-            {agentConfig?.demo_mode_enabled ? "Disable Demo Mode" : "Enable Demo Mode"}
-          </Button>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  size={"small"}
+                  checked={agentConfig?.demo_mode_enabled}
+                  onChange={onDemoModeClick}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              }
+              label="Demo Mode"
+            />
+          </FormGroup>
         </Box>
         <Box m={2}>
           <Button variant={"outlined"} color={"error"} onClick={onStopClicked}>

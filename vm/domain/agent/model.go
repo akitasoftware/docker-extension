@@ -14,7 +14,8 @@ type Config struct {
 	TargetPort      *int    `json:"target_port" bson:"target_port"`
 	TargetContainer *string `json:"target_container" bson:"target_container"`
 	// Indicates whether the agent should be started by the frontend on app startup
-	IsEnabled bool `json:"enabled" bson:"enabled"`
+	IsEnabled         bool `json:"enabled" bson:"enabled"`
+	IsDemoModeEnabled bool `json:"demo_mode_enabled" bson:"demo_mode_enabled"`
 }
 
 func DecodeConfig(r io.Reader) (*Config, error) {
@@ -39,6 +40,9 @@ func (a *Config) Credentials() user.Credentials {
 }
 
 func (a *Config) Validate() error {
+	if a.IsDemoModeEnabled && !a.IsEnabled {
+		return failure.Invalidf("demo mode cannot be enabled when the agent is disabled")
+	}
 	if a.APIKey == "" {
 		return failure.Invalidf("api key is missing")
 	}

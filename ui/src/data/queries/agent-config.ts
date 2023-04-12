@@ -7,6 +7,7 @@ export type AgentConfig = {
   target_port?: number;
   target_container?: string;
   enabled: boolean;
+  demo_mode_enabled: boolean;
 };
 
 export const getAgentConfig = async (ddClient: v1.DockerDesktopClient): Promise<AgentConfig> =>
@@ -17,7 +18,7 @@ export const createAgentConfig = async (
   config: AgentConfig
 ): Promise<AgentConfig> => {
   const data = JSON.stringify(config, (key: string, value: any) => {
-    if (key === "enabled") {
+    if (key === "enabled" || key === "demo_mode_enabled") {
       return Boolean(value);
     }
 

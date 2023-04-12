@@ -13,10 +13,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"log"
 	"net"
+	"time"
 )
 
 //go:embed application.yml
 var applicationYML []byte
+
+//go:embed stubs.json
+var demoServerStubs []byte
 
 func main() {
 	appConfig, err := config.Parse(applicationYML)
@@ -45,14 +49,20 @@ func main() {
 	}
 	defer analyticsClient.Close()
 
+	mockServer, err := datasource.ProvideDemoServer(8080, demoServerStubs)
+	if err != nil {
+		log.Fatalf("Failed to create mock server: %v", err)
+	}
+
 	akitaAPIClient := resty.New().SetBaseURL("https://api.akita.software")
 
 	agentRepo := repo.NewAgentRepository(database)
 	containerRepo := repo.NewContainerRepository(dockerClient)
 	userRepo := repo.NewUserRepository(akitaAPIClient, analyticsClient)
 	hostRepo := repo.NewHostRepository(database)
+	demoRepo := repo.NewDemoRepository(mockServer)
 
-	appInstance := app.New(agentRepo, hostRepo, containerRepo, userRepo, analyticsClient)
+	appInstance := app.New(agentRepo, hostRepo, containerRepo, userRepo, demoRepo, analyticsClient)
 
 	err = appInstance.SaveHostDetails.Handle(appCtx, appConfig.TargetPlatform())
 	if err != nil {
@@ -69,9 +79,35 @@ func main() {
 	}
 	router.Listener = ln
 
+	handleBackgroundDemoTasks(appCtx, appInstance)
+
 	log.Fatal(router.Start(startURL))
 }
 
 func listen(path string) (net.Listener, error) {
 	return net.Listen("unix", path)
+}
+
+// TODO: This doesn't belong here, but it's a convenient place to put it for now.
+// This is a worker that will send traffic to the Akita demo server in the background.
+func handleBackgroundDemoTasks(ctx context.Context, app *app.App) {
+	// Demo traffic is sent every `interval` seconds.
+	interval := time.Second * 1
+
+	// Create a channel that sends a value every 10 seconds.
+	ticker := time.NewTicker(interval)
+
+	// Run the demo traffic loop in the background.
+	go func() {
+		for {
+			// Wait for the next tick.
+			<-ticker.C
+
+			// Send a random breed request to the demo server.
+			err := app.Interactors.SendDemoTraffic.Handle(ctx)
+			if err != nil {
+				logrus.New().Errorf("failed to send demo traffic: %v", err)
+			}
+		}
+	}()
 }

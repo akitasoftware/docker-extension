@@ -47,11 +47,8 @@ func getRandomBreedID() (string, error) {
 		"33f9889c-e4aa-4ef4-ba2d-560c1048bc9b": 0.05,
 		"dcd6b113-19a1-41af-8037-84c02951b990": 0.05,
 		"09348399-fb03-4fcc-9a4b-a1eaf796bd75": 0.05,
-	}
-
-	// For the other 80%, generate a random UUID (which will cause the demo server to return a 200)
-	for i := 0; i < 8; i++ {
-		breeds[gofakeit.UUID()] = 0.1
+		// For the other 80%, just return a 200
+		gofakeit.UUID(): 0.8,
 	}
 
 	return pickFromWeightedMap(breeds)
@@ -90,11 +87,8 @@ func getRandomTrickID() (string, error) {
 		// Gives a 10% chance to cause a 500
 		"dc722acb-45e1-4e3e-a926-b186929e6570": 0.05,
 		"f2821a1d-b5f6-4a16-a1ed-b78fce03703d": 0.05,
-	}
-
-	// For the other 80%, generate random UUID that will produce a 200
-	for i := 0; i < 8; i++ {
-		tricks[gofakeit.UUID()] = 0.1
+		// Gives an 80% chance of returning a 200
+		gofakeit.UUID(): 0.8,
 	}
 
 	return pickFromWeightedMap(tricks)

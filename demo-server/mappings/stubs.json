@@ -1,58 +1,220 @@
 {
-  "mappings": [
-    {
-      "id": "5da7d8e4-9dd8-4a30-92ff-b80a88adabd2",
-      "name": "Get Breed By ID - Success",
-      "request": {
-        "urlPattern": "/v1/breeds/([^/]+)",
-        "method": "GET"
-      },
-      "response": {
-        "status": 200,
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "jsonBody": {
-          "id": "{{request.path.[2]}}",
-          "name": "{{pickRandom 'Labrador' 'Akita' 'Poodle' 'Husky' 'Maltese' 'German Shepard'}}",
-          "group": "{{pickRandom 'Sporting' 'Hound' 'Working' 'Terrier' 'Toy' 'Non-Sporting'}}",
-          "life_span": {
-            "min": "{{randomInt lower=5 upper=9}}",
-            "max": "{{randomInt lower=10 upper=15}}",
-            "avg": "{{randomInt lower=10 upper=12}}"
-          },
-          "height": {
-            "male": {
-              "min": "{{randomInt lower=20 upper=29}}",
-              "max": "{{randomInt lower={30 upper=40}}"
-            },
-            "female": {
-              "min": "{{randomInt lower=15 upper=19}}",
-              "max": "{{randomInt lower=20 upper=30}}"
-            },
-            "unit": "in"
-          },
-          "weight": {
-            "male": {
-              "min": "{{randomInt lower=65 upper=74}}",
-              "max": "{{randomInt lower=75 upper=90}}"
-            },
-            "female": {
-              "min": "{{randomInt lower=55 upper=64}}",
-              "max": "{{randomInt lower=65 upper=80}}"
-            },
-            "unit": "lb"
-          },
-          "description": "{{pickRandom 'A loving dog' 'A loyal dog' 'A playful dog' 'A smart dog' 'A friendly dog' 'A protective dog'}}",
-          "created_at": "{{now}}"
-        },
-        "transformers": [
-          "response-template"
-        ]
-      }
-    }
-  ],
-  "meta": {
-    "total": 5
-  }
+	"mappings": [
+		{
+			"id": "40e029d0-dbc9-4037-8f8a-7b2107f91448",
+			"name": "Perform Trick - Invalid",
+			"request": {
+				"urlPattern": "/v1/pets/([^/]+)/tricks/(bb5a4789-8189-4905-a736-682de6a32375|69d48609-ac34-4d36-bd7f-46f1207ee80e|fa9fa3c3-c435-41b3-9f3b-949d7f23a16d)",
+				"method": "POST",
+				"headers": {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				}
+			},
+			"response": {
+				"status": 400,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"jsonBody": {
+					"code": "invalid_trick",
+					"message": "Trick {{request.path.[4]}} is not valid for pet {{request.path.[2]}}"
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"persistent": true,
+			"priority": 1
+		},
+		{
+			"id": "9470f68d-eea8-414a-8847-cf75b5a49376",
+			"name": "Perform Trick - Doggo needs a nap",
+			"request": {
+				"urlPattern": "/v1/pets/([^/]+)/tricks/(dc722acb-45e1-4e3e-a926-b186929e6570|f2821a1d-b5f6-4a16-a1ed-b78fce03703d|c2e5278b-9225-4078-975c-ba47fc828040)",
+				"method": "POST",
+				"headers": {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				}
+			},
+			"response": {
+				"status": 500,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"jsonBody": {
+					"code": "doggo_needs_a_nap",
+					"message": "Doggo {{request.path.[2]}} needs a nap. Maybe you should try creating a treat API next?"
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"persistent": true,
+			"priority": 2
+		},
+		{
+			"id": "de7cbe4e-5576-48cd-a8d6-1f4a48193e31",
+			"name": "Get breed - Not Found",
+			"request": {
+				"urlPattern": "/v1/breeds/(4e7bde8a-92a6-4a4a-a1e9-5547537e90f7|33f9889c-e4aa-4ef4-ba2d-560c1048bc9b|dcd6b113-19a1-41af-8037-84c02951b990|09348399-fb03-4fcc-9a4b-a1eaf796bd75)",
+				"method": "GET",
+				"headers": {
+					"Accept": "application/json"
+				}
+			},
+			"response": {
+				"status": 404,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"jsonBody": {
+					"code": "no_doggo_found",
+					"message": "Breed with id {{request.path.[2]}} not found"
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"persistent": true,
+			"priority": 3
+		},
+		{
+			"id": "f4517383-c04a-4cb6-bfa3-b4f7fa5eab52",
+			"name": "Get owner",
+			"request": {
+				"urlPattern": "/v1/owners/([^/]+)",
+				"method": "GET",
+				"headers": {
+					"Accept": "application/json"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"jsonBody": {
+					"id": "{{request.path.[2]}}",
+					"first_name": "{{pickRandom 'John' 'Jane' 'Bob' 'Sally' 'Joe' 'Mary'}}",
+					"last_name": "{{pickRandom 'Smith' 'Doe' 'Johnson' 'Williams' 'Brown' 'Jones'}}",
+					"email": "{{request.path.[2]}}@example.com",
+					"phone": "{{randomInt lower=1000000000 upper=9999999999}}",
+					"pet_id": "{{randomValue type='UUID'}}"
+				},
+				"delayDistribution": {
+					"type": "uniform",
+					"lower": 300,
+					"upper": 500
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"persistent": true,
+			"priority": 4
+		},
+		{
+			"id": "1c28a103-e1b8-4da3-8cda-527024502139",
+			"name": "Perform Trick - Success",
+			"request": {
+				"urlPattern": "/v1/pets/([^/]+)/tricks/([^/]+)",
+				"method": "POST",
+				"headers": {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"jsonBody": {
+					"pet_id": "{{request.path.[2]}}",
+					"trick_id": "{{request.path.[4]}}",
+					"name": "{{pickRandom 'Sit' 'Down' 'Stay' 'Roll Over' 'Speak' 'Fetch' 'Lay Down'}}",
+					"difficulty": "{{pickRandom 'Easy' 'Medium' 'Hard'}}",
+					"pet_reaction": "{{picRandom 'Peformed trick with ease' 'Peformed trick with some difficulty' 'Peformed trick with great difficulty'}}",
+					"performed_at": "{{now}}"
+				},
+				"transformers": [
+					"response-template"
+				],
+				"delayDistribution": {
+					"type": "uniform",
+					"lower": 2000,
+					"upper": 5000
+				}
+			},
+			"persistent": true,
+			"priority": 5
+		},
+		{
+			"id": "5da7d8e4-9dd8-4a30-92ff-b80a88adabd2",
+			"name": "Get Breed By ID - Success",
+			"request": {
+				"urlPattern": "/v1/breeds/([^/]+)",
+				"method": "GET",
+				"headers": {
+					"Content-Type": "application/json",
+					"Accept": "application/json"
+				}
+			},
+			"response": {
+				"status": 200,
+				"headers": {
+					"Content-Type": "application/json"
+				},
+				"jsonBody": {
+					"id": "{{request.path.[2]}}",
+					"name": "{{pickRandom 'Labrador' 'Akita' 'Poodle' 'Husky' 'Maltese' 'German Shepard'}}",
+					"group": "{{pickRandom 'Sporting' 'Hound' 'Working' 'Terrier' 'Toy' 'Non-Sporting'}}",
+					"life_span": {
+						"min": "{{randomInt lower=5 upper=9}}",
+						"max": "{{randomInt lower=10 upper=15}}",
+						"avg": "{{randomInt lower=10 upper=12}}"
+					},
+					"height": {
+						"male": {
+							"min": "{{randomInt lower=20 upper=29}}",
+							"max": "{{randomInt lower={30 upper=40}}"
+						},
+						"female": {
+							"min": "{{randomInt lower=15 upper=19}}",
+							"max": "{{randomInt lower=20 upper=30}}"
+						},
+						"unit": "in"
+					},
+					"weight": {
+						"male": {
+							"min": "{{randomInt lower=65 upper=74}}",
+							"max": "{{randomInt lower=75 upper=90}}"
+						},
+						"female": {
+							"min": "{{randomInt lower=55 upper=64}}",
+							"max": "{{randomInt lower=65 upper=80}}"
+						},
+						"unit": "lb"
+					},
+					"description": "{{pickRandom 'A loving dog' 'A loyal dog' 'A playful dog' 'A smart dog' 'A friendly dog' 'A protective dog'}}",
+					"created_at": "{{now}}"
+				},
+				"delayDistribution": {
+					"type": "uniform",
+					"lower": 20,
+					"upper": 50
+				},
+				"transformers": [
+					"response-template"
+				]
+			},
+			"persistent": true,
+			"priority": 6
+		}
+	],
+	"meta": {
+		"total": 5
+	}
 }

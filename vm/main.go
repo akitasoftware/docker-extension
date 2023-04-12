@@ -89,9 +89,9 @@ func listen(path string) (net.Listener, error) {
 }
 
 // TODO: This doesn't belong here, but it's a convenient place to put it for now.
-// This is a demo worker that will send demo traffic to the Akita demo server in the background.
+// This is a worker that will send traffic to the Akita demo server in the background.
 func handleBackgroundDemoTasks(ctx context.Context, app *app.App) {
-	// Demo traffic is sent every 10 seconds.
+	// Demo traffic is sent every `interval` seconds.
 	interval := time.Second * 1
 
 	// Create a channel that sends a value every 10 seconds.

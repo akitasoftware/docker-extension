@@ -1,2 +1,7 @@
 analytics:
   enabled: false
+  segment_write_key: <WRITE_KEY>
+  app:
+    name: docker-extension
+    version: <SEMVER>
+  batch_size: 1

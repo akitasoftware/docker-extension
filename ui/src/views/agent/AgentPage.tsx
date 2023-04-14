@@ -83,6 +83,7 @@ export const AgentPage = () => {
 
   const handleDemoModeClick = () => {
     // Set demo mode true and clear target port and container
+    sendAnalyticsEvent("Toggled Demo Mode", { enabled: config.demo_mode_enabled });
     handleConfigChange({
       ...config,
       demo_mode_enabled: !config.demo_mode_enabled, // toggle demo mode on/off

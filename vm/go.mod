@@ -6,7 +6,7 @@ require (
 	github.com/akitasoftware/akita-libs v0.0.0-20221111205551-61b8b17a6799
 	github.com/akitasoftware/go-utils v0.0.0-20220521045242-cabe4c63daed
 	github.com/brianvoe/gofakeit/v6 v6.20.2
-	github.com/docker/docker v20.10.22+incompatible
+	github.com/docker/docker v20.10.24+incompatible
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/labstack/echo v3.3.10+incompatible

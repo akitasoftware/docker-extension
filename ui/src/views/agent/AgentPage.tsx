@@ -82,7 +82,7 @@ export const AgentPage = () => {
   };
 
   const handleDemoModeClick = () => {
-    sendAnalyticsEvent("Toggled Demo Mode", { enabled: config.demo_mode_enabled });
+    sendAnalyticsEvent("Toggled Demo Mode", { enabled: !config.demo_mode_enabled });
     // Toggle demo mode on or off and remove any targeted port or container
     handleConfigChange({
       ...config,

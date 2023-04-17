@@ -71,6 +71,7 @@ func (d demoServerImpl) PostTrick() error {
 
 	_, err = d.client.
 		SetHeader("Accept", "application/json").
+		SetHeader("Content-Type", "application/json").
 		R().SetBody(body).Post(url)
 	if err != nil {
 		return err

@@ -1,0 +1,71 @@
+name: Publish Docker Extension
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Release Tag
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Validate Release Tag
+        run: |
+          # Extract tag name without 'v' prefix
+          TAG_NAME=${{ github.event.release.tag_name }}
+          VERSION=${TAG_NAME#v}
+
+          echo "app_version=$VERSION" >> $GITHUB_ENV
+
+          # Check if the version (extracted from the tag name) is a valid semantic version without pre-release or metadata
+          # If so, we will publish this as the latest release on DockerHub
+          LATEST='false'
+          if echo "$VERSION" | grep -Eq  '^([0-9]+\.[0-9]+\.[0-9]+)$'; then
+            LATEST='true'
+          fi
+
+          echo "latest=$LATEST" >> $GITHUB_ENV
+
+      - name: Update app configuration
+        env:
+          SEGMENT_WRITE_KEY: ${{ secrets.segment_write_key }}
+          VERSION: ${{ env.app_version }}
+        run: |
+          # Set analytics enabled to true
+          sed -i 's/enabled: false/enabled: true/' application.yml
+
+          # Replace '<SEGMENT_WRITE_KEY>' with secret
+          sed -i "s/<SEGMENT_WRITE_KEY>/${SEGMENT_WRITE_KEY}/" application.yml
+
+          # Replace '<APP_VERSION>' with the extracted version value
+          sed -i "s/<APP_VERSION>/${VERSION}/" application.yml
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+
+      - name: Publish to Dockerhub
+        env:
+          TAG: ${{ env.app_version }}
+          LATEST: ${{ env.latest }}
+        run: |
+          if [ "$LATEST" = 'true' ]; then
+            make push-extension-latest
+          else
+            make push-extension
+          fi
